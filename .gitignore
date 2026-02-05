@@ -1,0 +1,24 @@
+# Oracle APEX 24 Documentation (local reference only)
+apex_24doc/
+
+# Environment files
+*.env.local
+apex.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

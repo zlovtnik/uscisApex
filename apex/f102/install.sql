@@ -16,6 +16,7 @@ prompt --install
 @@application/shared_components/files/app_scripts_min_js.sql
 @@application/shared_components/files/css_app_styles_css.sql
 @@application/shared_components/files/js_app_scripts_js.sql
+@@application/shared_components/files/js_page_0006_import_export_js.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/administration_rights.sql
 @@application/shared_components/navigation/navigation_bar.sql

@@ -1,0 +1,94 @@
+-- ============================================================
+-- USCIS Case Tracker - Database Installation Log (EXAMPLE)
+-- ============================================================
+-- NOTE: This is a TEMPLATE showing the expected output format.
+--       Actual installation logs are runtime-generated and should
+--       NOT be committed to the repository.
+--       Actual logs are excluded via .gitignore (**/install_log.txt)
+-- ============================================================
+-- Script: install_all_v2.sql
+-- Date: <TIMESTAMP>
+-- Schema: <SCHEMA_NAME>
+-- Database: <DATABASE_VERSION>
+-- Platform: <PLATFORM>
+-- ============================================================
+
+============================================================
+ INSTALLATION SUMMARY
+============================================================
+
+Overall Status: <SUCCESS|FAILURE>
+Duration: <DURATION>
+Total Objects Created: <COUNT>
+Invalid Objects: <COUNT>
+
+============================================================
+ STEP 1: TABLES CREATED
+============================================================
+
+TABLE_NAME                  STATUS
+--------------------------- --------
+CASE_HISTORY                <STATUS>
+CASE_AUDIT_LOG              <STATUS>
+CASE_AUDIT_LOG_ARCHIVE      <STATUS>
+OAUTH_TOKENS                <STATUS>
+API_RATE_LIMITER            <STATUS>
+SCHEDULER_CONFIG            <STATUS>
+STATUS_UPDATES              <STATUS>
+
+============================================================
+ STEP 2: INDEXES CREATED
+============================================================
+
+INDEX_NAME                  TABLE                   STATUS
+--------------------------- ----------------------- --------
+idx_status_receipt          STATUS_UPDATES          <STATUS>
+idx_status_date             STATUS_UPDATES          <STATUS>
+idx_status_receipt_date     STATUS_UPDATES          <STATUS>
+idx_status_created          STATUS_UPDATES          <STATUS>
+idx_audit_receipt           CASE_AUDIT_LOG          <STATUS>
+idx_audit_date              CASE_AUDIT_LOG          <STATUS>
+idx_audit_action            CASE_AUDIT_LOG          <STATUS>
+idx_archive_performed_at    CASE_AUDIT_LOG_ARCHIVE  <STATUS>
+idx_archive_receipt         CASE_AUDIT_LOG_ARCHIVE  <STATUS>
+
+============================================================
+ STEP 3: VIEWS CREATED
+============================================================
+
+VIEW_NAME                   STATUS
+--------------------------- --------
+V_CASE_CURRENT_STATUS       <STATUS>
+V_CASE_DASHBOARD            <STATUS>
+V_RECENT_ACTIVITY           <STATUS>
+V_STATUS_HISTORY            <STATUS>
+V_CASES_DUE_FOR_CHECK       <STATUS>
+V_CASE_TYPE_SUMMARY         <STATUS>
+V_TOKEN_STATUS              <STATUS>
+V_RATE_LIMIT_STATUS         <STATUS>
+
+============================================================
+ STEP 4: PACKAGES CREATED
+============================================================
+
+PACKAGE_NAME                STATUS
+--------------------------- --------
+USCIS_TYPES_PKG             <STATUS>
+USCIS_UTIL_PKG              <STATUS>
+USCIS_AUDIT_PKG             <STATUS>
+USCIS_CASE_PKG              <STATUS>
+USCIS_OAUTH_PKG             <STATUS>
+USCIS_API_PKG               <STATUS>
+USCIS_SCHEDULER_PKG         <STATUS>
+USCIS_EXPORT_PKG            <STATUS>
+
+============================================================
+ STEP 5: SAMPLE DATA LOADED
+============================================================
+
+Sample cases inserted: <COUNT>
+Audit log entries: <COUNT>
+
+============================================================
+ INSTALLATION COMPLETE
+============================================================

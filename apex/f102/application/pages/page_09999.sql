@@ -22,6 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_template=>2101157952850466385
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
+,p_css_file_urls=>'#APP_FILES#app-styles.css'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'12'
 );

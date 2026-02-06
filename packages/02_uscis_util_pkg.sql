@@ -157,6 +157,34 @@ AS
         p_sqlerrm IN VARCHAR2 DEFAULT NULL
     );
 
+    -- ========================================================
+    -- JSON Builder Helpers (used by audit triggers)
+    -- ========================================================
+
+    -- Build JSON for case_history row (trigger NEW/OLD values)
+    FUNCTION build_case_history_json(
+        p_receipt_number        IN VARCHAR2,
+        p_created_at            IN TIMESTAMP,
+        p_created_by            IN VARCHAR2,
+        p_notes                 IN CLOB,
+        p_is_active             IN NUMBER,
+        p_last_checked_at       IN TIMESTAMP,
+        p_check_frequency       IN NUMBER,
+        p_notifications_enabled IN NUMBER
+    ) RETURN CLOB;
+
+    -- Build JSON for status_updates row (trigger NEW/OLD values)
+    FUNCTION build_audit_json(
+        p_id             IN NUMBER,
+        p_receipt_number IN VARCHAR2,
+        p_case_type      IN VARCHAR2,
+        p_current_status IN VARCHAR2,
+        p_last_updated   IN TIMESTAMP,
+        p_details        IN CLOB,
+        p_source         IN VARCHAR2,
+        p_created_at     IN TIMESTAMP
+    ) RETURN CLOB;
+
 END uscis_util_pkg;
 /
 
@@ -656,6 +684,111 @@ CREATE OR REPLACE PACKAGE BODY uscis_util_pkg AS
             CASE WHEN p_sqlerrm IS NOT NULL THEN ' - ' || p_sqlerrm END
         );
     END log_error;
+
+    -- --------------------------------------------------------
+    -- Private JSON builder helpers (shared by build_case_history_json and build_audit_json)
+    -- --------------------------------------------------------
+    PROCEDURE json_append_raw(
+        p_clob  IN OUT NOCOPY CLOB,
+        p_chunk IN VARCHAR2
+    ) IS
+    BEGIN
+        DBMS_LOB.APPEND(p_clob, p_chunk);
+    END json_append_raw;
+
+    PROCEDURE json_add_string(
+        p_clob      IN OUT NOCOPY CLOB,
+        p_has_value IN OUT NOCOPY BOOLEAN,
+        p_key       IN VARCHAR2,
+        p_value     IN VARCHAR2
+    ) IS
+    BEGIN
+        IF p_value IS NULL THEN RETURN; END IF;
+        IF p_has_value THEN json_append_raw(p_clob, ','); END IF;
+        json_append_raw(p_clob, '"' || p_key || '":"' || json_escape_varchar2(p_value) || '"');
+        p_has_value := TRUE;
+    END json_add_string;
+
+    PROCEDURE json_add_number(
+        p_clob      IN OUT NOCOPY CLOB,
+        p_has_value IN OUT NOCOPY BOOLEAN,
+        p_key       IN VARCHAR2,
+        p_value     IN NUMBER
+    ) IS
+    BEGIN
+        IF p_value IS NULL THEN RETURN; END IF;
+        IF p_has_value THEN json_append_raw(p_clob, ','); END IF;
+        json_append_raw(p_clob, '"' || p_key || '":' || TO_CHAR(p_value, 'FM999999999990D999999999', 'NLS_NUMERIC_CHARACTERS = ''.'''));
+        p_has_value := TRUE;
+    END json_add_number;
+
+    -- --------------------------------------------------------
+    -- build_case_history_json
+    -- --------------------------------------------------------
+    FUNCTION build_case_history_json(
+        p_receipt_number        IN VARCHAR2,
+        p_created_at            IN TIMESTAMP,
+        p_created_by            IN VARCHAR2,
+        p_notes                 IN CLOB,
+        p_is_active             IN NUMBER,
+        p_last_checked_at       IN TIMESTAMP,
+        p_check_frequency       IN NUMBER,
+        p_notifications_enabled IN NUMBER
+    ) RETURN CLOB IS
+        l_json      CLOB;
+        l_has_value BOOLEAN := FALSE;
+        l_notes     VARCHAR2(500);
+    BEGIN
+        DBMS_LOB.CREATETEMPORARY(l_json, TRUE);
+        json_append_raw(l_json, '{');
+
+        json_add_string(l_json, l_has_value, 'receipt_number', p_receipt_number);
+        json_add_string(l_json, l_has_value, 'created_at', format_iso_timestamp(p_created_at));
+        json_add_string(l_json, l_has_value, 'created_by', p_created_by);
+        l_notes := DBMS_LOB.SUBSTR(p_notes, 500, 1);
+        json_add_string(l_json, l_has_value, 'notes', l_notes);
+        json_add_number(l_json, l_has_value, 'is_active', p_is_active);
+        json_add_string(l_json, l_has_value, 'last_checked_at', format_iso_timestamp(p_last_checked_at));
+        json_add_number(l_json, l_has_value, 'check_frequency', p_check_frequency);
+        json_add_number(l_json, l_has_value, 'notifications_enabled', p_notifications_enabled);
+
+        json_append_raw(l_json, '}');
+        RETURN l_json;
+    END build_case_history_json;
+
+    -- --------------------------------------------------------
+    -- build_audit_json
+    -- --------------------------------------------------------
+    FUNCTION build_audit_json(
+        p_id             IN NUMBER,
+        p_receipt_number IN VARCHAR2,
+        p_case_type      IN VARCHAR2,
+        p_current_status IN VARCHAR2,
+        p_last_updated   IN TIMESTAMP,
+        p_details        IN CLOB,
+        p_source         IN VARCHAR2,
+        p_created_at     IN TIMESTAMP
+    ) RETURN CLOB IS
+        l_json      CLOB;
+        l_has_value BOOLEAN := FALSE;
+        l_details   VARCHAR2(500);
+    BEGIN
+        DBMS_LOB.CREATETEMPORARY(l_json, TRUE);
+        json_append_raw(l_json, '{');
+
+        json_add_number(l_json, l_has_value, 'id', p_id);
+        json_add_string(l_json, l_has_value, 'receipt_number', p_receipt_number);
+        json_add_string(l_json, l_has_value, 'case_type', p_case_type);
+        json_add_string(l_json, l_has_value, 'current_status', p_current_status);
+        json_add_string(l_json, l_has_value, 'last_updated', format_iso_timestamp(p_last_updated));
+        l_details := DBMS_LOB.SUBSTR(p_details, 500, 1);
+        json_add_string(l_json, l_has_value, 'details', l_details);
+        json_add_string(l_json, l_has_value, 'source', p_source);
+        json_add_string(l_json, l_has_value, 'created_at', format_iso_timestamp(p_created_at));
+
+        json_append_raw(l_json, '}');
+        RETURN l_json;
+    END build_audit_json;
 
 END uscis_util_pkg;
 /

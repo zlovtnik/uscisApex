@@ -230,7 +230,7 @@ static-delete: check-sqlcl
 			FROM apex_application_static_files
 			WHERE application_id = $(APP_ID) AND file_name = '$(FILE)';
 			
-			wwv_flow_imp.remove_app_static_file(p_id => l_file_id, p_flow_id => $(APP_ID));
+			wwv_flow_api.remove_app_static_file(p_id => l_file_id, p_flow_id => $(APP_ID));
 			COMMIT;
 			DBMS_OUTPUT.PUT_LINE('Deleted: $(FILE)');
 		EXCEPTION

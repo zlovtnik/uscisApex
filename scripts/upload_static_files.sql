@@ -114,7 +114,7 @@ BEGIN
         WHERE application_id = l_app_id
         AND file_name = 'js/page_0006_import_export.js';
         
-        wwv_flow_imp.remove_app_static_file(
+        wwv_flow_api.remove_app_static_file(
             p_id      => l_file_id,
             p_flow_id => l_app_id
         );
@@ -123,8 +123,7 @@ BEGIN
     END;
 
     -- Upload the JS file
-    wwv_flow_imp.create_app_static_file(
-        p_id           => wwv_flow_id.next_val,
+    wwv_flow_api.create_app_static_file(
         p_flow_id      => l_app_id,
         p_file_name    => 'js/page_0006_import_export.js',
         p_mime_type    => 'application/javascript',

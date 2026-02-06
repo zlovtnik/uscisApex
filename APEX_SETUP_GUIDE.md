@@ -102,7 +102,7 @@ Page 0 is the "Global Page" - content here appears on ALL pages. Use it for:
 
 /* Header Brand Styling */
 .t-Header-logo {
-  background-color: var(--uscis-primary) !important;
+  --ut-header-logo-background-color: var(--uscis-primary);
 }
 
 /* Status Badge Styling */

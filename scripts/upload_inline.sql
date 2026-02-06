@@ -12,10 +12,6 @@ DECLARE
     l_css_content CLOB;
     l_js_content CLOB;
     l_blob BLOB;
-    l_dest_offset INTEGER := 1;
-    l_src_offset INTEGER := 1;
-    l_lang_context INTEGER := DBMS_LOB.DEFAULT_LANG_CTX;
-    l_warning INTEGER;
 
     -- Helper function to convert CLOB to BLOB for large content
     FUNCTION clob_to_blob(p_clob IN CLOB) RETURN BLOB IS
@@ -58,9 +54,9 @@ BEGIN
         SELECT application_file_id INTO l_file_id
         FROM apex_application_static_files
         WHERE application_id = l_app_id
-        AND file_name = 'css/app-styles.css';
+        AND file_name = 'app-styles.css';
         
-        wwv_flow_imp.remove_app_static_file(
+        wwv_flow_api.remove_app_static_file(
             p_id      => l_file_id,
             p_flow_id => l_app_id
         );
@@ -88,28 +84,31 @@ BEGIN
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Body enhancements */
+/* Body enhancements — UT custom properties, no !important (P2) */
 body {
-  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #0c1929 100%) !important;
-  background-attachment: fixed !important;
+  --ut-body-background-color: #0c1929;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #0c1929 100%);
+  background-attachment: fixed;
 }
 
 .t-Body-content {
-  background: rgba(248, 250, 252, 0.95) !important;
+  --ut-body-content-background-color: rgba(248, 250, 252, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Header styling */
+/* Header styling — UT custom properties (P2) */
 .t-Header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+  --ut-header-background-color: #0f172a;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
 }
 
 .t-Header-logo-link {
-  color: #ffffff !important;
+  --ut-header-logo-text-color: #ffffff;
+  color: #ffffff;
   font-weight: 700;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
@@ -169,13 +168,13 @@ body {
   box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
 }
 
-/* Cards with glassmorphism */
+/* Cards with glassmorphism — UT custom properties (P2) */
 .t-Card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  --a-cv-background-color: rgba(255, 255, 255, 0.95);
+  --a-cv-border-color: rgba(255, 255, 255, 0.2);
+  --a-cv-border-radius: 16px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 16px !important;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -184,21 +183,24 @@ body {
   transform: translateY(-6px);
 }
 
-/* Buttons */
+/* Buttons — UT custom properties (P2) */
 .t-Button--hot {
-  background: var(--gradient-secondary) !important;
-  border: none !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  padding: 12px 24px !important;
-  border-radius: 10px !important;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35) !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  --a-button-background-color: #3b82f6;
+  --a-button-text-color: #ffffff;
+  --a-button-border-color: transparent;
+  background: var(--gradient-secondary);
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .t-Button--hot:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45);
 }
 
 /* Timeline styling */
@@ -215,14 +217,266 @@ body {
   transform: translateX(8px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
+
+/* =============================================
+   NAVIGATION - CLEAN SIDEBAR
+   ============================================= */
+
+.t-TreeNav {
+  --ut-treeNav-background-color: #1b2638;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content {
+  color: #c8d6e5;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  margin: 3px 10px;
+  padding: 10px 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #4a9eff;
+  border-radius: 0 3px 3px 0;
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content {
+  background: rgba(74, 158, 255, 0.15);
+  color: #ffffff;
+}
+
+.t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content::before,
+.t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content:hover::before {
+  transform: scaleY(1);
+}
+
+.t-TreeNav .fa,
+.t-TreeNav [class*="fa-"] {
+  color: #7b8fa6;
+  font-size: 16px;
+  transition: color 0.2s ease;
+}
+
+.t-TreeNav .a-TreeView-content:hover .fa,
+.t-TreeNav .a-TreeView-content:hover [class*="fa-"],
+.t-TreeNav .is-selected > .a-TreeView-content .fa,
+.t-TreeNav .is-selected > .a-TreeView-content [class*="fa-"] {
+  color: #4a9eff;
+}
+
+/* =============================================
+   LOGIN PAGE
+   ============================================= */
+
+body.t-PageBody--login {
+  --ut-body-background-color: #0c1929;
+  background: linear-gradient(160deg, #1e3a5f 0%, #0f172a 45%, #0c1929 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+body.t-PageBody--login .t-Login-bg {
+  background: radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+  position: fixed;
+  inset: 0;
+}
+
+body.t-PageBody--login .t-Login-bgImg {
+  display: none;
+}
+
+body.t-PageBody--login .t-Login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+body.t-PageBody--login .t-Login-region {
+  --ut-login-region-background-color: rgba(15, 23, 42, 0.75);
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 48px 40px 40px;
+  max-width: 420px;
+  width: 100%;
+  animation: loginFadeIn 0.5s ease-out;
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+body.t-PageBody--login .t-Login-header {
+  text-align: center;
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.t-PageBody--login .t-Login-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  margin-bottom: 20px;
+}
+
+body.t-PageBody--login .t-Login-title {
+  color: #e2e8f0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+body.t-PageBody--login .t-Login-region .t-Form-fieldContainer {
+  margin-bottom: 16px;
+}
+
+body.t-PageBody--login .apex-item-text,
+body.t-PageBody--login .apex-item-password {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #e2e8f0;
+  font-size: 15px;
+  padding: 14px 16px 14px 44px;
+  height: auto;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+body.t-PageBody--login .apex-item-text::placeholder,
+body.t-PageBody--login .apex-item-password::placeholder {
+  color: #6a7b91;
+}
+
+body.t-PageBody--login .apex-item-text:focus,
+body.t-PageBody--login .apex-item-password:focus {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  outline: none;
+}
+
+body.t-PageBody--login .apex-item-icon {
+  color: #5a6e84;
+  font-size: 15px;
+  transition: color 0.2s ease;
+}
+
+body.t-PageBody--login .apex-item-wrapper:focus-within .apex-item-icon {
+  color: #3b82f6;
+}
+
+body.t-PageBody--login .t-Button--passwordVisibility {
+  background: transparent;
+  border: none;
+  color: #5a6e84;
+}
+
+body.t-PageBody--login .t-Button--passwordVisibility:hover {
+  color: #8fa3b8;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.t-PageBody--login .u-checkbox {
+  color: #8fa3b8;
+  font-size: 13px;
+}
+
+body.t-PageBody--login input[type="checkbox"] {
+  accent-color: #3b82f6;
+}
+
+body.t-PageBody--login .t-Login-buttons {
+  margin-top: 28px;
+}
+
+body.t-PageBody--login .t-Login-region .t-Button--hot {
+  --a-button-background-color: #3b82f6;
+  --a-button-text-color: #ffffff;
+  --a-button-border-color: transparent;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 14px 24px;
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+}
+
+body.t-PageBody--login .t-Login-region .t-Button--hot:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}
+
+body.t-PageBody--login .t-Login-region .t-Button--hot:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+body.t-PageBody--login .t-Login-containerFooter {
+  color: #4a5e73;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+@media (max-width: 480px) {
+  body.t-PageBody--login .t-Login-region {
+    padding: 36px 24px 32px;
+    border-radius: 16px;
+    margin: 0 8px;
+  }
+  body.t-PageBody--login .t-Login-logo {
+    width: 60px;
+    height: 60px;
+  }
+  body.t-PageBody--login .t-Login-title {
+    font-size: 20px;
+  }
+}
 ]';
 
     -- Upload CSS file (using BLOB to handle content > 32K)
     l_blob := clob_to_blob(l_css_content);
-    wwv_flow_imp.create_app_static_file(
-        p_id           => wwv_flow_id.next_val,
+    wwv_flow_api.create_app_static_file(
         p_flow_id      => l_app_id,
-        p_file_name    => 'css/app-styles.css',
+        p_file_name    => 'app-styles.css',
         p_mime_type    => 'text/css',
         p_file_charset => 'utf-8',
         p_file_content => l_blob
@@ -241,9 +495,9 @@ body {
         SELECT application_file_id INTO l_file_id
         FROM apex_application_static_files
         WHERE application_id = l_app_id
-        AND file_name = 'js/app-scripts.js';
+        AND file_name = 'app-scripts.js';
         
-        wwv_flow_imp.remove_app_static_file(
+        wwv_flow_api.remove_app_static_file(
             p_id      => l_file_id,
             p_flow_id => l_app_id
         );
@@ -372,7 +626,9 @@ function initVisualEnhancements() {
         }
     });
 
-    console.log('[USCIS Tracker] Visual enhancements initialized');
+    if (apex.debug && apex.debug.getLevel() > 0) {
+        apex.debug.info('[USCIS Tracker] Visual enhancements initialized');
+    }
 }
 
 // Auto-initialize
@@ -383,10 +639,9 @@ if (typeof apex !== 'undefined' && apex.jQuery) {
 
     -- Upload JS file (using BLOB to handle content > 32K)
     l_blob := clob_to_blob(l_js_content);
-    wwv_flow_imp.create_app_static_file(
-        p_id           => wwv_flow_id.next_val,
+    wwv_flow_api.create_app_static_file(
         p_flow_id      => l_app_id,
-        p_file_name    => 'js/app-scripts.js',
+        p_file_name    => 'app-scripts.js',
         p_mime_type    => 'application/javascript',
         p_file_charset => 'utf-8',
         p_file_content => l_blob

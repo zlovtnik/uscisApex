@@ -28,8 +28,8 @@ BEGIN
 
     DBMS_OUTPUT.PUT_LINE('Uploading enhanced static files...');
 
-    -- Upload CSS file
-    l_file_name := 'css/app-styles.css';
+    -- Upload CSS file (must match #APP_FILES#app-styles.css reference)
+    l_file_name := 'app-styles.css';
 
     -- Delete existing file if present (query ID first, then remove by ID)
     DECLARE
@@ -40,7 +40,7 @@ BEGIN
         WHERE application_id = l_app_id
         AND file_name = l_file_name;
         
-        wwv_flow_imp.remove_app_static_file(
+        wwv_flow_api.remove_app_static_file(
             p_id      => l_file_id,
             p_flow_id => l_app_id
         );
@@ -133,8 +133,9 @@ BEGIN
    ============================================= */
 
 body {
-  background: var(--gradient-hero) !important;
-  background-attachment: fixed !important;
+  --ut-body-background-color: #0c1929;
+  background: var(--gradient-hero);
+  background-attachment: fixed;
   min-height: 100vh;
 }
 
@@ -157,11 +158,13 @@ body::before {
 /* Main content area styling */
 .t-Body-content,
 .t-Body-contentInner {
-  background: transparent !important;
+  --ut-body-content-background-color: transparent;
+  background: transparent;
 }
 
 .t-Body-main {
-  background: rgba(248, 250, 252, 0.95) !important;
+  --ut-body-main-background-color: rgba(248, 250, 252, 0.95);
+  background: rgba(248, 250, 252, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -172,15 +175,16 @@ body::before {
    ============================================= */
 
 .t-Header {
-  background: var(--gradient-dark) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+  --ut-header-background-color: #0f172a;
+  background: var(--gradient-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 .t-Header-logo {
-  background: transparent !important;
+  background: transparent;
   position: relative;
 }
 
@@ -204,7 +208,8 @@ body::before {
 }
 
 .t-Header-logo-link {
-  color: var(--neutral-100) !important;
+  --ut-header-logo-text-color: var(--neutral-100);
+  color: var(--neutral-100);
   font-weight: 700;
   font-size: 1.25rem;
   letter-spacing: -0.02em;
@@ -213,21 +218,25 @@ body::before {
 }
 
 .t-Header-logo-link:hover {
-  color: var(--uscis-accent) !important;
+  color: var(--uscis-accent);
   text-shadow: 0 0 20px var(--uscis-accent-glow);
 }
 
-/* Navigation - Modern Sidebar */
+/* Navigation - Clean Sidebar */
 .t-TreeNav {
-  background: var(--gradient-dark) !important;
-  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.2);
+  --ut-treeNav-background-color: #1b2638;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content {
-  color: var(--neutral-300) !important;
-  transition: all var(--transition-normal);
-  border-radius: var(--radius-md);
-  margin: 4px 8px;
+  color: #c8d6e5;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  margin: 3px 10px;
+  padding: 10px 12px;
   position: relative;
   overflow: hidden;
 }
@@ -239,15 +248,20 @@ body::before {
   top: 0;
   bottom: 0;
   width: 3px;
-  background: var(--gradient-secondary);
+  background: #4a9eff;
+  border-radius: 0 3px 3px 0;
   transform: scaleY(0);
-  transition: transform var(--transition-normal);
+  transition: transform 0.2s ease;
 }
 
-.t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content,
+.t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content {
+  background: rgba(74, 158, 255, 0.15);
+  color: #ffffff;
+}
+
 .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content:hover {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, transparent 100%) !important;
-  color: var(--neutral-100) !important;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 
 .t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content::before,
@@ -255,16 +269,19 @@ body::before {
   transform: scaleY(1);
 }
 
-/* Navigation icons glow */
+/* Navigation icons */
 .t-TreeNav .fa,
 .t-TreeNav [class*="fa-"] {
-  transition: all var(--transition-fast);
+  color: #7b8fa6;
+  font-size: 16px;
+  transition: color 0.2s ease;
 }
 
 .t-TreeNav .a-TreeView-content:hover .fa,
-.t-TreeNav .a-TreeView-content:hover [class*="fa-"] {
-  color: var(--uscis-accent) !important;
-  filter: drop-shadow(0 0 8px var(--uscis-accent-glow));
+.t-TreeNav .a-TreeView-content:hover [class*="fa-"],
+.t-TreeNav .is-selected > .a-TreeView-content .fa,
+.t-TreeNav .is-selected > .a-TreeView-content [class*="fa-"] {
+  color: #4a9eff;
 }
 
 /* =============================================
@@ -406,11 +423,11 @@ body::before {
    ============================================= */
 
 .t-Card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  --a-cv-background-color: rgba(255, 255, 255, 0.95);
+  --a-cv-border-color: rgba(255, 255, 255, 0.2);
+  --a-cv-border-radius: var(--radius-lg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: var(--radius-lg) !important;
   transition: all var(--transition-normal);
   overflow: hidden;
 }
@@ -430,7 +447,7 @@ body::before {
 .t-Card:hover {
   box-shadow: var(--shadow-xl);
   transform: translateY(-6px);
-  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .t-Card:hover::before {
@@ -665,14 +682,17 @@ body::before {
 
 .btn-primary,
 .t-Button--hot {
-  background: var(--gradient-secondary) !important;
-  border: none !important;
-  color: var(--neutral-100) !important;
-  font-weight: 600 !important;
-  padding: 12px 24px !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35) !important;
-  transition: all var(--transition-normal) !important;
+  --a-button-background-color: #3b82f6;
+  --a-button-text-color: var(--neutral-100);
+  --a-button-border-color: transparent;
+  background: var(--gradient-secondary);
+  border: none;
+  color: var(--neutral-100);
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+  transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
 }
@@ -691,9 +711,9 @@ body::before {
 
 .btn-primary:hover,
 .t-Button--hot:hover {
-  background: var(--gradient-primary) !important;
-  transform: translateY(-3px) !important;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45) !important;
+  background: var(--gradient-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45);
 }
 
 .btn-primary:hover::before,
@@ -703,14 +723,14 @@ body::before {
 
 .btn-primary:active,
 .t-Button--hot:active {
-  transform: translateY(-1px) !important;
+  transform: translateY(-1px);
 }
 
 /* Standard buttons */
 .t-Button {
-  border-radius: var(--radius-md) !important;
-  font-weight: 600 !important;
-  transition: all var(--transition-fast) !important;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all var(--transition-fast);
   position: relative;
   overflow: hidden;
 }
@@ -723,29 +743,35 @@ body::before {
 /* Danger button - Red gradient */
 .btn-danger,
 .t-Button--danger {
-  background: var(--gradient-danger) !important;
-  border: none !important;
-  color: var(--neutral-100) !important;
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35) !important;
+  --a-button-background-color: #ef4444;
+  --a-button-text-color: var(--neutral-100);
+  --a-button-border-color: transparent;
+  background: var(--gradient-danger);
+  border: none;
+  color: var(--neutral-100);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
 }
 
 .btn-danger:hover,
 .t-Button--danger:hover {
-  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.45) !important;
-  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.45);
+  transform: translateY(-3px);
 }
 
 /* Success button */
 .t-Button--success {
-  background: var(--gradient-success) !important;
-  border: none !important;
-  color: var(--neutral-100) !important;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35) !important;
+  --a-button-background-color: #10b981;
+  --a-button-text-color: var(--neutral-100);
+  --a-button-border-color: transparent;
+  background: var(--gradient-success);
+  border: none;
+  color: var(--neutral-100);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
 }
 
 .t-Button--success:hover {
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45) !important;
-  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+  transform: translateY(-3px);
 }
 
 /* Quick action buttons - Enhanced */
@@ -779,18 +805,20 @@ body::before {
 
 /* Icon buttons */
 .t-Button--icon {
-  border-radius: var(--radius-full) !important;
-  width: 42px !important;
-  height: 42px !important;
-  padding: 0 !important;
-  display: inline-flex !important;
+  border-radius: var(--radius-full);
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .t-Button--icon:hover {
-  background: var(--gradient-secondary) !important;
-  color: var(--neutral-100) !important;
+  --a-button-background-color: #3b82f6;
+  --a-button-text-color: var(--neutral-100);
+  background: var(--gradient-secondary);
+  color: var(--neutral-100);
   box-shadow: var(--shadow-glow-blue);
   transform: scale(1.1);
 }
@@ -923,6 +951,229 @@ body::before {
 }
 
 /* =============================================
+   LOGIN PAGE - ENHANCED
+   ============================================= */
+
+/* Background */
+.t-PageBody--login {
+  --ut-body-background-color: #0e1a2b;
+  background: #0e1a2b;
+  min-height: 100vh;
+}
+
+.t-Login-bg {
+  background: radial-gradient(ellipse at 20% 50%, rgba(30, 64, 120, 0.25) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 90%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+  position: fixed;
+  inset: 0;
+}
+
+.t-Login-bgImg {
+  display: none;
+}
+
+/* Login container centering */
+.t-Login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Login region card */
+.t-Login-region {
+  --ut-login-region-background-color: rgba(20, 30, 50, 0.85);
+  background: rgba(20, 30, 50, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(255, 255, 255, 0.04),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 48px 40px 40px;
+  max-width: 420px;
+  width: 100%;
+  animation: loginFadeIn 0.5s ease-out;
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header - logo and title */
+.t-Login-header {
+  text-align: center;
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.t-Login-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+}
+
+.t-Login-title {
+  color: #e8eef6;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* Form inputs */
+.t-Login-region .t-Form-fieldContainer {
+  margin-bottom: 16px;
+}
+
+.t-Login-region .apex-item-text,
+.t-Login-region .apex-item-password {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #e0e7f0;
+  font-size: 15px;
+  padding: 14px 16px 14px 44px;
+  height: auto;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.t-Login-region .apex-item-text::placeholder,
+.t-Login-region .apex-item-password::placeholder {
+  color: #6a7b91;
+}
+
+.t-Login-region .apex-item-text:focus,
+.t-Login-region .apex-item-password:focus {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.15);
+  outline: none;
+}
+
+/* Input icons */
+.t-Login-region .apex-item-icon {
+  color: #5a6e84;
+  font-size: 15px;
+  left: 14px;
+  transition: color 0.2s ease;
+}
+
+.t-Login-region .apex-item-text:focus ~ .apex-item-icon,
+.t-Login-region .apex-item-wrapper:focus-within .apex-item-icon {
+  color: #4a9eff;
+}
+
+/* Password visibility toggle */
+.t-Login-region .t-Button--passwordVisibility {
+  background: transparent;
+  border: none;
+  color: #5a6e84;
+  border-radius: 8px;
+}
+
+.t-Login-region .t-Button--passwordVisibility:hover {
+  color: #8fa3b8;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Checkbox */
+.t-Login-region .u-checkbox {
+  color: #8fa3b8;
+  font-size: 13px;
+}
+
+.t-Login-region input[type="checkbox"] {
+  accent-color: #4a9eff;
+}
+
+/* Sign In button */
+.t-Login-buttons {
+  margin-top: 28px;
+  padding-top: 4px;
+}
+
+.t-Login-region .t-Button--hot {
+  --a-button-background-color: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 14px 24px;
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.t-Login-region .t-Button--hot:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}
+
+.t-Login-region .t-Button--hot:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Error/success messages on login */
+.t-PageBody--login .apex-page-error,
+.t-PageBody--login .apex-page-success {
+  max-width: 420px;
+  margin: 0 auto 16px;
+  border-radius: 12px;
+}
+
+/* Login footer */
+.t-Login-containerFooter {
+  color: #4a5e73;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .t-Login-region {
+    padding: 36px 24px 32px;
+    border-radius: 16px;
+    margin: 0 8px;
+  }
+
+  .t-Login-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .t-Login-title {
+    font-size: 20px;
+  }
+
+  .t-Login-region .apex-item-text,
+  .t-Login-region .apex-item-password {
+    padding: 12px 14px 12px 40px;
+    font-size: 14px;
+  }
+
+  .t-Login-region .t-Button--hot {
+    padding: 12px 20px;
+  }
+}
+
+/* =============================================
    RESPONSIVE UTILITIES
    ============================================= */
 
@@ -1010,8 +1261,7 @@ body::before {
 ]';
 
     -- Upload CSS file
-    wwv_flow_imp.create_app_static_file(
-        p_id           => wwv_flow_id.next_val,
+    wwv_flow_api.create_app_static_file(
         p_flow_id      => l_app_id,
         p_file_name    => l_file_name,
         p_mime_type    => 'text/css',
@@ -1021,8 +1271,8 @@ body::before {
 
     DBMS_OUTPUT.PUT_LINE('Successfully uploaded: ' || l_file_name);
 
-    -- Upload JS file
-    l_file_name := 'js/app-scripts.js';
+    -- Upload JS file (must match #APP_FILES#app-scripts.js reference)
+    l_file_name := 'app-scripts.js';
 
     -- Delete existing file if present (query ID first, then remove by ID)
     DECLARE
@@ -1033,7 +1283,7 @@ body::before {
         WHERE application_id = l_app_id
         AND file_name = l_file_name;
         
-        wwv_flow_imp.remove_app_static_file(
+        wwv_flow_api.remove_app_static_file(
             p_id      => l_file_id,
             p_flow_id => l_app_id
         );
@@ -1794,8 +2044,7 @@ function testReceiptFunctions() {
 ]';
 
     -- Upload JS file
-    wwv_flow_imp.create_app_static_file(
-        p_id           => wwv_flow_id.next_val,
+    wwv_flow_api.create_app_static_file(
         p_flow_id      => l_app_id,
         p_file_name    => l_file_name,
         p_mime_type    => 'application/javascript',

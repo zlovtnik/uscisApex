@@ -18,6 +18,8 @@ This project uses **Oracle APEX 24.2** (Application Express) with **Oracle Datab
 | [APEX_SHELL_SETUP.md](../APEX_SHELL_SETUP.md) | Detailed shell setup guide (1307 lines) | Application creation, authorization schemes |
 | [MIGRATION_ROADMAP.md](../MIGRATION_ROADMAP.md) | Task tracking, roadmap, priorities (524 lines) | Project planning, task status |
 | [tests/README.md](../tests/README.md) | utPLSQL testing guide | Writing and running tests |
+| [APEX_24_REVIEW.md](../APEX_24_REVIEW.md) | APEX 24.2 code review standards & enhancement guide | Code review, best practices, security, AI integration |
+| [APEX_CONTEXTUAL_ANCHOR.md](../APEX_CONTEXTUAL_ANCHOR.md) | AI Contextual Anchor — principles AI tools must follow | AI code review, modern APEX patterns, legacy detection |
 
 ### Reference by Task Type
 
@@ -31,6 +33,9 @@ This project uses **Oracle APEX 24.2** (Application Express) with **Oracle Datab
 | **USCIS API** | ORACLE_APEX_MIGRATION_SPEC.md §7 | packages/05_uscis_oauth_pkg.sql, packages/06_uscis_api_pkg.sql |
 | **Testing** | tests/README.md | MIGRATION_ROADMAP.md Phase 5 |
 | **Deployment** | APEX_INSTRUCTIONS.md §8 | deployment/*.sql |
+| **Code Review / Standards** | APEX_24_REVIEW.md | APEX_CONTEXTUAL_ANCHOR.md, APEX_FRONTEND_DESIGN.md, packages/*.sql |
+| **AI Code Review** | APEX_CONTEXTUAL_ANCHOR.md | APEX_24_REVIEW.md, APEX_FRONTEND_DESIGN.md |
+| **AI Integration** | APEX_24_REVIEW.md §R-14, R-15 | ORACLE_APEX_MIGRATION_SPEC.md §7 |
 
 ---
 
@@ -249,6 +254,34 @@ From [APEX_FRONTEND_DESIGN.md](../APEX_FRONTEND_DESIGN.md):
 
 ---
 
+## APEX 24.2 Coding Standards (Enforced)
+
+See [APEX_24_REVIEW.md](../APEX_24_REVIEW.md) for the full guide with before/after examples.
+
+### Priority Hierarchy
+
+When writing or reviewing any code, follow this priority order:
+1. **Native over Custom** — Use native Dynamic Actions / Template Components before writing JavaScript or PL/SQL
+2. **AI Integration** — Look for opportunities to use `APEX_AI` and native AI Assistant regions
+3. **Modern UI** — Use `--ut-*` CSS variables and Template Components; never override `.t-*` classes with `!important`
+4. **Security** — Bind variables in all SQL; `apex_escape` for all output; CSP-compliant static assets
+
+### Critical Rules
+
+| Rule | Ref | Summary |
+|------|-----|---------|
+| No internal APIs | R-01 | Never call `wwv_flow_imp.*` in hand-written scripts; use `wwv_flow_api.*` |
+| Full session context | R-02 | Use `apex_session.create_session` instead of `apex_util.set_security_group_id` |
+| No `!important` on UT classes | R-05 | Override `--ut-*` CSS custom properties instead |
+| Native messaging | R-08 | Use `apex.message.showPageSuccess` / `showErrors`, not custom toast DOM |
+| IIFE wrapping | R-10 | Wrap all JS in `(function(apex, $){ ... })(apex, apex.jQuery)` |
+| CSP compliance | R-11 | No runtime `<style>` injection; all CSS in static files |
+| Bind variables always | R-12 | Never concatenate user input into SQL strings |
+| Escape all output | R-13 | Use `apex_escape.html()` (PL/SQL) or `apex.util.escapeHTML()` (JS) |
+| LOB cleanup | R-04 | Every `DBMS_LOB.CREATETEMPORARY` needs `FREETEMPORARY` on both success and error paths |
+
+---
+
 ## Page Designer Best Practices
 
 1. **Regions**: Use appropriate region types (Static Content, Cards, Interactive Grid, etc.)
@@ -257,6 +290,8 @@ From [APEX_FRONTEND_DESIGN.md](../APEX_FRONTEND_DESIGN.md):
 4. **Processes**: Use PL/SQL processes for server-side logic
 5. **Validations**: Add both client-side and server-side validations
 6. **Computations**: Use for calculating values before/after submit
+7. **Template Components**: Use for reusable UI fragments (status badges, cards) — see R-07
+8. **AI Assistant**: Add native AI Assistant regions for natural-language search — see R-14
 
 See local docs: `htmdb/using-page-designer.html`, `htmdb/about-page-designer.html`
 
@@ -274,8 +309,13 @@ See local docs: `htmdb/using-template-directives.html`
 1. **Authentication**: Configure in Shared Components > Security > Authentication
 2. **Authorization**: Use authorization schemes to control access
 3. **Session State Protection**: Enable checksum protection for items
-4. **Escaping**: Use `apex_escape` package for output escaping
-5. **SQL Injection Prevention**: Use bind variables in SQL
+4. **Escaping**: Use `apex_escape` package for output escaping (R-13)
+5. **SQL Injection Prevention**: Use bind variables in all SQL — never concatenate (R-12)
+6. **CSP Headers**: Enable Content-Security-Policy in Shared Components > Security; no runtime `<style>` injection (R-11)
+7. **LOB Memory Safety**: Always `FREETEMPORARY` in both success and error paths (R-04)
+8. **Public APIs Only**: Never call `wwv_flow_imp.*` directly in scripts (R-01)
+
+See [APEX_24_REVIEW.md](../APEX_24_REVIEW.md) for full details on each rule.
 
 See local docs:
 - `htmdb/establishing-user-identity-through-authentication.html`
@@ -302,6 +342,8 @@ New in APEX 24.2 - AI integration capabilities:
 - Use `APEX_AI` package for programmatic access
 - Create AI-powered assistants and chat interfaces
 - Generate content using `APEX_AI.GENERATE` function
+- **AI Assistant for Case Search** — see R-14 in [APEX_24_REVIEW.md](../APEX_24_REVIEW.md)
+- **RAG-Powered Status Insights** — see R-15 in [APEX_24_REVIEW.md](../APEX_24_REVIEW.md)
 
 See local docs:
 - `htmdb/including-generative-ai-in-applications.html`

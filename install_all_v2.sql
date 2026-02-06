@@ -46,6 +46,7 @@ PROMPT Step 1: Creating Tables...
 PROMPT ============================================================
 
 -- Drop existing objects if they exist (for re-runs)
+PURGE RECYCLEBIN;
 BEGIN
     FOR t IN (
         SELECT table_name FROM user_tables 
@@ -86,6 +87,7 @@ CREATE TABLE case_history (
     is_active         NUMBER(1)       DEFAULT 1 NOT NULL,
     last_checked_at   TIMESTAMP,
     check_frequency   NUMBER          DEFAULT 24,
+    notifications_enabled NUMBER(1)    DEFAULT 0 NOT NULL,
     --
     CONSTRAINT pk_case_history 
         PRIMARY KEY (receipt_number),
@@ -94,7 +96,9 @@ CREATE TABLE case_history (
     CONSTRAINT chk_is_active 
         CHECK (is_active IN (0, 1)),
     CONSTRAINT chk_check_frequency 
-        CHECK (check_frequency >= 1 AND check_frequency <= 720)
+        CHECK (check_frequency >= 1 AND check_frequency <= 720),
+    CONSTRAINT chk_notifications_enabled
+        CHECK (notifications_enabled IN (0, 1))
 );
 
 COMMENT ON TABLE case_history IS 'Master table for tracked USCIS cases';
@@ -255,6 +259,415 @@ PROMPT Created 7 indexes
 
 
 -- ============================================================
+-- STEP 2.1: CREATE AUDIT/UTIL PACKAGE STUBS (FOR TRIGGERS)
+-- ============================================================
+
+PROMPT ============================================================
+PROMPT Step 2.1: Creating package stubs for audit triggers...
+PROMPT ============================================================
+
+CREATE OR REPLACE PACKAGE uscis_util_pkg AUTHID CURRENT_USER AS
+    FUNCTION json_escape(p_text IN VARCHAR2) RETURN VARCHAR2;
+    FUNCTION format_iso_timestamp(p_ts IN TIMESTAMP) RETURN VARCHAR2;
+    FUNCTION build_case_history_json(
+        p_receipt_number       IN VARCHAR2,
+        p_created_at           IN TIMESTAMP,
+        p_created_by           IN VARCHAR2,
+        p_notes                IN CLOB,
+        p_is_active            IN NUMBER,
+        p_last_checked_at      IN TIMESTAMP,
+        p_check_frequency      IN NUMBER,
+        p_notifications_enabled IN NUMBER
+    ) RETURN CLOB;
+    FUNCTION build_audit_json(
+        p_id             IN NUMBER,
+        p_receipt_number IN VARCHAR2,
+        p_case_type      IN VARCHAR2,
+        p_current_status IN VARCHAR2,
+        p_last_updated   IN TIMESTAMP,
+        p_details        IN CLOB,
+        p_source         IN VARCHAR2,
+        p_created_at     IN TIMESTAMP
+    ) RETURN CLOB;
+END uscis_util_pkg;
+/
+
+CREATE OR REPLACE PACKAGE BODY uscis_util_pkg AS
+    FUNCTION json_escape(p_text IN VARCHAR2) RETURN VARCHAR2 IS
+        l_text VARCHAR2(32767);
+    BEGIN
+        IF p_text IS NULL THEN
+            RETURN NULL;
+        END IF;
+        -- Backslash must be escaped first to avoid double-escaping
+        l_text := REPLACE(p_text, '\', '\\');
+        -- Escape double-quote
+        l_text := REPLACE(l_text, '"', '\"');
+        -- Standard named escapes for common control characters
+        l_text := REPLACE(l_text, CHR(8),  '\b');  -- Backspace
+        l_text := REPLACE(l_text, CHR(9),  '\t');  -- Tab
+        l_text := REPLACE(l_text, CHR(10), '\n');  -- Newline (LF)
+        l_text := REPLACE(l_text, CHR(12), '\f');  -- Form feed
+        l_text := REPLACE(l_text, CHR(13), '\r');  -- Carriage return
+        -- Escape remaining control characters U+0000..U+001F as \u00XX
+        FOR i IN 0..31 LOOP
+            IF i NOT IN (8, 9, 10, 12, 13) THEN
+                l_text := REPLACE(l_text, CHR(i),
+                    '\u00' || LPAD(TRIM(TO_CHAR(i, 'XX')), 2, '0'));
+            END IF;
+        END LOOP;
+        RETURN l_text;
+    END json_escape;
+
+    FUNCTION format_iso_timestamp(p_ts IN TIMESTAMP) RETURN VARCHAR2 IS
+    BEGIN
+        IF p_ts IS NULL THEN
+            RETURN NULL;
+        END IF;
+        RETURN TO_CHAR(p_ts, 'YYYY-MM-DD"T"HH24:MI:SS.FF3');
+    END format_iso_timestamp;
+
+    FUNCTION build_case_history_json(
+        p_receipt_number       IN VARCHAR2,
+        p_created_at           IN TIMESTAMP,
+        p_created_by           IN VARCHAR2,
+        p_notes                IN CLOB,
+        p_is_active            IN NUMBER,
+        p_last_checked_at      IN TIMESTAMP,
+        p_check_frequency      IN NUMBER,
+        p_notifications_enabled IN NUMBER
+    ) RETURN CLOB IS
+        l_json      CLOB;
+        l_has_value BOOLEAN := FALSE;
+        l_notes     VARCHAR2(500);
+
+        PROCEDURE append_raw(p_value IN VARCHAR2) IS
+        BEGIN
+            DBMS_LOB.APPEND(l_json, p_value);
+        END append_raw;
+
+        PROCEDURE add_string(p_key IN VARCHAR2, p_value IN VARCHAR2) IS
+        BEGIN
+            IF p_value IS NULL THEN
+                RETURN;
+            END IF;
+            IF l_has_value THEN
+                append_raw(',');
+            END IF;
+            append_raw('"' || p_key || '":"' || json_escape(p_value) || '"');
+            l_has_value := TRUE;
+        END add_string;
+
+        PROCEDURE add_number(p_key IN VARCHAR2, p_value IN NUMBER) IS
+        BEGIN
+            IF p_value IS NULL THEN
+                RETURN;
+            END IF;
+            IF l_has_value THEN
+                append_raw(',');
+            END IF;
+            append_raw('"' || p_key || '":' || TO_CHAR(p_value));
+            l_has_value := TRUE;
+        END add_number;
+    BEGIN
+        DBMS_LOB.CREATETEMPORARY(l_json, TRUE);
+        append_raw('{');
+
+        add_string('receipt_number', p_receipt_number);
+        add_string('created_at', format_iso_timestamp(p_created_at));
+        add_string('created_by', p_created_by);
+        l_notes := DBMS_LOB.SUBSTR(p_notes, 500, 1);
+        add_string('notes', l_notes);
+        add_number('is_active', p_is_active);
+        add_string('last_checked_at', format_iso_timestamp(p_last_checked_at));
+        add_number('check_frequency', p_check_frequency);
+        add_number('notifications_enabled', p_notifications_enabled);
+
+        append_raw('}');
+        RETURN l_json;
+    END build_case_history_json;
+
+    FUNCTION build_audit_json(
+        p_id             IN NUMBER,
+        p_receipt_number IN VARCHAR2,
+        p_case_type      IN VARCHAR2,
+        p_current_status IN VARCHAR2,
+        p_last_updated   IN TIMESTAMP,
+        p_details        IN CLOB,
+        p_source         IN VARCHAR2,
+        p_created_at     IN TIMESTAMP
+    ) RETURN CLOB IS
+        l_json      CLOB;
+        l_has_value BOOLEAN := FALSE;
+        l_details   VARCHAR2(500);
+
+        PROCEDURE append_raw(p_value IN VARCHAR2) IS
+        BEGIN
+            DBMS_LOB.APPEND(l_json, p_value);
+        END append_raw;
+
+        PROCEDURE add_string(p_key IN VARCHAR2, p_value IN VARCHAR2) IS
+        BEGIN
+            IF p_value IS NULL THEN
+                RETURN;
+            END IF;
+            IF l_has_value THEN
+                append_raw(',');
+            END IF;
+            append_raw('"' || p_key || '":"' || json_escape(p_value) || '"');
+            l_has_value := TRUE;
+        END add_string;
+
+        PROCEDURE add_number(p_key IN VARCHAR2, p_value IN NUMBER) IS
+        BEGIN
+            IF p_value IS NULL THEN
+                RETURN;
+            END IF;
+            IF l_has_value THEN
+                append_raw(',');
+            END IF;
+            append_raw('"' || p_key || '":' || TO_CHAR(p_value));
+            l_has_value := TRUE;
+        END add_number;
+    BEGIN
+        DBMS_LOB.CREATETEMPORARY(l_json, TRUE);
+        append_raw('{');
+
+        add_number('id', p_id);
+        add_string('receipt_number', p_receipt_number);
+        add_string('case_type', p_case_type);
+        add_string('current_status', p_current_status);
+        add_string('last_updated', format_iso_timestamp(p_last_updated));
+        l_details := DBMS_LOB.SUBSTR(p_details, 500, 1);
+        add_string('details', l_details);
+        add_string('source', p_source);
+        add_string('created_at', format_iso_timestamp(p_created_at));
+
+        append_raw('}');
+        RETURN l_json;
+    END build_audit_json;
+END uscis_util_pkg;
+/
+
+CREATE OR REPLACE PACKAGE uscis_audit_pkg AUTHID CURRENT_USER AS
+    PROCEDURE log_event(
+        p_receipt_number IN VARCHAR2,
+        p_action         IN VARCHAR2,
+        p_old_values     IN CLOB,
+        p_new_values     IN CLOB
+    );
+END uscis_audit_pkg;
+/
+
+CREATE OR REPLACE PACKAGE BODY uscis_audit_pkg AS
+    PROCEDURE log_event(
+        p_receipt_number IN VARCHAR2,
+        p_action         IN VARCHAR2,
+        p_old_values     IN CLOB,
+        p_new_values     IN CLOB
+    ) IS
+        l_ip_address  VARCHAR2(500);
+        l_user_agent  VARCHAR2(500);
+    BEGIN
+        -- Get IP address from session context
+        l_ip_address := COALESCE(SYS_CONTEXT('USERENV', 'IP_ADDRESS'), 'UNKNOWN');
+
+        -- Get user agent: try OWA_UTIL (only works inside ORDS/web context)
+        BEGIN
+            l_user_agent := OWA_UTIL.GET_CGI_ENV('HTTP_USER_AGENT');
+        EXCEPTION
+            WHEN OTHERS THEN
+                l_user_agent := 'UNKNOWN';
+        END;
+
+        INSERT INTO case_audit_log (
+            receipt_number,
+            action,
+            old_values,
+            new_values,
+            performed_by,
+            performed_at,
+            ip_address,
+            user_agent
+        ) VALUES (
+            p_receipt_number,
+            p_action,
+            p_old_values,
+            p_new_values,
+            SYS_CONTEXT('USERENV', 'SESSION_USER'),
+            SYSTIMESTAMP,
+            l_ip_address,
+            l_user_agent
+        );
+    END log_event;
+END uscis_audit_pkg;
+/
+
+
+-- ============================================================
+-- STEP 2.2: CREATE AUDIT TRIGGERS
+-- ============================================================
+
+PROMPT ============================================================
+PROMPT Step 2.2: Creating Audit Triggers...
+PROMPT ============================================================
+
+CREATE OR REPLACE TRIGGER trg_case_history_audit
+AFTER INSERT OR UPDATE OR DELETE ON case_history
+FOR EACH ROW
+DECLARE
+    l_old_values CLOB;
+    l_new_values CLOB;
+BEGIN
+    IF INSERTING THEN
+        l_new_values := uscis_util_pkg.build_case_history_json(
+            p_receipt_number        => :NEW.receipt_number,
+            p_created_at            => :NEW.created_at,
+            p_created_by            => :NEW.created_by,
+            p_notes                 => :NEW.notes,
+            p_is_active             => :NEW.is_active,
+            p_last_checked_at       => :NEW.last_checked_at,
+            p_check_frequency       => :NEW.check_frequency,
+            p_notifications_enabled => :NEW.notifications_enabled
+        );
+
+        uscis_audit_pkg.log_event(
+            p_receipt_number => :NEW.receipt_number,
+            p_action         => 'INSERT',
+            p_old_values     => NULL,
+            p_new_values     => l_new_values
+        );
+    ELSIF UPDATING THEN
+        l_old_values := uscis_util_pkg.build_case_history_json(
+            p_receipt_number        => :OLD.receipt_number,
+            p_created_at            => :OLD.created_at,
+            p_created_by            => :OLD.created_by,
+            p_notes                 => :OLD.notes,
+            p_is_active             => :OLD.is_active,
+            p_last_checked_at       => :OLD.last_checked_at,
+            p_check_frequency       => :OLD.check_frequency,
+            p_notifications_enabled => :OLD.notifications_enabled
+        );
+
+        l_new_values := uscis_util_pkg.build_case_history_json(
+            p_receipt_number        => :NEW.receipt_number,
+            p_created_at            => :NEW.created_at,
+            p_created_by            => :NEW.created_by,
+            p_notes                 => :NEW.notes,
+            p_is_active             => :NEW.is_active,
+            p_last_checked_at       => :NEW.last_checked_at,
+            p_check_frequency       => :NEW.check_frequency,
+            p_notifications_enabled => :NEW.notifications_enabled
+        );
+
+        uscis_audit_pkg.log_event(
+            p_receipt_number => :NEW.receipt_number,
+            p_action         => 'UPDATE',
+            p_old_values     => l_old_values,
+            p_new_values     => l_new_values
+        );
+    ELSIF DELETING THEN
+        l_old_values := uscis_util_pkg.build_case_history_json(
+            p_receipt_number        => :OLD.receipt_number,
+            p_created_at            => :OLD.created_at,
+            p_created_by            => :OLD.created_by,
+            p_notes                 => :OLD.notes,
+            p_is_active             => :OLD.is_active,
+            p_last_checked_at       => :OLD.last_checked_at,
+            p_check_frequency       => :OLD.check_frequency,
+            p_notifications_enabled => :OLD.notifications_enabled
+        );
+
+        uscis_audit_pkg.log_event(
+            p_receipt_number => :OLD.receipt_number,
+            p_action         => 'DELETE',
+            p_old_values     => l_old_values,
+            p_new_values     => NULL
+        );
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_status_updates_audit
+AFTER INSERT OR UPDATE OR DELETE ON status_updates
+FOR EACH ROW
+DECLARE
+    l_old_values CLOB;
+    l_new_values CLOB;
+BEGIN
+    IF INSERTING THEN
+        l_new_values := uscis_util_pkg.build_audit_json(
+            p_id             => :NEW.id,
+            p_receipt_number => :NEW.receipt_number,
+            p_case_type      => :NEW.case_type,
+            p_current_status => :NEW.current_status,
+            p_last_updated   => :NEW.last_updated,
+            p_details        => :NEW.details,
+            p_source         => :NEW.source,
+            p_created_at     => :NEW.created_at
+        );
+
+        uscis_audit_pkg.log_event(
+            p_receipt_number => :NEW.receipt_number,
+            p_action         => 'INSERT',
+            p_old_values     => NULL,
+            p_new_values     => l_new_values
+        );
+    ELSIF UPDATING THEN
+        l_old_values := uscis_util_pkg.build_audit_json(
+            p_id             => :OLD.id,
+            p_receipt_number => :OLD.receipt_number,
+            p_case_type      => :OLD.case_type,
+            p_current_status => :OLD.current_status,
+            p_last_updated   => :OLD.last_updated,
+            p_details        => :OLD.details,
+            p_source         => :OLD.source,
+            p_created_at     => :OLD.created_at
+        );
+
+        l_new_values := uscis_util_pkg.build_audit_json(
+            p_id             => :NEW.id,
+            p_receipt_number => :NEW.receipt_number,
+            p_case_type      => :NEW.case_type,
+            p_current_status => :NEW.current_status,
+            p_last_updated   => :NEW.last_updated,
+            p_details        => :NEW.details,
+            p_source         => :NEW.source,
+            p_created_at     => :NEW.created_at
+        );
+
+        uscis_audit_pkg.log_event(
+            p_receipt_number => :NEW.receipt_number,
+            p_action         => 'UPDATE',
+            p_old_values     => l_old_values,
+            p_new_values     => l_new_values
+        );
+    ELSIF DELETING THEN
+        l_old_values := uscis_util_pkg.build_audit_json(
+            p_id             => :OLD.id,
+            p_receipt_number => :OLD.receipt_number,
+            p_case_type      => :OLD.case_type,
+            p_current_status => :OLD.current_status,
+            p_last_updated   => :OLD.last_updated,
+            p_details        => :OLD.details,
+            p_source         => :OLD.source,
+            p_created_at     => :OLD.created_at
+        );
+
+        uscis_audit_pkg.log_event(
+            p_receipt_number => :OLD.receipt_number,
+            p_action         => 'DELETE',
+            p_old_values     => l_old_values,
+            p_new_values     => NULL
+        );
+    END IF;
+END;
+/
+
+PROMPT Created audit triggers for CASE_HISTORY and STATUS_UPDATES
+
+
+-- ============================================================
 -- STEP 2.5: OAUTH TOKEN ENCRYPTION FUNCTIONS
 -- ============================================================
 
@@ -309,6 +722,7 @@ BEGIN
     -- For APEX applications, use APEX Web Credentials instead of this function
     RAISE_APPLICATION_ERROR(-20010,
         'Token encryption not configured. ' ||
+        'Key source: ' || l_key_source || '. ' ||
         'For APEX apps, use APEX Web Credentials (Shared Components > Web Credentials) ' ||
         'which provides built-in secure token storage. ' ||
         'See APEX_CREDENTIAL package for programmatic access.');
@@ -400,6 +814,32 @@ PROMPT Created OAuth encryption functions (v_oauth_tokens_secure removed for sec
 
 
 -- ============================================================
+-- STEP 2.6: INSTALL FULL PL/SQL PACKAGES
+-- ============================================================
+
+PROMPT ============================================================
+PROMPT Step 2.6: Installing Full PL/SQL Packages...
+PROMPT ============================================================
+
+@@packages/01_uscis_types_pkg.sql
+@@packages/02_uscis_util_pkg.sql
+@@packages/03_uscis_audit_pkg.sql
+@@packages/04_uscis_case_pkg.sql
+@@packages/05_uscis_oauth_pkg.sql
+@@packages/06_uscis_api_pkg.sql
+@@packages/07_uscis_scheduler_pkg.sql
+@@packages/08_uscis_export_pkg.sql
+
+PROMPT Full PL/SQL packages installed
+
+-- Recompile triggers after full packages replace stubs
+ALTER TRIGGER trg_case_history_audit COMPILE;
+ALTER TRIGGER trg_status_updates_audit COMPILE;
+
+PROMPT Recompiled triggers against full packages
+
+
+-- ============================================================
 -- STEP 3: CREATE VIEWS
 -- ============================================================
 
@@ -424,6 +864,7 @@ SELECT
     ch.is_active,
     ch.last_checked_at,
     ch.check_frequency,
+    ch.notifications_enabled,
     su.case_type,
     su.current_status,
     su.last_updated,
@@ -702,6 +1143,23 @@ PROMPT ============================================================
 PROMPT Step 5: Loading Sample Test Data...
 PROMPT ============================================================
 
+-- Disable audit triggers during sample data load (wrapped for safety)
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'ALTER TRIGGER trg_case_history_audit DISABLE';
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Warning: Could not disable trg_case_history_audit: ' || SQLERRM);
+    END;
+    BEGIN
+        EXECUTE IMMEDIATE 'ALTER TRIGGER trg_status_updates_audit DISABLE';
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Warning: Could not disable trg_status_updates_audit: ' || SQLERRM);
+    END;
+END;
+/
+
 -- Sample case 1: I-485 (Adjustment of Status)
 INSERT INTO case_history (receipt_number, created_by, notes, is_active)
 VALUES ('IOE0912345678', 'ADMIN', 'Sample I-485 application for testing', 1);
@@ -775,6 +1233,43 @@ VALUES ('LIN2412345678', 'INSERT', '{"receipt_number":"LIN2412345678","case_type
 COMMIT;
 
 PROMPT Added audit log entries
+
+-- Re-enable audit triggers (with exception safety using boolean flags)
+DECLARE
+    l_case_history_enabled    BOOLEAN := FALSE;
+    l_status_updates_enabled  BOOLEAN := FALSE;
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TRIGGER trg_case_history_audit ENABLE';
+    l_case_history_enabled := TRUE;
+
+    EXECUTE IMMEDIATE 'ALTER TRIGGER trg_status_updates_audit ENABLE';
+    l_status_updates_enabled := TRUE;
+
+    DBMS_OUTPUT.PUT_LINE('Re-enabled audit triggers');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERROR re-enabling audit triggers: ' || SQLERRM);
+        -- Only attempt to enable triggers that were not yet successfully enabled
+        IF NOT l_case_history_enabled THEN
+            BEGIN
+                EXECUTE IMMEDIATE 'ALTER TRIGGER trg_case_history_audit ENABLE';
+            EXCEPTION
+                WHEN OTHERS THEN
+                    DBMS_OUTPUT.PUT_LINE('  Could not re-enable trg_case_history_audit: ' || SQLERRM);
+            END;
+        END IF;
+        IF NOT l_status_updates_enabled THEN
+            BEGIN
+                EXECUTE IMMEDIATE 'ALTER TRIGGER trg_status_updates_audit ENABLE';
+            EXCEPTION
+                WHEN OTHERS THEN
+                    DBMS_OUTPUT.PUT_LINE('  Could not re-enable trg_status_updates_audit: ' || SQLERRM);
+            END;
+        END IF;
+        RAISE;
+END;
+/
+PROMPT Re-enabled audit triggers
 
 
 -- ============================================================

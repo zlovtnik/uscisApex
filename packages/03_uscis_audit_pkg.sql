@@ -574,32 +574,33 @@ END purge_old_records;
                 -- Exit when no more rows to process
                 EXIT WHEN l_rowids.COUNT = 0;
                 
-                -- Bulk INSERT...SELECT to archive using collected ROWIDs
-                INSERT INTO case_audit_log_archive (
-                    audit_id,
-                    receipt_number,
-                    action,
-                    old_values,
-                    new_values,
-                    performed_by,
-                    performed_at,
-                    ip_address,
-                    user_agent,
-                    archived_at
-                )
-                SELECT 
-                    audit_id,
-                    receipt_number,
-                    action,
-                    old_values,
-                    new_values,
-                    performed_by,
-                    performed_at,
-                    ip_address,
-                    user_agent,
-                    SYSTIMESTAMP
-                FROM case_audit_log
-                WHERE ROWID IN (SELECT COLUMN_VALUE FROM TABLE(l_rowids));
+                -- Archive batch using FORALL with INSERT...SELECT by ROWID
+                FORALL i IN 1..l_rowids.COUNT
+                    INSERT INTO case_audit_log_archive (
+                        audit_id,
+                        receipt_number,
+                        action,
+                        old_values,
+                        new_values,
+                        performed_by,
+                        performed_at,
+                        ip_address,
+                        user_agent,
+                        archived_at
+                    )
+                    SELECT 
+                        audit_id,
+                        receipt_number,
+                        action,
+                        old_values,
+                        new_values,
+                        performed_by,
+                        performed_at,
+                        ip_address,
+                        user_agent,
+                        SYSTIMESTAMP
+                    FROM case_audit_log
+                    WHERE ROWID = l_rowids(i);
                 
                 -- Delete batch using same ROWIDs
                 FORALL i IN 1..l_rowids.COUNT

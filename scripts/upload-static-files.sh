@@ -185,7 +185,7 @@ BEGIN
         WHERE application_id = l_app_id
         AND file_name = 'css/app-styles.css';
         
-        wwv_flow_imp.remove_app_static_file(
+        wwv_flow_api.remove_app_static_file(
             p_id      => l_file_id,
             p_flow_id => l_app_id
         );
@@ -213,28 +213,31 @@ BEGIN
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Body enhancements */
+/* Body enhancements — UT custom properties, no !important (P2) */
 body {
-  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #0c1929 100%) !important;
-  background-attachment: fixed !important;
+  --ut-body-background-color: #0c1929;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #0c1929 100%);
+  background-attachment: fixed;
 }
 
 .t-Body-content {
-  background: rgba(248, 250, 252, 0.95) !important;
+  --ut-body-content-background-color: rgba(248, 250, 252, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Header styling */
+/* Header styling — UT custom properties (P2) */
 .t-Header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+  --ut-header-background-color: #0f172a;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
 }
 
 .t-Header-logo-link {
-  color: #ffffff !important;
+  --ut-header-logo-text-color: #ffffff;
+  color: #ffffff;
   font-weight: 700;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
@@ -282,13 +285,13 @@ body {
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
 }
 
-/* Cards with glassmorphism */
+/* Cards with glassmorphism — UT custom properties (P2) */
 .t-Card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  --a-cv-background-color: rgba(255, 255, 255, 0.95);
+  --a-cv-border-color: rgba(255, 255, 255, 0.2);
+  --a-cv-border-radius: 16px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 16px !important;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -297,21 +300,24 @@ body {
   transform: translateY(-6px);
 }
 
-/* Buttons */
+/* Buttons — UT custom properties (P2) */
 .t-Button--hot {
-  background: var(--gradient-secondary) !important;
-  border: none !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  padding: 12px 24px !important;
-  border-radius: 10px !important;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35) !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  --a-button-background-color: #3b82f6;
+  --a-button-text-color: #ffffff;
+  --a-button-border-color: transparent;
+  background: var(--gradient-secondary);
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .t-Button--hot:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45);
 }
 
 /* Timeline styling */
@@ -331,8 +337,7 @@ body {
 ]';
 
     -- Upload CSS file
-    wwv_flow_imp.create_app_static_file(
-        p_id           => wwv_flow_id.next_val,
+    wwv_flow_api.create_app_static_file(
         p_flow_id      => l_app_id,
         p_file_name    => 'css/app-styles.css',
         p_mime_type    => 'text/css',
@@ -354,7 +359,7 @@ body {
         WHERE application_id = l_app_id
         AND file_name = 'js/app-scripts.js';
         
-        wwv_flow_imp.remove_app_static_file(
+        wwv_flow_api.remove_app_static_file(
             p_id      => l_file_id,
             p_flow_id => l_app_id
         );
@@ -488,8 +493,7 @@ if (typeof apex !== 'undefined' && apex.jQuery) {
 ]';
 
     -- Upload JS file
-    wwv_flow_imp.create_app_static_file(
-        p_id           => wwv_flow_id.next_val,
+    wwv_flow_api.create_app_static_file(
         p_flow_id      => l_app_id,
         p_file_name    => 'js/app-scripts.js',
         p_mime_type    => 'application/javascript',

@@ -340,7 +340,7 @@ body {
 
 /* Row hover highlight */
 .a-IG-row:hover {
-  background-color: rgba(0, 51, 102, 0.05) !important;
+  --a-ig-row-hover-background-color: rgba(0, 51, 102, 0.05);
 }
 
 /* ---------- Loading Spinner ---------- */
@@ -393,7 +393,7 @@ body {
   }
   
   .a-CardView-items {
-    grid-template-columns: 1fr !important;
+    --a-cv-columns: 1;
   }
 }
 

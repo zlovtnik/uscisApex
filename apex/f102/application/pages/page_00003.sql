@@ -122,6 +122,31 @@ wwv_flow_imp_page.create_page(
 '  padding: 8px;',
 '  border-bottom: 1px solid #f0f0f0;',
 '  font-size: 13px;',
+'}',
+'',
+'/* Audit Trail Table */',
+'.audit-history-table {',
+'  width: 100%;',
+'  border-collapse: collapse;',
+'}',
+'.audit-history-table th {',
+'  padding: 8px;',
+'  text-align: left;',
+'  border-bottom: 2px solid #e0e0e0;',
+'  font-size: 12px;',
+'  font-weight: 600;',
+'  text-transform: uppercase;',
+'  color: #666;',
+'}',
+'.audit-history-table td {',
+'  padding: 8px;',
+'  border-bottom: 1px solid #f0f0f0;',
+'  font-size: 13px;',
+'  vertical-align: top;',
+'}',
+'.audit-history-table .audit-values {',
+'  max-width: 280px;',
+'  word-break: break-word;',
 '}'))
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_component_map=>'16'
@@ -193,6 +218,46 @@ wwv_flow_imp_page.create_page_plug(
   'output_as', 'HTML',
   'show_line_breaks', 'N')).to_clob
 );
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(13300006000000006)
+,p_plug_name=>'Case Details Tabs'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_plug_template=>4072358936313175081
+,p_plug_display_sequence=>25
+,p_plug_source_type=>'NATIVE_DISPLAY_SELECTOR'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(13300004000000004)
+,p_plug_name=>'Notes'
+,p_parent_plug_id=>wwv_flow_imp.id(13300006000000006)
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>4501440665235496320
+,p_plug_display_sequence=>10
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(13300007000000007)
+,p_plug_name=>'Audit Trail'
+,p_parent_plug_id=>wwv_flow_imp.id(13300006000000006)
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>4501440665235496320
+,p_plug_display_sequence=>20
+,p_plug_source=>'&P3_AUDIT_HTML!RAW.'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML',
+  'show_line_breaks', 'N')).to_clob
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(13300005000000005)
+,p_plug_name=>'Settings'
+,p_parent_plug_id=>wwv_flow_imp.id(13300006000000006)
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>4501440665235496320
+,p_plug_display_sequence=>30
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+);
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(13300101000000101)
 ,p_button_sequence=>20
@@ -218,6 +283,30 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-trash-o'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(13300103000000103)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(13300004000000004)
+,p_button_name=>'BTN_SAVE_NOTES'
+,p_button_action=>'SUBMIT'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>4072362960822175091
+,p_button_image_alt=>'Save Notes'
+,p_button_position=>'NEXT'
+,p_icon_css_classes=>'fa-save'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(13300104000000104)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(13300005000000005)
+,p_button_name=>'BTN_SAVE_ACTIVE'
+,p_button_action=>'SUBMIT'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>4072362960822175091
+,p_button_image_alt=>'Update Settings'
+,p_button_position=>'NEXT'
+,p_icon_css_classes=>'fa-toggle-on'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(13300100000000100)
@@ -350,6 +439,83 @@ wwv_flow_imp_page.create_page_item(
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'N')).to_clob
 );
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(13300023000000023)
+,p_name=>'P3_AUDIT_HTML'
+,p_item_sequence=>120
+,p_item_plug_id=>wwv_flow_imp.id(13300007000000007)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_escape_on_http_output=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'N')).to_clob
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(13300021000000021)
+,p_name=>'P3_NOTES_EDIT'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(13300004000000004)
+,p_prompt=>'Notes'
+,p_placeholder=>'Add or update notes for this case...'
+,p_display_as=>'NATIVE_TEXTAREA'
+,p_cSize=>60
+,p_cMaxlength=>4000
+,p_cHeight=>3
+,p_field_template=>1609121967514267634
+,p_item_template_options=>'#DEFAULT#'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'auto_height', 'N',
+  'character_counter', 'N',
+  'resizable', 'Y',
+  'trim_spaces', 'BOTH')).to_clob
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(13300022000000022)
+,p_name=>'P3_ACTIVE_TOGGLE'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(13300005000000005)
+,p_item_default=>'Y'
+,p_prompt=>'Active Tracking'
+,p_display_as=>'NATIVE_YES_NO'
+,p_field_template=>1609121967514267634
+,p_item_template_options=>'#DEFAULT#'
+,p_help_text=>'Enable to keep this case in active tracking'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'off_value', 'N',
+  'on_value', 'Y',
+  'use_defaults', 'N')).to_clob
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(13300024000000024)
+,p_name=>'P3_CHECK_FREQUENCY'
+,p_item_sequence=>20
+,p_item_plug_id=>wwv_flow_imp.id(13300005000000005)
+,p_item_default=>'24'
+,p_prompt=>'Auto-check frequency'
+,p_display_as=>'NATIVE_SELECT_LIST'
+,p_lov=>'STATIC:6 hours;6,12 hours;12,24 hours;24,48 hours;48,Weekly;168'
+,p_cHeight=>1
+,p_field_template=>1609121967514267634
+,p_item_template_options=>'#DEFAULT#'
+,p_lov_display_extra=>'NO'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'page_action_on_selection', 'NONE')).to_clob
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(13300025000000025)
+,p_name=>'P3_NOTIFICATIONS'
+,p_item_sequence=>30
+,p_item_plug_id=>wwv_flow_imp.id(13300005000000005)
+,p_item_default=>'N'
+,p_prompt=>'Email notifications'
+,p_display_as=>'NATIVE_YES_NO'
+,p_field_template=>1609121967514267634
+,p_item_template_options=>'#DEFAULT#'
+,p_help_text=>'Notification delivery is not configured yet.'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'off_value', 'N',
+  'on_value', 'Y',
+  'use_defaults', 'N')).to_clob
+);
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(13300600000000600)
 ,p_name=>'Confirm Delete'
@@ -448,6 +614,108 @@ wwv_flow_imp_page.create_page_process(
 ,p_internal_uid=>13300202000000202
 );
 wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(13300203000000203)
+,p_process_sequence=>30
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Save Notes'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'BEGIN',
+'  IF :P3_RECEIPT_NUMBER IS NULL THEN',
+'    apex_error.add_error(',
+'      p_message => ''No receipt number specified. Cannot save notes.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RETURN;',
+'  END IF;',
+'  uscis_case_pkg.update_case_notes(',
+'    p_receipt_number => :P3_RECEIPT_NUMBER,',
+'    p_notes          => :P3_NOTES_EDIT',
+'  );',
+'EXCEPTION',
+'  WHEN OTHERS THEN',
+'    apex_debug.error(',
+'      p_message => ''Save notes failed for [%s]: %s (%s)'',',
+'      p0 => :P3_RECEIPT_NUMBER,',
+'      p1 => SQLERRM,',
+'      p2 => DBMS_UTILITY.FORMAT_ERROR_BACKTRACE',
+'    );',
+'    apex_error.add_error(',
+'      p_message => ''Failed to save notes. Please try again.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RETURN;',
+'END;'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when_button_id=>wwv_flow_imp.id(13300103000000103)
+,p_process_success_message=>'Notes saved successfully.'
+,p_internal_uid=>13300203000000203
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(13300204000000204)
+,p_process_sequence=>40
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Update Tracking Status'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'BEGIN',
+'  IF :P3_RECEIPT_NUMBER IS NULL THEN',
+'    apex_error.add_error(',
+'      p_message => ''No receipt number specified. Cannot update tracking.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RETURN;',
+'  END IF;',
+'  uscis_case_pkg.set_case_active(',
+'    p_receipt_number => :P3_RECEIPT_NUMBER,',
+'    p_is_active      => (:P3_ACTIVE_TOGGLE = ''Y'')',
+'  );',
+'',
+'  IF :P3_CHECK_FREQUENCY IS NOT NULL THEN',
+'    IF VALIDATE_CONVERSION(:P3_CHECK_FREQUENCY AS NUMBER) = 1 THEN',
+'      uscis_case_pkg.set_check_frequency(',
+'        p_receipt_number => :P3_RECEIPT_NUMBER,',
+'        p_hours          => TO_NUMBER(:P3_CHECK_FREQUENCY)',
+'      );',
+'    ELSE',
+'      apex_debug.error(',
+'        p_message => ''Invalid check frequency for [%s]: %s'',',
+'        p0 => :P3_RECEIPT_NUMBER,',
+'        p1 => :P3_CHECK_FREQUENCY',
+'      );',
+'      apex_error.add_error(',
+'        p_message          => ''Invalid check frequency for ['' || :P3_RECEIPT_NUMBER || '']: '' || :P3_CHECK_FREQUENCY,',
+'        p_display_location => apex_error.c_inline_in_notification',
+'      );',
+'      apex_application.g_print_success_message := NULL;',
+'    END IF;',
+'  END IF;',
+'',
+'  UPDATE case_history',
+'  SET notifications_enabled = CASE WHEN :P3_NOTIFICATIONS = ''Y'' THEN 1 ELSE 0 END',
+'  WHERE receipt_number = :P3_RECEIPT_NUMBER',
+'    AND created_by = :APP_USER;',
+'EXCEPTION',
+'  WHEN OTHERS THEN',
+'    apex_debug.error(',
+'      p_message => ''Update tracking failed for [%s]: %s'',',
+'      p0 => :P3_RECEIPT_NUMBER,',
+'      p1 => SQLERRM',
+'    );',
+'    apex_error.add_error(',
+'      p_message => ''Failed to update tracking. Please try again.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RETURN;',
+'END;'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when_button_id=>wwv_flow_imp.id(13300104000000104)
+,p_process_success_message=>'Settings updated successfully.'
+,p_internal_uid=>13300204000000204
+);
+wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(13300200000000200)
 ,p_process_sequence=>10
 ,p_process_point=>'BEFORE_HEADER'
@@ -457,7 +725,9 @@ wwv_flow_imp_page.create_page_process(
 'DECLARE',
 '  l_receipt      VARCHAR2(13) := :P3_RECEIPT_NUMBER;',
 '  l_html         VARCHAR2(32767);',
+'  l_audit_html   CLOB;',
 '  l_count        NUMBER := 0;',
+'  l_audit_count  NUMBER := 0;',
 '  l_raw_status   VARCHAR2(500);',
 'BEGIN',
 '  IF l_receipt IS NULL THEN',
@@ -469,19 +739,25 @@ wwv_flow_imp_page.create_page_process(
 '    SELECT',
 '      NVL(case_type, ''Unknown''),',
 '      NVL(current_status, ''Unknown''),',
-'      NVL(TO_CHAR(last_updated, ''Mon DD, YYYY HH:MI AM''), ''N/A''),',
+'      NVL(TO_CHAR(last_updated, ''Mon DD, YYYY HH12":"MI AM''), ''N/A''),',
 '      NVL(TO_CHAR(tracking_since, ''Mon DD, YYYY''), ''N/A''),',
 '      CASE WHEN NVL(is_active, 1) = 1 THEN ''Y'' ELSE ''N'' END,',
-'      notes',
+'      notes,',
+'      NVL(check_frequency, 24),',
+'      CASE WHEN NVL(notifications_enabled, 0) = 1 THEN ''Y'' ELSE ''N'' END',
 '    INTO',
 '      :P3_CASE_TYPE,',
 '      :P3_CURRENT_STATUS,',
 '      :P3_LAST_UPDATED,',
 '      :P3_TRACKING_SINCE,',
 '      :P3_IS_ACTIVE,',
-'      :P3_NOTES',
+'      :P3_NOTES,',
+'      :P3_CHECK_FREQUENCY,',
+'      :P3_NOTIFICATIONS',
 '    FROM v_case_current_status',
 '    WHERE receipt_number = l_receipt;',
+'    :P3_NOTES_EDIT := :P3_NOTES;',
+'    :P3_ACTIVE_TOGGLE := :P3_IS_ACTIVE;',
 '  EXCEPTION',
 '    WHEN NO_DATA_FOUND THEN',
 '      :P3_CURRENT_STATUS := ''Not Found'';',
@@ -490,6 +766,10 @@ wwv_flow_imp_page.create_page_process(
 '      :P3_TRACKING_SINCE := ''N/A'';',
 '      :P3_IS_ACTIVE := ''N'';',
 '      :P3_NOTES := NULL;',
+'      :P3_NOTES_EDIT := NULL;',
+'      :P3_ACTIVE_TOGGLE := ''N'';',
+'      :P3_CHECK_FREQUENCY := 24;',
+'      :P3_NOTIFICATIONS := ''N'';',
 '  END;',
 '',
 '  -- Escape display values for safe HTML rendering',
@@ -550,7 +830,7 @@ wwv_flow_imp_page.create_page_process(
 '',
 '  FOR rec IN (',
 '    SELECT',
-'      TO_CHAR(last_updated, ''Mon DD, YYYY HH:MI AM'') AS updated_dt,',
+'      TO_CHAR(last_updated, ''Mon DD, YYYY HH12":"MI AM'') AS updated_dt,',
 '      NVL(current_status, ''Unknown'') AS sts,',
 '      NVL(case_type, ''-'') AS ctype,',
 '      NVL(source, ''MANUAL'') AS src',
@@ -576,6 +856,54 @@ wwv_flow_imp_page.create_page_process(
 '',
 '  l_html := l_html || ''</tbody></table>'';',
 '  :P3_STATUS_HTML := l_html;',
+'',
+'  -- Build audit trail HTML table',
+'  DBMS_LOB.CREATETEMPORARY(l_audit_html, TRUE);',
+'  DBMS_LOB.APPEND(l_audit_html,',
+'    ''<table class="audit-history-table">''',
+'    || ''<thead><tr>''',
+'    || ''<th>Date</th>''',
+'    || ''<th>Action</th>''',
+'    || ''<th>By</th>''',
+'    || ''<th>Old Values</th>''',
+'    || ''<th>New Values</th>''',
+'    || ''</tr></thead><tbody>'');',
+'',
+'  FOR rec IN (',
+'    SELECT',
+'      TO_CHAR(performed_at, ''Mon DD, YYYY HH12":"MI AM'') AS performed_dt,',
+'      NVL(action, ''-'') AS action_name,',
+'      NVL(performed_by, ''SYSTEM'') AS performed_by,',
+'      NVL(DBMS_LOB.SUBSTR(old_values, 2000, 1), ''-'') AS old_values,',
+'      NVL(DBMS_LOB.SUBSTR(new_values, 2000, 1), ''-'') AS new_values',
+'    FROM case_audit_log',
+'    WHERE receipt_number = l_receipt',
+'    ORDER BY performed_at DESC',
+'    FETCH FIRST 50 ROWS ONLY',
+'  ) LOOP',
+'    DBMS_LOB.APPEND(l_audit_html,',
+'      ''<tr>''',
+'      || ''<td>'' || apex_escape.html(rec.performed_dt) || ''</td>''',
+'      || ''<td>'' || apex_escape.html(rec.action_name) || ''</td>''',
+'      || ''<td>'' || apex_escape.html(rec.performed_by) || ''</td>''',
+'      || ''<td class="audit-values">'' || apex_escape.html(rec.old_values) || ''</td>''',
+'      || ''<td class="audit-values">'' || apex_escape.html(rec.new_values) || ''</td>''',
+'      || ''</tr>'');',
+'    l_audit_count := l_audit_count + 1;',
+'  END LOOP;',
+'',
+'  IF l_audit_count = 0 THEN',
+'    DBMS_LOB.APPEND(l_audit_html,',
+'      ''<tr><td colspan="5" style="padding:16px;text-align:center;''',
+'      || ''color:#666">No audit entries recorded yet.</td></tr>'');',
+'  END IF;',
+'',
+'  DBMS_LOB.APPEND(l_audit_html, ''</tbody></table>'');',
+'  :P3_AUDIT_HTML := DBMS_LOB.SUBSTR(l_audit_html, 32767, 1);',
+'',
+'  IF DBMS_LOB.ISTEMPORARY(l_audit_html) = 1 THEN',
+'    DBMS_LOB.FREETEMPORARY(l_audit_html);',
+'  END IF;',
 'END;'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'

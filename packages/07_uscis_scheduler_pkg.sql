@@ -130,6 +130,15 @@ END uscis_scheduler_pkg;
 CREATE OR REPLACE PACKAGE BODY uscis_scheduler_pkg AS
 
     -- --------------------------------------------------------
+    -- Session context constants for headless (DBMS_SCHEDULER) execution.
+    -- APEX_WEB_SERVICE requires a valid APEX session; these are used by
+    -- apex_session.create_session before any APEX API call.
+    -- --------------------------------------------------------
+    gc_app_id          CONSTANT NUMBER       := 102;
+    gc_page_id         CONSTANT NUMBER       := 1;
+    gc_scheduler_user  CONSTANT VARCHAR2(30) := 'USCIS_SCHEDULER';
+
+    -- --------------------------------------------------------
     -- Private: Check if job exists
     -- --------------------------------------------------------
     FUNCTION job_exists(
@@ -304,15 +313,24 @@ CREATE OR REPLACE PACKAGE BODY uscis_scheduler_pkg AS
         l_receipt     VARCHAR2(13);
         l_count       NUMBER := 0;
     BEGIN
+        -- Establish APEX session context (required for APEX_WEB_SERVICE)
+        apex_session.create_session(
+            p_app_id   => gc_app_id,
+            p_page_id  => gc_page_id,
+            p_username => gc_scheduler_user
+        );
+
         -- Check if enabled
         IF NOT is_auto_check_enabled THEN
             uscis_util_pkg.log_debug('Auto check is disabled, skipping', gc_package_name);
+            apex_session.delete_session;
             RETURN;
         END IF;
         
         -- Check if API is configured
         IF NOT uscis_api_pkg.is_api_configured AND NOT uscis_api_pkg.is_mock_mode THEN
             uscis_util_pkg.log_debug('API not configured, skipping auto check', gc_package_name);
+            apex_session.delete_session;
             RETURN;
         END IF;
         
@@ -343,6 +361,7 @@ CREATE OR REPLACE PACKAGE BODY uscis_scheduler_pkg AS
         
         IF l_receipts.COUNT = 0 THEN
             uscis_util_pkg.log_debug('No cases due for check', gc_package_name);
+            apex_session.delete_session;
             RETURN;
         END IF;
         
@@ -357,9 +376,18 @@ CREATE OR REPLACE PACKAGE BODY uscis_scheduler_pkg AS
             p_save_to_database => TRUE,
             p_stop_on_error    => FALSE
         );
+
+        -- Tear down APEX session
+        apex_session.delete_session;
         
     EXCEPTION
         WHEN OTHERS THEN
+            -- Always clean up APEX session on error
+            BEGIN
+                apex_session.delete_session;
+            EXCEPTION
+                WHEN OTHERS THEN NULL;
+            END;
             uscis_util_pkg.log_error(
                 'Auto check failed: ' || SQLERRM,
                 gc_package_name,
@@ -374,11 +402,25 @@ CREATE OR REPLACE PACKAGE BODY uscis_scheduler_pkg AS
     -- --------------------------------------------------------
     PROCEDURE run_token_refresh IS
     BEGIN
+        -- Establish APEX session context (required for APEX_WEB_SERVICE)
+        apex_session.create_session(
+            p_app_id   => gc_app_id,
+            p_page_id  => gc_page_id,
+            p_username => gc_scheduler_user
+        );
+
         uscis_oauth_pkg.refresh_token_if_needed(
             p_buffer_seconds => 300  -- Refresh 5 min before expiry
         );
+
+        apex_session.delete_session;
     EXCEPTION
         WHEN OTHERS THEN
+            BEGIN
+                apex_session.delete_session;
+            EXCEPTION
+                WHEN OTHERS THEN NULL;
+            END;
             uscis_util_pkg.log_error(
                 'Token refresh failed: ' || SQLERRM,
                 gc_package_name,
@@ -396,6 +438,13 @@ CREATE OR REPLACE PACKAGE BODY uscis_scheduler_pkg AS
         l_status_days NUMBER;
         l_deleted_count NUMBER := 0;
     BEGIN
+        -- Establish APEX session context (cleanup may call APEX APIs indirectly)
+        apex_session.create_session(
+            p_app_id   => gc_app_id,
+            p_page_id  => gc_page_id,
+            p_username => gc_scheduler_user
+        );
+
         -- Get retention periods
         l_audit_days := uscis_util_pkg.get_config_number('AUDIT_RETENTION_DAYS', 365);
         l_status_days := uscis_util_pkg.get_config_number('STATUS_HISTORY_RETENTION_DAYS', 730);
@@ -427,10 +476,17 @@ CREATE OR REPLACE PACKAGE BODY uscis_scheduler_pkg AS
         uscis_audit_pkg.purge_old_records(l_audit_days);
         
         uscis_util_pkg.log_debug('Cleanup completed', gc_package_name);
+
+        apex_session.delete_session;
         
     EXCEPTION
         WHEN OTHERS THEN
             ROLLBACK;
+            BEGIN
+                apex_session.delete_session;
+            EXCEPTION
+                WHEN OTHERS THEN NULL;
+            END;
             uscis_util_pkg.log_error(
                 'Cleanup failed: ' || SQLERRM,
                 gc_package_name,

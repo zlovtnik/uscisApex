@@ -18,7 +18,7 @@ wwv_imp_workspace.create_flow(
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'USCIS')
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
-,p_checksum_salt=>RAWTOHEX(SYS_GUID())
+,p_checksum_salt=>'4A2B6A5577BEB381E063D259000A0129'
 ,p_bookmark_checksum_function=>'SH512'
 ,p_compatibility_mode=>'24.2'
 ,p_flow_language=>'en'

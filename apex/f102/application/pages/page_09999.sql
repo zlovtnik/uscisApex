@@ -19,10 +19,10 @@ wwv_flow_imp_page.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
+,p_css_file_urls=>'#APP_FILES#app-styles.css'
 ,p_step_template=>2101157952850466385
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
-,p_css_file_urls=>'#APP_FILES#app-styles.css'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'12'
 );

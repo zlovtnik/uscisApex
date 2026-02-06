@@ -34,23 +34,6 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'16'
 );
--- Hero / Breadcrumb region
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(13064674777297960)
-,p_plug_name=>'USCIS Case Tracker'
-,p_region_template_options=>'#DEFAULT#'
-,p_escape_on_http_output=>'Y'
-,p_plug_template=>2674017834225413037
-,p_plug_display_sequence=>10
-,p_plug_display_point=>'REGION_POSITION_01'
-,p_plug_query_num_rows=>15
-,p_region_image=>'#APP_FILES#icons/app-icon-512.png'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'expand_shortcuts', 'N',
-  'output_as', 'HTML',
-  'show_line_breaks', 'Y')).to_clob
-);
--- Summary Cards Region (PL/SQL dynamic content)
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(13001001000000101)
 ,p_plug_name=>'Summary Cards'
@@ -123,7 +106,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source_type=>'NATIVE_PLSQL'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
--- Status Distribution Chart
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(13001002000000102)
 ,p_plug_name=>'Cases by Status'
@@ -131,6 +113,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>2674017834225413037
 ,p_plug_display_sequence=>30
 ,p_plug_grid_column_span=>7
+,p_location=>null
 ,p_plug_source_type=>'NATIVE_JET_CHART'
 );
 wwv_flow_imp_page.create_jet_chart(
@@ -145,15 +128,29 @@ wwv_flow_imp_page.create_jet_chart(
 ,p_data_cursor_behavior=>'auto'
 ,p_hover_behavior=>'dim'
 ,p_stack=>'off'
+,p_stack_label=>'off'
 ,p_connect_nulls=>'Y'
+,p_value_position=>'auto'
 ,p_sorting=>'value-desc'
 ,p_fill_multi_series_gaps=>true
 ,p_tooltip_rendered=>'Y'
 ,p_show_series_name=>true
 ,p_show_group_name=>true
 ,p_show_value=>true
+,p_show_label=>true
+,p_show_row=>true
+,p_show_start=>true
+,p_show_end=>true
+,p_show_progress=>true
+,p_show_baseline=>true
 ,p_legend_rendered=>'on'
 ,p_legend_position=>'bottom'
+,p_overview_rendered=>'off'
+,p_horizontal_grid=>'auto'
+,p_vertical_grid=>'auto'
+,p_gauge_orientation=>'circular'
+,p_gauge_plot_area=>'on'
+,p_show_gauge_value=>true
 );
 wwv_flow_imp_page.create_jet_chart_series(
  p_id=>wwv_flow_imp.id(13001004000000104)
@@ -181,8 +178,8 @@ wwv_flow_imp_page.create_jet_chart_series(
 ,p_color=>'&STATUS_COLOR.'
 ,p_items_label_rendered=>true
 ,p_items_label_display_as=>'PERCENT'
+,p_threshold_display=>'onIndicator'
 );
--- Recent Activity Region
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(13001005000000105)
 ,p_plug_name=>'Recent Activity'
@@ -235,7 +232,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source_type=>'NATIVE_PLSQL'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
--- Quick Actions Region
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(13001006000000106)
 ,p_plug_name=>'Quick Actions'
@@ -247,6 +243,21 @@ wwv_flow_imp_page.create_page_plug(
   'expand_shortcuts', 'N',
   'output_as', 'HTML',
   'show_line_breaks', 'N')).to_clob
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(13064674777297960)
+,p_plug_name=>'USCIS Case Tracker'
+,p_region_template_options=>'#DEFAULT#'
+,p_escape_on_http_output=>'Y'
+,p_plug_template=>2674017834225413037
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_plug_query_num_rows=>15
+,p_region_image=>'#APP_FILES#icons/app-icon-512.png'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML',
+  'show_line_breaks', 'Y')).to_clob
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(13001101000000111)

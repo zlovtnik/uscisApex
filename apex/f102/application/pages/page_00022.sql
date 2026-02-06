@@ -164,11 +164,14 @@ wwv_flow_imp_page.create_page_plug(
 '    v.days_since_update,',
 '    NVL(TO_CHAR(v.hours_since_check) || '' hrs ago'', ''Never'') AS last_check_display,',
 '    CASE',
-'        WHEN UPPER(v.current_status) LIKE ''%DENIED%'' OR UPPER(v.current_status) LIKE ''%NOT APPROVED%'' OR UPPER(v.current_status) LIKE ''%REJECT%'' OR UPPER(v.current_status) LIKE ''%TERMINAT%'' OR UPPER(v.current_status) LIKE ''%WITHDRAWN%'' OR UPPER(v.current_status) LIKE ''%REVOKED%'' THEN ''denied''',
-'        WHEN UPPER(v.current_status) LIKE ''%APPROVED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS PRODUCED%'' OR UPPER(v.current_status) LIKE ''%CARD IS BEING PRODUCED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS DELIVERED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS MAILED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS PICKED UP%'' OR UPPER(v.current_status) LIKE ''%OATH CEREMONY%'' OR UPPER(v.current_status) LIKE ''%WELCOME NOTICE%'' THEN ''approved''',
+'        WHEN UPPER(v.current_status) LIKE ''%DENIED%'' OR UPPER(v.current_status) LIKE ''%NOT APPROVED%'' OR UPPER(v.current_status) LIKE ''%REJECT%'' OR UPPER(v.current_status) LIKE ''%TERMINAT%'' OR UPPER(v.current_status) LIKE ''%WITHDRAWN%'' OR UPPER(v.cur'
+||'rent_status) LIKE ''%REVOKED%'' THEN ''denied''',
+'        WHEN UPPER(v.current_status) LIKE ''%APPROVED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS PRODUCED%'' OR UPPER(v.current_status) LIKE ''%CARD IS BEING PRODUCED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS DELIVERED%'' OR UPPER(v.current_status) '
+||'LIKE ''%CARD WAS MAILED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS PICKED UP%'' OR UPPER(v.current_status) LIKE ''%OATH CEREMONY%'' OR UPPER(v.current_status) LIKE ''%WELCOME NOTICE%'' THEN ''approved''',
 '        WHEN UPPER(v.current_status) LIKE ''%EVIDENCE%'' OR UPPER(v.current_status) LIKE ''%RFE%'' THEN ''rfe''',
 '        WHEN UPPER(v.current_status) LIKE ''%RECEIVED%'' OR UPPER(v.current_status) LIKE ''%ACCEPTED%'' OR UPPER(v.current_status) LIKE ''%FEE%'' THEN ''received''',
-'        WHEN UPPER(v.current_status) LIKE ''%FINGERPRINT%'' OR UPPER(v.current_status) LIKE ''%INTERVIEW%'' OR UPPER(v.current_status) LIKE ''%PROCESSING%'' OR UPPER(v.current_status) LIKE ''%REVIEW%'' OR UPPER(v.current_status) LIKE ''%PENDING%'' OR UPPER(v.current_status) LIKE ''%SCHEDULED%'' THEN ''pending''',
+'        WHEN UPPER(v.current_status) LIKE ''%FINGERPRINT%'' OR UPPER(v.current_status) LIKE ''%INTERVIEW%'' OR UPPER(v.current_status) LIKE ''%PROCESSING%'' OR UPPER(v.current_status) LIKE ''%REVIEW%'' OR UPPER(v.current_status) LIKE ''%PENDING%'' OR UPPER(v.c'
+||'urrent_status) LIKE ''%SCHEDULED%'' THEN ''pending''',
 '        WHEN UPPER(v.current_status) LIKE ''%TRANSFER%'' THEN ''transferred''',
 '        ELSE ''unknown''',
 '    END AS status_class,',

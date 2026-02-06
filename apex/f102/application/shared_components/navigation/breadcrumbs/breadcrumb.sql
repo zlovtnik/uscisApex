@@ -26,6 +26,14 @@ wwv_flow_imp_shared.create_menu_option(
 ,p_short_name=>'My Cases'
 ,p_link=>'f?p=&APP_ID.:22:&APP_SESSION.::&DEBUG.:::'
 ,p_page_id=>22
+,p_parent_id=>wwv_flow_imp.id(13051773748297768)
+);
+wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(13300001100000111)
+,p_short_name=>'Case Details'
+,p_link=>'f?p=&APP_ID.:3:&APP_SESSION.::&DEBUG.::P3_RECEIPT_NUMBER:&P3_RECEIPT_NUMBER.'
+,p_page_id=>3
+,p_parent_id=>wwv_flow_imp.id(13088550178253660)
 );
 wwv_flow_imp.component_end;
 end;

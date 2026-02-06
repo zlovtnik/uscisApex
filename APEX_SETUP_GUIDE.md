@@ -229,8 +229,8 @@ function copyToClipboard(text, successMsg) {
 function getStatusClass(status) {
     if (!status) return 'status-unknown';
     const s = status.toLowerCase();
-    if (s.includes('approved') || s.includes('card was produced')) return 'status-approved';
-    if (s.includes('denied') || s.includes('rejected')) return 'status-denied';
+    if (s.includes('approved') || s.includes('card was produced') || s.includes('card is being produced') || s.includes('new card')) return 'status-approved';
+    if (s.includes('not approved') || s.includes('denied') || s.includes('rejected')) return 'status-denied';
     if (s.includes('rfe') || s.includes('evidence')) return 'status-rfe';
     if (s.includes('received')) return 'status-received';
     if (s.includes('pending') || s.includes('processing')) return 'status-pending';

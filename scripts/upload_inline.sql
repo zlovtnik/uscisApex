@@ -281,7 +281,7 @@ function getStatusClass(status) {
     if (!status) return 'status-unknown';
     const s = status.toLowerCase();
     if (/\bnot approved\b/.test(s) || /\bdenied\b/.test(s)) return 'status-denied';
-    if (/\bapproved\b/.test(s) || /\bcard was produced\b/.test(s)) return 'status-approved';
+    if (/\bapproved\b/.test(s) || /\bcard was produced\b/.test(s) || /\bcard is being produced\b/.test(s) || /\bnew card\b/.test(s)) return 'status-approved';
     if (/\brfe\b/.test(s)) return 'status-rfe';
     if (/\breceived\b/.test(s)) return 'status-received';
     if (/\bpending\b/.test(s) || /\bprocessing\b/.test(s)) return 'status-pending';

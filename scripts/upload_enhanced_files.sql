@@ -1179,6 +1179,8 @@ function getStatusClass(status) {
     // Approved / Positive outcomes (checked after negatives)
     if (/\bapproved\b/.test(s) ||
         /\bcard was produced\b/.test(s) ||
+        /\bcard is being produced\b/.test(s) ||
+        /\bnew card\b/.test(s) ||
         /\bcard was delivered\b/.test(s) ||
         /\bcard was picked up\b/.test(s) ||
         /\bcard was mailed\b/.test(s) ||

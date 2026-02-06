@@ -46,7 +46,7 @@ wwv_imp_workspace.create_flow(
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'USCIS Case Tracker'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>12
+,p_files_version=>14
 ,p_version_scn=>39349181401918
 ,p_print_server_type=>'NATIVE'
 ,p_file_storage=>'DB'

@@ -186,7 +186,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
 ,p_plug_template=>2674017834225413037
 ,p_plug_display_sequence=>20
-,p_plug_source=>'&P3_STATUS_HTML.'
+,p_plug_source=>'&P3_STATUS_HTML!RAW.'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
@@ -346,6 +346,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>110
 ,p_item_plug_id=>wwv_flow_imp.id(13300003000000003)
 ,p_display_as=>'NATIVE_HIDDEN'
+,p_escape_on_http_output=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'N')).to_clob
 );
@@ -501,14 +502,34 @@ wwv_flow_imp_page.create_page_process(
 '',
 '  -- Status CSS class (use raw value for matching)',
 '  :P3_STATUS_CLASS := CASE',
-'    WHEN UPPER(l_raw_status) LIKE ''%APPROVED%'' THEN ''status-approved''',
-'    WHEN UPPER(l_raw_status) LIKE ''%DENIED%''',
-'      OR UPPER(l_raw_status) LIKE ''%REJECT%'' THEN ''status-denied''',
+'    WHEN UPPER(l_raw_status) LIKE ''%NOT APPROVED%''',
+'      OR UPPER(l_raw_status) LIKE ''%DENIED%''',
+'      OR UPPER(l_raw_status) LIKE ''%REJECT%''',
+'      OR UPPER(l_raw_status) LIKE ''%TERMINATED%''',
+'      OR UPPER(l_raw_status) LIKE ''%WITHDRAWN%''',
+'      OR UPPER(l_raw_status) LIKE ''%REVOKED%'' THEN ''status-denied''',
+'    WHEN UPPER(l_raw_status) LIKE ''%APPROVED%''',
+'      OR UPPER(l_raw_status) LIKE ''%CARD%PRODUCED%''',
+'      OR UPPER(l_raw_status) LIKE ''%CARD%BEING PRODUCED%''',
+'      OR UPPER(l_raw_status) LIKE ''%CARD%DELIVERED%''',
+'      OR UPPER(l_raw_status) LIKE ''%CARD%MAILED%''',
+'      OR UPPER(l_raw_status) LIKE ''%CARD%PICKED UP%''',
+'      OR UPPER(l_raw_status) LIKE ''%OATH CEREMONY%''',
+'      OR UPPER(l_raw_status) LIKE ''%WELCOME NOTICE%'' THEN ''status-approved''',
 '    WHEN UPPER(l_raw_status) LIKE ''%RFE%''',
 '      OR UPPER(l_raw_status) LIKE ''%EVIDENCE%'' THEN ''status-rfe''',
-'    WHEN UPPER(l_raw_status) LIKE ''%RECEIVED%'' THEN ''status-received''',
+'    WHEN UPPER(l_raw_status) LIKE ''%RECEIVED%''',
+'      OR UPPER(l_raw_status) LIKE ''%ACCEPTED%''',
+'      OR UPPER(l_raw_status) LIKE ''%FEE WAS%'' THEN ''status-received''',
 '    WHEN UPPER(l_raw_status) LIKE ''%PENDING%''',
-'      OR UPPER(l_raw_status) LIKE ''%REVIEW%'' THEN ''status-pending''',
+'      OR UPPER(l_raw_status) LIKE ''%REVIEW%''',
+'      OR UPPER(l_raw_status) LIKE ''%FINGERPRINT%''',
+'      OR UPPER(l_raw_status) LIKE ''%INTERVIEW%''',
+'      OR UPPER(l_raw_status) LIKE ''%PROCESSING%''',
+'      OR UPPER(l_raw_status) LIKE ''%SCHEDULED%'' THEN ''status-pending''',
+'    WHEN UPPER(l_raw_status) LIKE ''%TRANSFERRED%''',
+'      OR UPPER(l_raw_status) LIKE ''%RELOCATED%''',
+'      OR UPPER(l_raw_status) LIKE ''%SENT TO%'' THEN ''status-pending''',
 '    ELSE ''status-unknown''',
 '  END;',
 '',

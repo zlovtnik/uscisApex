@@ -21,19 +21,28 @@ wwv_flow_imp_page.create_page(
 '/* Status Badge Styling */',
 '.status-badge {',
 '  display: inline-block;',
-'  padding: 4px 12px;',
-'  border-radius: 12px;',
-'  font-size: 12px;',
+'  padding: 2px 8px;',
+'  border-radius: 4px;',
+'  font-size: 11px;',
 '  font-weight: 600;',
-'  text-transform: uppercase;',
-'  line-height: 1.4;',
+'  line-height: 1.5;',
+'  border-left: 3px solid currentColor;',
+'  animation: none !important;',
+'  transition: none !important;',
+'  box-shadow: none !important;',
+'  text-transform: none;',
+'  letter-spacing: normal;',
+'  white-space: nowrap;',
 '}',
-'.status-approved { background-color: #2e8540; color: #fff; }',
-'.status-denied { background-color: #cd2026; color: #fff; }',
-'.status-rfe { background-color: #0071bc; color: #fff; }',
-'.status-received { background-color: #4c2c92; color: #fff; }',
-'.status-pending { background-color: #fdb81e; color: #212121; }',
-'.status-unknown { background-color: #5b616b; color: #fff; }',
+'.status-badge::before { display: none !important; }',
+'.status-badge:hover { transform: none !important; }',
+'.status-approved { background: #e6f4ea; color: #1b7a36; }',
+'.status-denied { background: #fce8e8; color: #b71c22; }',
+'.status-rfe { background: #e3f0fa; color: #005a96; }',
+'.status-received { background: #ede3f5; color: #3b2270; }',
+'.status-pending { background: #fff8e1; color: #7a6200; }',
+'.status-transferred { background: #e0f7fa; color: #006064; }',
+'.status-unknown { background: #f0f1f2; color: #3d4551; }',
 '',
 '/* Receipt Number Styling */',
 '.receipt-number {',
@@ -76,6 +85,22 @@ wwv_flow_imp_page.create_page(
 '}',
 '.case-filters .t-Form-fieldContainer {',
 '  margin-bottom: 0;',
+'}',
+'',
+'/* IG Selected Row - light highlight so text stays readable */',
+'.a-GV-row.is-selected .a-GV-cell,',
+'.a-GV-row.is-active .a-GV-cell,',
+'.a-GV-row.is-focused .a-GV-cell {',
+'  background-color: #e8f0fe !important;',
+'  color: #1a1a1a !important;',
+'}',
+'.a-GV-row.is-selected .receipt-link,',
+'.a-GV-row.is-active .receipt-link {',
+'  color: #003d99 !important;',
+'}',
+'.a-GV-row.is-selected .status-badge,',
+'.a-GV-row.is-active .status-badge {',
+'  opacity: 1 !important;',
 '}',
 '',
 '/* IG Edit Mode Styling */',
@@ -138,7 +163,15 @@ wwv_flow_imp_page.create_page_plug(
 '    v.created_by,',
 '    v.days_since_update,',
 '    NVL(TO_CHAR(v.hours_since_check) || '' hrs ago'', ''Never'') AS last_check_display,',
-'    REGEXP_REPLACE(LOWER(REGEXP_REPLACE(v.current_status, ''[^a-zA-Z0-9]+'', ''-'')), ''[^a-z0-9-]'', '''') AS status_class,',
+'    CASE',
+'        WHEN UPPER(v.current_status) LIKE ''%DENIED%'' OR UPPER(v.current_status) LIKE ''%NOT APPROVED%'' OR UPPER(v.current_status) LIKE ''%REJECT%'' OR UPPER(v.current_status) LIKE ''%TERMINAT%'' OR UPPER(v.current_status) LIKE ''%WITHDRAWN%'' OR UPPER(v.current_status) LIKE ''%REVOKED%'' THEN ''denied''',
+'        WHEN UPPER(v.current_status) LIKE ''%APPROVED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS PRODUCED%'' OR UPPER(v.current_status) LIKE ''%CARD IS BEING PRODUCED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS DELIVERED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS MAILED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS PICKED UP%'' OR UPPER(v.current_status) LIKE ''%OATH CEREMONY%'' OR UPPER(v.current_status) LIKE ''%WELCOME NOTICE%'' THEN ''approved''',
+'        WHEN UPPER(v.current_status) LIKE ''%EVIDENCE%'' OR UPPER(v.current_status) LIKE ''%RFE%'' THEN ''rfe''',
+'        WHEN UPPER(v.current_status) LIKE ''%RECEIVED%'' OR UPPER(v.current_status) LIKE ''%ACCEPTED%'' OR UPPER(v.current_status) LIKE ''%FEE%'' THEN ''received''',
+'        WHEN UPPER(v.current_status) LIKE ''%FINGERPRINT%'' OR UPPER(v.current_status) LIKE ''%INTERVIEW%'' OR UPPER(v.current_status) LIKE ''%PROCESSING%'' OR UPPER(v.current_status) LIKE ''%REVIEW%'' OR UPPER(v.current_status) LIKE ''%PENDING%'' OR UPPER(v.current_status) LIKE ''%SCHEDULED%'' THEN ''pending''',
+'        WHEN UPPER(v.current_status) LIKE ''%TRANSFER%'' THEN ''transferred''',
+'        ELSE ''unknown''',
+'    END AS status_class,',
 '    APEX_PAGE.GET_URL(p_page => 3, p_items => ''P3_RECEIPT_NUMBER'', p_values => v.receipt_number) AS detail_url',
 'FROM v_case_current_status v',
 'JOIN case_history ch ON ch.receipt_number = v.receipt_number',
@@ -798,7 +831,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>5
 ,p_column_id=>wwv_flow_imp.id(13093949710253697)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(
@@ -822,7 +855,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>8
 ,p_column_id=>wwv_flow_imp.id(13096988465253707)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(
@@ -830,7 +863,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>9
 ,p_column_id=>wwv_flow_imp.id(13097993885253711)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(
@@ -838,7 +871,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>10
 ,p_column_id=>wwv_flow_imp.id(13098979713253714)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(
@@ -846,7 +879,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>11
 ,p_column_id=>wwv_flow_imp.id(13099945765253718)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(
@@ -854,7 +887,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>12
 ,p_column_id=>wwv_flow_imp.id(13100912685253721)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(
@@ -862,7 +895,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>13
 ,p_column_id=>wwv_flow_imp.id(13101976099253725)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(
@@ -870,7 +903,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>14
 ,p_column_id=>wwv_flow_imp.id(13102991952253729)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(

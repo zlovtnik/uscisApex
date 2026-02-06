@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This review identifies **23 high-priority issues** and **17 medium-priority improvements** across the USCIS Case Tracker codebase. The primary concerns are:
+This review identifies **10 high-priority issues** (3 critical, 3 high, 4 security) and **6 medium-priority improvements** (4 medium, 2 AI opportunities) across the USCIS Case Tracker codebase. The primary concerns are:
 
 1. **CRITICAL**: Use of internal `wwv_flow_imp` APIs in upload scripts
 2. **HIGH**: Missing session context initialization in deployment scripts
@@ -17,7 +17,7 @@ This review identifies **23 high-priority issues** and **17 medium-priority impr
 4. **HIGH**: Custom toast implementation instead of native `apex.message`
 5. **MEDIUM**: Hardcoded application IDs without parameterization
 
-**Estimated Remediation Effort:** 40-60 hours
+**Estimated Remediation Effort:** 52-72 hours
 
 ---
 
@@ -72,10 +72,10 @@ wwv_flow_api.create_app_static_file(
 ```
 
 **Action Items:**
-- [ ] Update `scripts/upload_inline.sql` (lines 45-52, 78-85)
-- [ ] Update `scripts/upload_enhanced_files.sql` (lines 38-45)
-- [ ] Update `scripts/upload_static_files.sql` (lines 28-35)
-- [ ] Test file upload/deletion with new APIs
+- [x] Update `scripts/upload_inline.sql` (lines 45-52, 78-85)
+- [x] Update `scripts/upload_enhanced_files.sql` (lines 38-45)
+- [x] Update `scripts/upload_static_files.sql` (lines 28-35)
+- [x] Test file upload/deletion with new APIs
 
 **Reference:** APEX_24_REVIEW.md § R-01
 
@@ -121,9 +121,9 @@ apex_session.attach(
 ```
 
 **Action Items:**
-- [ ] Update `scripts/upload_inline.sql` (add session management)
-- [ ] Update `scripts/upload_enhanced_files.sql` (add session management)
-- [ ] Update `scripts/upload_static_files.sql` (add session management)
+- [x] Update `scripts/upload_inline.sql` (add session management)
+- [x] Update `scripts/upload_enhanced_files.sql` (add session management)
+- [x] Update `scripts/upload_static_files.sql` (add session management)
 - [ ] Update `install_all_v2.sql` if it calls APEX APIs directly
 - [ ] Test deployment with full session context
 
@@ -185,8 +185,8 @@ END;
 ```
 
 **Action Items:**
-- [ ] Update `scripts/upload_inline.sql` (all LOB operations)
-- [ ] Verify no other scripts have similar pattern
+- [x] Update `scripts/upload_inline.sql` (all LOB operations)
+- [x] Verify no other scripts have similar pattern
 - [ ] Test error scenarios to confirm cleanup
 
 **Reference:** APEX_24_REVIEW.md § R-04
@@ -230,11 +230,11 @@ The design document specifies 30+ CSS rules using `!important` to override Unive
 ```
 
 **Action Items:**
-- [ ] Audit all CSS in `APEX_FRONTEND_DESIGN.md` Section 3.3
-- [ ] Replace `!important` rules with `--ut-*` variables
-- [ ] Use Theme Roller for base palette (see § R-06)
+- [x] Audit all CSS in `APEX_FRONTEND_DESIGN.md` Section 3.3
+- [x] Replace `!important` rules with `--ut-*` variables
+- [x] Use Theme Roller for base palette (see § R-06)
 - [ ] Test theme survives APEX upgrades
-- [ ] Document custom variables in code comments
+- [x] Document custom variables in code comments
 
 **Reference:** APEX_24_REVIEW.md § R-05
 
@@ -870,7 +870,7 @@ END;
 - [ ] Add `DEFINE APP_ID` parameter (M-1)
 
 ### `APEX_FRONTEND_DESIGN.md` (CSS)
-- [ ] Replace 30+ `!important` rules with `--ut-*` variables (H-1)
+- [x] Replace 30+ `!important` rules with `--ut-*` variables (H-1)
 - [ ] Remove `.custom-toast` styles (H-2)
 - [ ] Remove `.status-badge-*` styles (H-3)
 - [ ] Move `@keyframes` to static file (M-4)

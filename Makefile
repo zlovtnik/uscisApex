@@ -224,7 +224,12 @@ static-delete: check-sqlcl
 		BEGIN
 			SELECT workspace_id INTO l_workspace_id
 			FROM apex_applications WHERE application_id = $(APP_ID);
-			apex_util.set_security_group_id(l_workspace_id);
+			apex_session.create_session(
+				p_app_id                   => $(APP_ID),
+				p_page_id                  => 1,
+				p_username                 => 'ADMIN',
+				p_call_post_authentication => FALSE
+			);
 			
 			SELECT application_file_id INTO l_file_id
 			FROM apex_application_static_files
@@ -233,8 +238,10 @@ static-delete: check-sqlcl
 			wwv_flow_api.remove_app_static_file(p_id => l_file_id, p_flow_id => $(APP_ID));
 			COMMIT;
 			DBMS_OUTPUT.PUT_LINE('Deleted: $(FILE)');
+			apex_session.delete_session;
 		EXCEPTION
 			WHEN NO_DATA_FOUND THEN
+				BEGIN apex_session.delete_session; EXCEPTION WHEN OTHERS THEN NULL; END;
 				DBMS_OUTPUT.PUT_LINE('File not found: $(FILE)');
 		END;
 		/

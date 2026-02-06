@@ -14,10 +14,15 @@ BEGIN
     FROM apex_applications
     WHERE application_id = l_app_id;
 
-    -- Set APEX security context
-    apex_util.set_security_group_id(l_workspace_id);
+    -- Initialize full APEX session context (R-02: use apex_session instead of set_security_group_id)
+    apex_session.create_session(
+        p_app_id                   => l_app_id,
+        p_page_id                  => 1,
+        p_username                 => 'ADMIN',
+        p_call_post_authentication => FALSE
+    );
 
-    DBMS_OUTPUT.PUT_LINE('Security context set for application ' || l_app_id);
+    DBMS_OUTPUT.PUT_LINE('Session context set for application ' || l_app_id);
     DBMS_OUTPUT.PUT_LINE('');
     DBMS_OUTPUT.PUT_LINE('NOTE: This simple script sets up the security context only.');
     DBMS_OUTPUT.PUT_LINE('For actual file uploads, use one of these options:');
@@ -32,8 +37,13 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('  - Enhanced visual effects');
     DBMS_OUTPUT.PUT_LINE('  - Improved user experience');
 
+    -- Clean up APEX session (R-02)
+    apex_session.delete_session;
+
 EXCEPTION
     WHEN OTHERS THEN
+        -- Clean up APEX session on error (R-02)
+        BEGIN apex_session.delete_session; EXCEPTION WHEN OTHERS THEN NULL; END;
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
         ROLLBACK;
         RAISE;

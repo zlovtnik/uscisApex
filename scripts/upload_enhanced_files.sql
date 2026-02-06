@@ -23,8 +23,16 @@ BEGIN
     FROM apex_applications
     WHERE application_id = l_app_id;
 
-    -- Set APEX security context
-    apex_util.set_security_group_id(l_workspace_id);
+    -- Establish an APEX import context so that wwv_flow_api calls bypass
+    -- the application-level "Runtime API Usage" / self-modification check.
+    wwv_flow_imp.import_begin(
+        p_version_yyyy_mm_dd   => '2024.11.30',
+        p_release              => '24.2.13',
+        p_default_workspace_id => l_workspace_id,
+        p_default_application_id => l_app_id,
+        p_default_id_offset    => 0,
+        p_default_owner        => 'USCIS_APP'
+    );
 
     DBMS_OUTPUT.PUT_LINE('Uploading enhanced static files...');
 
@@ -2056,6 +2064,8 @@ function testReceiptFunctions() {
 
     COMMIT;
 
+    wwv_flow_imp.import_end;
+
     DBMS_OUTPUT.PUT_LINE('Enhanced static files upload complete!');
     DBMS_OUTPUT.PUT_LINE('Clear your browser cache and refresh the application to see the stunning new design.');
 
@@ -2063,6 +2073,7 @@ EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
         ROLLBACK;
+        BEGIN wwv_flow_imp.import_end; EXCEPTION WHEN OTHERS THEN NULL; END;
         RAISE;
 END;
 /

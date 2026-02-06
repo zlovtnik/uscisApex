@@ -22,10 +22,37 @@ PROMPT ============================================================
 
 -- ============================================================
 -- STEP 0: Disable audit triggers for bulk load performance
+--         Wrapped in a parent block that guarantees re-enable
+--         even if the main generation (STEP 1) raises an error.
 -- ============================================================
 DECLARE
     l_exists NUMBER;
+
+    -- Re-enable procedure (called on both success and error paths)
+    PROCEDURE reenable_triggers IS
+        l_trig_exists NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO l_trig_exists FROM user_triggers WHERE trigger_name = 'TRG_CASE_HISTORY_AUDIT';
+        IF l_trig_exists > 0 THEN
+            EXECUTE IMMEDIATE 'ALTER TRIGGER trg_case_history_audit ENABLE';
+            DBMS_OUTPUT.PUT_LINE('Re-enabled trg_case_history_audit');
+        END IF;
+
+        SELECT COUNT(*) INTO l_trig_exists FROM user_triggers WHERE trigger_name = 'TRG_STATUS_UPDATES_AUDIT';
+        IF l_trig_exists > 0 THEN
+            EXECUTE IMMEDIATE 'ALTER TRIGGER trg_status_updates_audit ENABLE';
+            DBMS_OUTPUT.PUT_LINE('Re-enabled trg_status_updates_audit');
+        END IF;
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('ERROR re-enabling triggers: SQLCODE=' || SQLCODE
+                || ' SQLERRM=' || SQLERRM);
+            DBMS_OUTPUT.PUT_LINE('Backtrace: ' || DBMS_UTILITY.FORMAT_ERROR_BACKTRACE());
+            RAISE;
+    END reenable_triggers;
+
 BEGIN
+    -- Disable triggers
     SELECT COUNT(*) INTO l_exists FROM user_triggers WHERE trigger_name = 'TRG_CASE_HISTORY_AUDIT';
     IF l_exists > 0 THEN
         EXECUTE IMMEDIATE 'ALTER TRIGGER trg_case_history_audit DISABLE';
@@ -37,16 +64,10 @@ BEGIN
         EXECUTE IMMEDIATE 'ALTER TRIGGER trg_status_updates_audit DISABLE';
         DBMS_OUTPUT.PUT_LINE('Disabled trg_status_updates_audit');
     END IF;
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Warning disabling triggers: ' || SQLERRM);
-END;
-/
 
--- ============================================================
--- STEP 1: Generate test cases and status updates
--- ============================================================
-DECLARE
+    -- Run the main generation in an inner block so we can
+    -- guarantee triggers are re-enabled on any error.
+    DECLARE
     -- Receipt number prefixes (real USCIS service centers)
     TYPE t_prefix_tab IS TABLE OF VARCHAR2(3) INDEX BY PLS_INTEGER;
     l_prefixes t_prefix_tab;
@@ -411,8 +432,18 @@ BEGIN
                 l_receipt,
                 'CHECK',
                 '{"receipt_number":"' || l_receipt ||
-                    '","source":"API","status":"' ||
-                    REPLACE(l_status_text, '''', '''''') || '"}',
+                    '"source":"API","status":"' ||
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        REPLACE(l_status_text,
+                                            '\\', '\\\\'),   -- escape backslashes first
+                                        CHR(13), '\\r'),
+                                    CHR(9), '\\t'),
+                                CHR(10), '\\n'),
+                            '"', '\\"') -- escape double quotes for JSON
+                        || '"}',
                 'SCHEDULER',
                 SYSTIMESTAMP - NUMTODSINTERVAL(
                     TRUNC(DBMS_RANDOM.VALUE(0, l_days_ago)), 'DAY'
@@ -442,35 +473,30 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('  Audit log entries:       ' || l_audit_count);
     DBMS_OUTPUT.PUT_LINE('============================================================');
 
-END;
-/
+    END; -- end inner DECLARE block (STEP 1 generation)
 
--- ============================================================
--- STEP 2: Re-enable audit triggers
--- ============================================================
-DECLARE
-    l_exists NUMBER;
-BEGIN
-    SELECT COUNT(*) INTO l_exists FROM user_triggers WHERE trigger_name = 'TRG_CASE_HISTORY_AUDIT';
-    IF l_exists > 0 THEN
-        EXECUTE IMMEDIATE 'ALTER TRIGGER trg_case_history_audit ENABLE';
-        DBMS_OUTPUT.PUT_LINE('Re-enabled trg_case_history_audit');
-    END IF;
+    -- Success path: re-enable triggers
+    reenable_triggers;
 
-    SELECT COUNT(*) INTO l_exists FROM user_triggers WHERE trigger_name = 'TRG_STATUS_UPDATES_AUDIT';
-    IF l_exists > 0 THEN
-        EXECUTE IMMEDIATE 'ALTER TRIGGER trg_status_updates_audit ENABLE';
-        DBMS_OUTPUT.PUT_LINE('Re-enabled trg_status_updates_audit');
-    END IF;
 EXCEPTION
     WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('ERROR re-enabling triggers: ' || SQLERRM);
-        RAISE;  -- Don't silently continue with disabled triggers
+        -- Always re-enable triggers, even on failure
+        DBMS_OUTPUT.PUT_LINE('ERROR during data generation: SQLCODE=' || SQLCODE
+            || ' SQLERRM=' || SQLERRM);
+        DBMS_OUTPUT.PUT_LINE('Backtrace: ' || DBMS_UTILITY.FORMAT_ERROR_BACKTRACE());
+        BEGIN
+            reenable_triggers;
+        EXCEPTION
+            WHEN OTHERS THEN
+                -- reenable_triggers already logged details; nothing more to do
+                NULL;
+        END;
+        RAISE;
 END;
 /
 
 -- ============================================================
--- STEP 3: Verification queries
+-- STEP 2: Verification queries
 -- ============================================================
 PROMPT
 PROMPT ============================================================

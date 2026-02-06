@@ -65,12 +65,23 @@ BEGIN
     IF l_count = 0 THEN
         EXECUTE IMMEDIATE
             'ALTER TABLE case_history ADD (notifications_enabled NUMBER(1) DEFAULT 0 NOT NULL)';
-        EXECUTE IMMEDIATE
-            'ALTER TABLE case_history ADD CONSTRAINT chk_notifications_enabled '
-         || 'CHECK (notifications_enabled IN (0, 1))';
         DBMS_OUTPUT.PUT_LINE('Added column: CASE_HISTORY.NOTIFICATIONS_ENABLED');
     ELSE
         DBMS_OUTPUT.PUT_LINE('Column already exists: CASE_HISTORY.NOTIFICATIONS_ENABLED');
+    END IF;
+
+    SELECT COUNT(*) INTO l_count
+      FROM user_constraints
+     WHERE table_name       = 'CASE_HISTORY'
+       AND constraint_name  = 'CHK_NOTIFICATIONS_ENABLED';
+
+    IF l_count = 0 THEN
+        EXECUTE IMMEDIATE
+            'ALTER TABLE case_history ADD CONSTRAINT chk_notifications_enabled '
+         || 'CHECK (notifications_enabled IN (0, 1))';
+        DBMS_OUTPUT.PUT_LINE('Added constraint: CHK_NOTIFICATIONS_ENABLED');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Constraint already exists: CHK_NOTIFICATIONS_ENABLED');
     END IF;
 END;
 /

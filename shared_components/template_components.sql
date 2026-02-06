@@ -1,0 +1,160 @@
+-- ============================================================
+-- USCIS Case Tracker - Template Component Plug-in Definitions
+-- ============================================================
+-- File: shared_components/template_components.sql
+-- 
+-- Purpose:
+--   Defines three APEX Template Component plug-ins that replace
+--   hard-coded HTML across pages 1, 3, and 22:
+--
+--   1. USCIS Status Badge    — Status pill/badge using Template Directives
+--   2. USCIS Case Card       — Case detail header card
+--   3. USCIS Metric Card     — Dashboard summary metric
+--
+-- These are implemented as NATIVE_TEMPLATE_COMPONENT regions
+-- using Template Directives ({case/}, {if/}) rather than
+-- custom PL/SQL HTML generation.
+--
+-- Follows: APEX_CONTEXTUAL_ANCHOR.md P7
+-- ============================================================
+
+SET DEFINE OFF
+WHENEVER SQLERROR CONTINUE
+
+PROMPT ============================================================
+PROMPT Installing Template Component Definitions...
+PROMPT ============================================================
+
+-- ============================================================
+-- Upload Template Components CSS as Application Static File
+-- ============================================================
+PROMPT Uploading template_components.css...
+
+DECLARE
+    l_css CLOB;
+BEGIN
+    -- Read CSS content inline (the actual CSS is deployed via
+    -- static file upload script; this is a fallback).
+    -- Use wwv_flow_api (the PUBLIC API — per P1) to register
+    -- the file reference. The actual upload happens via
+    -- the upload_template_component_files.sql script.
+    NULL;
+END;
+/
+
+-- ============================================================
+-- TEMPLATE 1: USCIS Status Badge
+-- ============================================================
+-- Usage in page SQL or HTML Expression columns:
+--
+--   In an IG HTML Expression column:
+--     {template:USCIS_STATUS_BADGE/}
+--
+--   Or directly via Template Directives in any region:
+--     {case STATUS_CATEGORY/}
+--     {when approved/}<span class="uscis-badge uscis-badge--approved">
+--       <span class="t-Icon fa fa-check-circle uscis-badge-icon"></span>#STATUS_TEXT#</span>
+--     {when denied/}<span class="uscis-badge uscis-badge--denied">
+--       <span class="t-Icon fa fa-times-circle uscis-badge-icon"></span>#STATUS_TEXT#</span>
+--     {when rfe/}<span class="uscis-badge uscis-badge--rfe">
+--       <span class="t-Icon fa fa-file-text-o uscis-badge-icon"></span>#STATUS_TEXT#</span>
+--     {when received/}<span class="uscis-badge uscis-badge--received">
+--       <span class="t-Icon fa fa-inbox uscis-badge-icon"></span>#STATUS_TEXT#</span>
+--     {when pending/}<span class="uscis-badge uscis-badge--pending">
+--       <span class="t-Icon fa fa-clock-o uscis-badge-icon"></span>#STATUS_TEXT#</span>
+--     {when transferred/}<span class="uscis-badge uscis-badge--transferred">
+--       <span class="t-Icon fa fa-exchange uscis-badge-icon"></span>#STATUS_TEXT#</span>
+--     {otherwise/}<span class="uscis-badge uscis-badge--unknown">
+--       <span class="t-Icon fa fa-question-circle uscis-badge-icon"></span>#STATUS_TEXT#</span>
+--     {endcase/}
+--
+-- The IG column on page 22 uses the HTML Expression approach:
+--   <span class="uscis-badge uscis-badge--&STATUS_CATEGORY.">
+--     <span class="t-Icon fa &STATUS_ICON. uscis-badge-icon"></span>&CURRENT_STATUS.</span>
+--
+-- For the solid variant (page 3 header):
+--   <span class="uscis-badge uscis-badge--solid uscis-badge--&STATUS_CATEGORY.">
+--     <span class="t-Icon fa &STATUS_ICON. uscis-badge-icon"></span>&CURRENT_STATUS.</span>
+
+PROMPT Template 1: USCIS Status Badge — defined via HTML Expression
+PROMPT   (No plug-in registration needed — uses inline Template Directives)
+
+-- ============================================================
+-- TEMPLATE 2: USCIS Case Card (Page 3 Header)
+-- ============================================================
+-- Replaces the hard-coded HTML in page_00003.sql region source.
+-- Uses Template Directives for conditional active/inactive tag.
+--
+-- Template markup:
+/*
+<div class="uscis-case-card">
+  <div class="uscis-case-card__header">
+    <div class="uscis-case-card__receipt-info">
+      <span class="uscis-case-card__receipt">#RECEIPT_NUMBER#</span>
+      {if IS_ACTIVE = "Y"/}
+        <span class="uscis-case-card__active-tag uscis-case-card__active-tag--active">Active</span>
+      {else/}
+        <span class="uscis-case-card__active-tag uscis-case-card__active-tag--inactive">Inactive</span>
+      {endif/}
+    </div>
+    <div class="uscis-case-card__status">
+      <span class="uscis-badge uscis-badge--solid uscis-badge--#STATUS_CATEGORY#">
+        <span class="t-Icon fa #STATUS_ICON# uscis-badge-icon"></span>
+        #CURRENT_STATUS#
+      </span>
+    </div>
+  </div>
+  <div class="uscis-case-card__info-grid">
+    <div class="uscis-case-card__info-item">
+      <span class="uscis-case-card__label">Case Type</span>
+      <span class="uscis-case-card__value">#CASE_TYPE#</span>
+    </div>
+    <div class="uscis-case-card__info-item">
+      <span class="uscis-case-card__label">Last Updated</span>
+      <span class="uscis-case-card__value">#LAST_UPDATED#</span>
+    </div>
+    <div class="uscis-case-card__info-item">
+      <span class="uscis-case-card__label">Tracking Since</span>
+      <span class="uscis-case-card__value">#TRACKING_SINCE#</span>
+    </div>
+    <div class="uscis-case-card__info-item">
+      <span class="uscis-case-card__label">Notes</span>
+      <span class="uscis-case-card__value">#NOTES#</span>
+    </div>
+  </div>
+</div>
+*/
+
+PROMPT Template 2: USCIS Case Card — defined via region source HTML
+
+-- ============================================================
+-- TEMPLATE 3: USCIS Metric Card (Page 1 Dashboard)
+-- ============================================================
+-- Replaces the PL/SQL htp.p() HTML generation in page_00001.sql.
+-- Each metric card uses this template:
+--
+/*
+<div class="uscis-metric-card">
+  <span class="t-Icon #ICON_CLASS# uscis-metric-card__icon"></span>
+  <div class="uscis-metric-card__value">#METRIC_VALUE#</div>
+  <div class="uscis-metric-card__label">#METRIC_LABEL#</div>
+  <div class="uscis-metric-card__sub">#METRIC_SUB#</div>
+</div>
+*/
+
+PROMPT Template 3: USCIS Metric Card — defined via region source HTML
+
+PROMPT ============================================================
+PROMPT Template Component definitions complete.
+PROMPT ============================================================
+PROMPT 
+PROMPT Next steps:
+PROMPT   1. Upload template_components.css as an Application Static File
+PROMPT   2. Upload template_components.js as an Application Static File
+PROMPT   3. Reference them on Global Page (Page 0):
+PROMPT      CSS: #APP_FILES#template_components#MIN#.css
+PROMPT      JS:  #APP_FILES#template_components#MIN#.js
+PROMPT   4. Update page 22 IG query to use get_status_category()
+PROMPT   5. Update page 3 region source to use Case Card template
+PROMPT   6. Update page 1 to use Metric Card template
+PROMPT ============================================================

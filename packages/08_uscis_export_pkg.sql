@@ -570,7 +570,7 @@ CREATE OR REPLACE PACKAGE BODY uscis_export_pkg AS
         
         -- Set APEX download headers
         OWA_UTIL.MIME_HEADER(l_mime, FALSE);
-        HTP.P('Content-Disposition: attachment; filename="' || l_filename || '"');
+        HTP.P('Content-Disposition: attachment; filename="' || APEX_ESCAPE.HTML(l_filename) || '"');
         HTP.P('Content-Length: ' || LENGTHB(l_data));
         OWA_UTIL.HTTP_HEADER_CLOSE;
         

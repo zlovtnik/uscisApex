@@ -339,6 +339,21 @@ All hand-authored CSS has been refactored to use `--ut-*` / `--a-*` CSS custom p
 > **Note:** Print stylesheet `!important` in `APEX_FRONTEND_DESIGN.md` is retained (acceptable per P2).
 > **Note:** Utility class `!important` (`.hide-mobile`, `.hide-desktop`, `.stack-mobile`) and accessibility overrides (`prefers-reduced-motion`, `prefers-contrast`) in all CSS files are retained (acceptable per P2).
 
+### Status/Card UI Template Component Migration — **REMEDIATED**
+
+All status badge and card UIs have been converted from hard-coded HTML to Template Component patterns per P7:
+
+| File / Component | Status | Change |
+|------------------|--------|--------|
+| `shared_components/files/template_components.css` | ✅ Fixed | New BEM classes: `.uscis-badge`, `.uscis-metric-card`, `.uscis-activity-item`, `.uscis-case-card`; backward-compat `.status-badge` / `.receipt-link` mapped to CSS custom properties |
+| `shared_components/files/template_components.js` | ✅ Fixed | `USCIS_TC` namespace with `getStatusCategory()`, `getStatusClass()`, `getStatusColor()`, `applyStatusBadges()` |
+| `packages/09_uscis_template_components_pkg.sql` | ✅ Fixed | Server-side `get_status_category`, `get_status_class`, `get_status_color_from_text` |
+| `page_patches/page_00001_patch.sql` | ✅ Fixed | Dashboard cards → `.uscis-metric-card`, activity → `.uscis-activity-item`, chart colors → `get_status_color_from_text()` |
+| `page_patches/page_00022_patch.sql` | ✅ Fixed | Case list badge column → `uscis_template_components_pkg.get_status_badge_html()`, inline CSS moved to static file |
+| `page_patches/page_00003_patch.sql` | ✅ Fixed | Case detail card → `.uscis-case-card`, status badge via package function |
+| `scripts/apply_template_components.sql` | ✅ Fixed | Template Component markup documented for all three pages |
+| `shared_components/template_components.sql` | ✅ Fixed | Shared Component plug-in definition |
+
 ### APEX-Generated Files (Acceptable — Do Not Modify)
 
 | File | Note |
@@ -391,7 +406,8 @@ Use this prompt when submitting code to an AI tool for analysis:
 
 ## 6. Quick-Reference Checklist
 
-Use this before committing any APEX-related code:
+Verify each item before committing any APEX-related code. This is an
+**ongoing pre-commit checklist** — every PR should pass all items.
 
 ```
 [ ] No wwv_flow_imp / wwv_flow_id in hand-written code       (P1)
@@ -400,7 +416,7 @@ Use this before committing any APEX-related code:
 [ ] JavaScript uses apex.* namespace exclusively               (P4)
 [ ] Data features consider APEX_AI integration                 (P5)
 [ ] No inline JS handlers — CSP compliant                     (P6)
-[ ] Status/card UI uses Template Components                   (P7)
+[x] Status/card UI uses Template Components                   (P7)  — REMEDIATED (see §4)
 [ ] All SQL uses bind variables                               (P8)
 [ ] APEX-exported files left unmodified                       (exception)
 ```

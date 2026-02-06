@@ -217,7 +217,7 @@ CREATE OR REPLACE PACKAGE BODY uscis_util_pkg AS
         IF NOT validate_receipt_number(p_receipt_number) THEN
             RAISE_APPLICATION_ERROR(
                 uscis_types_pkg.gc_err_invalid_receipt,
-                'Invalid receipt number format: ' || NVL(mask_receipt_number(p_receipt_number), 'NULL') ||
+                'Invalid receipt number format: ' || APEX_ESCAPE.HTML(NVL(mask_receipt_number(p_receipt_number), 'NULL')) ||
                 '. Expected format: 3 letters + 10 digits (e.g., IOE0912345678)'
             );
         END IF;
@@ -278,7 +278,7 @@ CREATE OR REPLACE PACKAGE BODY uscis_util_pkg AS
             WHEN 'EAC' THEN 'Vermont Service Center'
             WHEN 'SRC' THEN 'Texas Service Center'
             WHEN 'MSC' THEN 'National Benefits Center'
-            ELSE 'Unknown (' || l_prefix || ')'
+            ELSE 'Unknown (' || APEX_ESCAPE.HTML(l_prefix) || ')'
         END;
     END get_service_center;
     

@@ -151,24 +151,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source_type=>'NATIVE_IG'
 ,p_prn_page_header=>'My Cases'
 );
--- ROW_ID column for DML operations
-wwv_flow_imp_page.create_region_column(
- p_id=>wwv_flow_imp.id(13106000000253740)
-,p_name=>'ROW_ID'
-,p_source_type=>'DB_COLUMN'
-,p_source_expression=>'ROW_ID'
-,p_data_type=>'ROWID'
-,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_HIDDEN'
-,p_display_sequence=>5
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'value_protected', 'Y')).to_clob
-,p_use_as_row_header=>false
-,p_is_primary_key=>true
-,p_duplicate_value=>false
-,p_include_in_export=>false
-);
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13090010413253679)
 ,p_name=>'RECEIPT_NUMBER'
@@ -276,10 +258,10 @@ wwv_flow_imp_page.create_region_column(
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>40
 ,p_value_alignment=>'LEFT'
-,p_format_mask=>'SINCE'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'based_on', 'VALUE',
   'format', 'PLAIN')).to_clob
+,p_format_mask=>'SINCE'
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -307,10 +289,10 @@ wwv_flow_imp_page.create_region_column(
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>50
 ,p_value_alignment=>'LEFT'
-,p_format_mask=>'SINCE'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'based_on', 'VALUE',
   'format', 'PLAIN')).to_clob
+,p_format_mask=>'SINCE'
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -492,10 +474,10 @@ wwv_flow_imp_page.create_region_column(
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>110
 ,p_value_alignment=>'LEFT'
-,p_format_mask=>'SINCE'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'based_on', 'VALUE',
   'format', 'PLAIN')).to_clob
+,p_format_mask=>'SINCE'
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -622,7 +604,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>false
 );
--- DETAIL_URL column - checksummed URL for receipt link
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13103985039253733)
 ,p_name=>'DETAIL_URL'
@@ -641,6 +622,23 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_hide=>true
 ,p_enable_pivot=>false
 ,p_is_primary_key=>false
+,p_include_in_export=>false
+);
+wwv_flow_imp_page.create_region_column(
+ p_id=>wwv_flow_imp.id(13106000000253740)
+,p_name=>'ROW_ID'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'ROW_ID'
+,p_data_type=>'ROWID'
+,p_session_state_data_type=>'VARCHAR2'
+,p_is_query_only=>false
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>5
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_use_as_row_header=>false
+,p_is_primary_key=>true
+,p_duplicate_value=>false
 ,p_include_in_export=>false
 );
 wwv_flow_imp_page.create_interactive_grid(
@@ -763,15 +761,6 @@ wwv_flow_imp_page.create_ig_report_view(
 ,p_srv_only_display_columns=>true
 ,p_edit_mode=>false
 );
--- ROW_ID column (hidden)
-wwv_flow_imp_page.create_ig_report_column(
- p_id=>wwv_flow_imp.id(13106100000253741)
-,p_view_id=>wwv_flow_imp.id(13089822797253670)
-,p_display_seq=>0
-,p_column_id=>wwv_flow_imp.id(13106000000253740)
-,p_is_visible=>false
-,p_is_frozen=>false
-);
 wwv_flow_imp_page.create_ig_report_column(
  p_id=>wwv_flow_imp.id(13090446580253682)
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
@@ -892,7 +881,14 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_is_visible=>false
 ,p_is_frozen=>false
 );
--- DETAIL_URL report column removed (column no longer exists)
+wwv_flow_imp_page.create_ig_report_column(
+ p_id=>wwv_flow_imp.id(13106100000253741)
+,p_view_id=>wwv_flow_imp.id(13089822797253670)
+,p_display_seq=>0
+,p_column_id=>wwv_flow_imp.id(13106000000253740)
+,p_is_visible=>false
+,p_is_frozen=>false
+);
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(13107600000471606)
 ,p_button_sequence=>10
@@ -1016,7 +1012,26 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_imp.id(13088711960253661)
 );
--- Save IG Changes - Automatic Row Processing (DML)
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(13108300000471613)
+,p_name=>'Refresh Grid on Dialog Close'
+,p_event_sequence=>20
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_imp.id(13107600000471606)
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'apexafterclosedialog'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(13108400000471614)
+,p_event_id=>wwv_flow_imp.id(13108300000471613)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(13088711960253661)
+);
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(13108500000471615)
 ,p_process_sequence=>5
@@ -1031,7 +1046,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>13108500000471615
 );
--- Delete Case Process (from row action)
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(13108600000471616)
 ,p_process_sequence=>10
@@ -1068,7 +1082,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when_type=>'REQUEST_EQUALS_CONDITION'
 ,p_internal_uid=>13108600000471616
 );
--- AJAX Callback: Refresh Case Status
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(13108200000471612)
 ,p_process_sequence=>10
@@ -1123,50 +1136,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>13108200000471612
-);
--- Dialog Closed - Refresh Case List Grid
-wwv_flow_imp_page.create_page_da_event(
- p_id=>wwv_flow_imp.id(13108300000471613)
-,p_name=>'Refresh Grid on Dialog Close'
-,p_event_sequence=>20
-,p_triggering_element_type=>'BUTTON'
-,p_triggering_button_id=>wwv_flow_imp.id(13107600000471606)
-,p_bind_type=>'bind'
-,p_execution_type=>'IMMEDIATE'
-,p_bind_event_type=>'apexafterclosedialog'
-);
-wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(13108400000471614)
-,p_event_id=>wwv_flow_imp.id(13108300000471613)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_REFRESH'
-,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_imp.id(13088711960253661)
-);
--- Note: Delete case is handled by the IG custom 'delete-case' action in JavaScript.
--- No separate DA needed since the IG action directly sets P22_SELECTED_RECEIPT and submits.
--- Show success message after delete
-wwv_flow_imp_page.create_page_da_event(
- p_id=>wwv_flow_imp.id(13108800000471620)
-,p_name=>'After Delete Refresh'
-,p_event_sequence=>40
-,p_triggering_element_type=>'JQUERY_SELECTOR'
-,p_triggering_element=>'body'
-,p_bind_type=>'bind'
-,p_execution_type=>'IMMEDIATE'
-,p_bind_event_type=>'apexafterclosedialog'
-);
-wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(13108810000471621)
-,p_event_id=>wwv_flow_imp.id(13108800000471620)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_REFRESH'
-,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_imp.id(13088711960253661)
 );
 wwv_flow_imp.component_end;
 end;

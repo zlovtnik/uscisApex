@@ -44,8 +44,8 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
-  'output_as', 'TEXT',
-  'show_line_breaks', 'Y')).to_clob
+  'output_as', 'HTML',
+  'show_line_breaks', 'N')).to_clob
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(90006002)
@@ -68,8 +68,8 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
-  'output_as', 'TEXT',
-  'show_line_breaks', 'Y')).to_clob
+  'output_as', 'HTML',
+  'show_line_breaks', 'N')).to_clob
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(90006003)
@@ -84,8 +84,8 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_when_condition=>'P6_IMPORT_RESULT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
-  'output_as', 'TEXT',
-  'show_line_breaks', 'Y')).to_clob
+  'output_as', 'HTML',
+  'show_line_breaks', 'N')).to_clob
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(90006004)
@@ -125,8 +125,8 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
-  'output_as', 'TEXT',
-  'show_line_breaks', 'Y')).to_clob
+  'output_as', 'HTML',
+  'show_line_breaks', 'N')).to_clob
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(90006402)
@@ -135,6 +135,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'BTN_PREVIEW'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(13349797865298420)
 ,p_button_image_alt=>'Preview Import'
 ,p_button_position=>'NEXT'
 ,p_icon_css_classes=>'fa-eye'
@@ -148,6 +149,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'BTN_EXPORT'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(13349797865298420)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Download Export'
 ,p_button_position=>'NEXT'
@@ -160,6 +162,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'BTN_IMPORT'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(13349797865298420)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Import Cases'
 ,p_button_position=>'NEXT'
@@ -177,6 +180,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'BTN_CLEAR'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(13349797865298420)
 ,p_button_image_alt=>'Clear'
 ,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
@@ -251,10 +255,10 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_help_text=>'Select a JSON file to import. Maximum file size is 10 MB. CSV import coming soon.'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'storage_type', 'APEX_APPLICATION_TEMP_FILES',
-  'purge_file_at', 'END_OF_SESSION',
   'allow_multiple_files', 'N',
-  'max_file_size', '10000')).to_clob
+  'max_file_size', '10000',
+  'purge_file_at', 'END_OF_SESSION',
+  'storage_type', 'APEX_APPLICATION_TEMP_FILES')).to_clob
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(90006202)

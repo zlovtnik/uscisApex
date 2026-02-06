@@ -26,6 +26,7 @@ prompt --install
 @@application/pages/page_groups.sql
 @@application/shared_components/navigation/breadcrumbs/breadcrumb.sql
 @@application/shared_components/navigation/breadcrumbentry.sql
+@@application/shared_components/user_interface/templates/button/html_button_legacy_apex_5_migration.sql
 @@application/shared_components/user_interface/templates/popuplov.sql
 @@application/shared_components/user_interface/themes.sql
 @@application/shared_components/user_interface/theme_style.sql

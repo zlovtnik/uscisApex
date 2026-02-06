@@ -11,9 +11,6 @@ wwv_flow_imp.component_begin (
 ,p_default_id_offset=>0
 ,p_default_owner=>'USCIS_APP'
 );
--- Placeholder: No list entries are defined in this application.
--- List entries are defined inline within their parent lists in navigation/lists/*.sql
--- This file is retained for APEX export/import compatibility.
 null;
 wwv_flow_imp.component_end;
 end;

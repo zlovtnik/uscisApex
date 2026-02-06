@@ -124,10 +124,8 @@ wwv_flow_imp_page.create_page(
 '  font-size: 13px;',
 '}'))
 ,p_page_template_options=>'#DEFAULT#'
-,p_protection_level=>'U'
 ,p_page_component_map=>'16'
 );
--- Breadcrumb Region
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(13300001000000001)
 ,p_plug_name=>'Breadcrumb'
@@ -140,7 +138,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source_type=>'NATIVE_BREADCRUMB'
 ,p_menu_template_id=>4072363345357175094
 );
--- Case Information Region
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(13300002000000002)
 ,p_plug_name=>'Case Information'
@@ -183,7 +180,6 @@ wwv_flow_imp_page.create_page_plug(
   'output_as', 'HTML',
   'show_line_breaks', 'N')).to_clob
 );
--- Status History Region
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(13300003000000003)
 ,p_plug_name=>'Status History'
@@ -197,7 +193,63 @@ wwv_flow_imp_page.create_page_plug(
   'output_as', 'HTML',
   'show_line_breaks', 'N')).to_clob
 );
--- Hidden Items
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(13300101000000101)
+,p_button_sequence=>20
+,p_button_plug_id=>wwv_flow_imp.id(13300001000000001)
+,p_button_name=>'BTN_REFRESH'
+,p_button_action=>'SUBMIT'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>4072362960822175091
+,p_button_is_hot=>'Y'
+,p_button_image_alt=>'Refresh Status'
+,p_button_position=>'NEXT'
+,p_icon_css_classes=>'fa-refresh'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(13300102000000102)
+,p_button_sequence=>30
+,p_button_plug_id=>wwv_flow_imp.id(13300001000000001)
+,p_button_name=>'BTN_DELETE'
+,p_button_action=>'DEFINED_BY_DA'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft:t-Button--danger'
+,p_button_template_id=>4072362960822175091
+,p_button_image_alt=>'Delete Case'
+,p_button_position=>'NEXT'
+,p_warn_on_unsaved_changes=>null
+,p_icon_css_classes=>'fa-trash-o'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(13300100000000100)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(13300001000000001)
+,p_button_name=>'BTN_BACK'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>4072362960822175091
+,p_button_image_alt=>'Back to Cases'
+,p_button_position=>'PREVIOUS'
+,p_button_redirect_url=>'f?p=&APP_ID.:22:&SESSION.::&DEBUG.:::'
+,p_icon_css_classes=>'fa-chevron-left'
+);
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(13300300000000300)
+,p_branch_name=>'After Delete'
+,p_branch_action=>'f?p=&APP_ID.:22:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'AFTER_PROCESSING'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_sequence=>10
+,p_branch_condition_type=>'REQUEST_EQUALS_CONDITION'
+,p_branch_condition=>'DELETE'
+);
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(13300301000000301)
+,p_branch_name=>'Reload Case Details'
+,p_branch_action=>'f?p=&APP_ID.:3:&SESSION.::&DEBUG.::P3_RECEIPT_NUMBER:&P3_RECEIPT_NUMBER.&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'AFTER_PROCESSING'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_sequence=>20
+);
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(13300010000000010)
 ,p_name=>'P3_RECEIPT_NUMBER'
@@ -297,47 +349,103 @@ wwv_flow_imp_page.create_page_item(
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'N')).to_clob
 );
--- Buttons in Breadcrumb Region
-wwv_flow_imp_page.create_page_button(
- p_id=>wwv_flow_imp.id(13300100000000100)
-,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_imp.id(13300001000000001)
-,p_button_name=>'BTN_BACK'
-,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
-,p_button_template_id=>4072362960822175091
-,p_button_image_alt=>'Back to Cases'
-,p_button_position=>'PREVIOUS'
-,p_button_redirect_url=>'f?p=&APP_ID.:22:&SESSION.::&DEBUG.:::'
-,p_icon_css_classes=>'fa-chevron-left'
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(13300600000000600)
+,p_name=>'Confirm Delete'
+,p_event_sequence=>10
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_imp.id(13300102000000102)
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'click'
 );
-wwv_flow_imp_page.create_page_button(
- p_id=>wwv_flow_imp.id(13300101000000101)
-,p_button_sequence=>20
-,p_button_plug_id=>wwv_flow_imp.id(13300001000000001)
-,p_button_name=>'BTN_REFRESH'
-,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
-,p_button_template_id=>4072362960822175091
-,p_button_is_hot=>'Y'
-,p_button_image_alt=>'Refresh Status'
-,p_button_position=>'NEXT'
-,p_icon_css_classes=>'fa-refresh'
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(13300601000000601)
+,p_event_id=>wwv_flow_imp.id(13300600000000600)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>'apex.message.confirm("Are you sure you want to delete this case? This action cannot be undone.",function(ok){if(ok){apex.page.submit("DELETE");}});'
 );
-wwv_flow_imp_page.create_page_button(
- p_id=>wwv_flow_imp.id(13300102000000102)
-,p_button_sequence=>30
-,p_button_plug_id=>wwv_flow_imp.id(13300001000000001)
-,p_button_name=>'BTN_DELETE'
-,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft:t-Button--danger'
-,p_button_template_id=>4072362960822175091
-,p_button_image_alt=>'Delete Case'
-,p_button_position=>'NEXT'
-,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-trash-o'
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(13300201000000201)
+,p_process_sequence=>10
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Refresh Status'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'DECLARE',
+'  l_status uscis_types_pkg.t_case_status;',
+'BEGIN',
+'  IF :P3_RECEIPT_NUMBER IS NULL THEN',
+'    apex_error.add_error(',
+'      p_message => ''No receipt number specified. Please navigate from the Cases list.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RETURN;',
+'  END IF;',
+'  l_status := uscis_api_pkg.check_case_status(',
+'    p_receipt_number   => :P3_RECEIPT_NUMBER,',
+'    p_save_to_database => TRUE',
+'  );',
+'EXCEPTION',
+'  WHEN OTHERS THEN',
+'    apex_debug.error(',
+'      p_message => ''Refresh status failed for [%s]: %s'',',
+'      p0 => :P3_RECEIPT_NUMBER,',
+'      p1 => SQLERRM',
+'    );',
+'    apex_error.add_error(',
+'      p_message => ''Failed to refresh status. The USCIS API may be unavailable.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RETURN;',
+'END;'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when_button_id=>wwv_flow_imp.id(13300101000000101)
+,p_process_success_message=>'Status refreshed successfully.'
+,p_internal_uid=>13300201000000201
 );
--- Before Header Process: Load Case Data
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(13300202000000202)
+,p_process_sequence=>20
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Delete Case'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'BEGIN',
+'  IF :P3_RECEIPT_NUMBER IS NULL THEN',
+'    apex_error.add_error(',
+'      p_message => ''No receipt number specified. Cannot delete.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RETURN;',
+'  END IF;',
+'  uscis_case_pkg.delete_case(',
+'    p_receipt_number => :P3_RECEIPT_NUMBER',
+'  );',
+'EXCEPTION',
+'  WHEN OTHERS THEN',
+'    apex_debug.error(',
+'      p_message => ''Delete case failed for [%s]: %s'',',
+'      p0 => :P3_RECEIPT_NUMBER,',
+'      p1 => SQLERRM',
+'    );',
+'    apex_error.add_error(',
+'      p_message => ''Failed to delete case. Please try again.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RETURN;',
+'END;'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when=>'DELETE'
+,p_process_when_type=>'REQUEST_EQUALS_CONDITION'
+,p_process_success_message=>'Case deleted successfully.'
+,p_internal_uid=>13300202000000202
+);
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(13300200000000200)
 ,p_process_sequence=>10
@@ -362,7 +470,7 @@ wwv_flow_imp_page.create_page_process(
 '      NVL(current_status, ''Unknown''),',
 '      NVL(TO_CHAR(last_updated, ''Mon DD, YYYY HH:MI AM''), ''N/A''),',
 '      NVL(TO_CHAR(tracking_since, ''Mon DD, YYYY''), ''N/A''),',
-'      NVL(is_active, ''Y''),',
+'      CASE WHEN NVL(is_active, 1) = 1 THEN ''Y'' ELSE ''N'' END,',
 '      notes',
 '    INTO',
 '      :P3_CASE_TYPE,',
@@ -450,124 +558,7 @@ wwv_flow_imp_page.create_page_process(
 'END;'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
--- After Submit Process: Refresh Status
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(13300201000000201)
-,p_process_sequence=>10
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Refresh Status'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'DECLARE',
-'  l_status uscis_types_pkg.t_case_status;',
-'BEGIN',
-'  IF :P3_RECEIPT_NUMBER IS NULL THEN',
-'    apex_error.add_error(',
-'      p_message => ''No receipt number specified. Please navigate from the Cases list.'',',
-'      p_display_location => apex_error.c_inline_in_notification',
-'    );',
-'    RETURN;',
-'  END IF;',
-'  l_status := uscis_api_pkg.check_case_status(',
-'    p_receipt_number   => :P3_RECEIPT_NUMBER,',
-'    p_save_to_database => TRUE',
-'  );',
-'EXCEPTION',
-'  WHEN OTHERS THEN',
-'    apex_debug.error(',
-'      p_message => ''Refresh status failed for [%s]: %s'',',
-'      p0 => :P3_RECEIPT_NUMBER,',
-'      p1 => SQLERRM',
-'    );',
-'    apex_error.add_error(',
-'      p_message => ''Failed to refresh status. The USCIS API may be unavailable.'',',
-'      p_display_location => apex_error.c_inline_in_notification',
-'    );',
-'    RETURN;',
-'END;'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(13300101000000101)
-,p_process_success_message=>'Status refreshed successfully.'
-);
--- After Submit Process: Delete Case
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(13300202000000202)
-,p_process_sequence=>20
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Delete Case'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'BEGIN',
-'  IF :P3_RECEIPT_NUMBER IS NULL THEN',
-'    apex_error.add_error(',
-'      p_message => ''No receipt number specified. Cannot delete.'',',
-'      p_display_location => apex_error.c_inline_in_notification',
-'    );',
-'    RETURN;',
-'  END IF;',
-'  uscis_case_pkg.delete_case(',
-'    p_receipt_number => :P3_RECEIPT_NUMBER',
-'  );',
-'EXCEPTION',
-'  WHEN OTHERS THEN',
-'    apex_debug.error(',
-'      p_message => ''Delete case failed for [%s]: %s'',',
-'      p0 => :P3_RECEIPT_NUMBER,',
-'      p1 => SQLERRM',
-'    );',
-'    apex_error.add_error(',
-'      p_message => ''Failed to delete case. Please try again.'',',
-'      p_display_location => apex_error.c_inline_in_notification',
-'    );',
-'    RETURN;',
-'END;'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when=>'DELETE'
-,p_process_when_type=>'REQUEST_EQUALS_CONDITION'
-,p_process_success_message=>'Case deleted successfully.'
-);
--- Branch: After Delete -> Back to Cases list
-wwv_flow_imp_page.create_page_branch(
- p_id=>wwv_flow_imp.id(13300300000000300)
-,p_branch_name=>'After Delete'
-,p_branch_action=>'f?p=&APP_ID.:22:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
-,p_branch_point=>'AFTER_PROCESSING'
-,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>10
-,p_branch_condition_type=>'REQUEST_EQUALS_CONDITION'
-,p_branch_condition=>'DELETE'
-);
--- Branch: Default -> Reload Case Details (after Refresh)
-wwv_flow_imp_page.create_page_branch(
- p_id=>wwv_flow_imp.id(13300301000000301)
-,p_branch_name=>'Reload Case Details'
-,p_branch_action=>'f?p=&APP_ID.:3:&SESSION.::&DEBUG.::P3_RECEIPT_NUMBER:&P3_RECEIPT_NUMBER.&success_msg=#SUCCESS_MSG#'
-,p_branch_point=>'AFTER_PROCESSING'
-,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>20
-);
--- Dynamic Action: Confirm Delete
-wwv_flow_imp_page.create_page_da_event(
- p_id=>wwv_flow_imp.id(13300600000000600)
-,p_name=>'Confirm Delete'
-,p_event_sequence=>10
-,p_triggering_element_type=>'BUTTON'
-,p_triggering_button_id=>wwv_flow_imp.id(13300102000000102)
-,p_bind_type=>'bind'
-,p_execution_type=>'IMMEDIATE'
-,p_bind_event_type=>'click'
-);
-wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(13300601000000601)
-,p_event_id=>wwv_flow_imp.id(13300600000000600)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>'apex.message.confirm("Are you sure you want to delete this case? This action cannot be undone.",function(ok){if(ok){apex.page.submit("DELETE");}});'
+,p_internal_uid=>13300200000000200
 );
 wwv_flow_imp.component_end;
 end;

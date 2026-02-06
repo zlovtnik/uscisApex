@@ -11,9 +11,6 @@ wwv_flow_imp.component_begin (
 ,p_default_id_offset=>0
 ,p_default_owner=>'USCIS_APP'
 );
--- Placeholder: This application uses the default Universal Theme popup LOV template.
--- Custom popup LOV templates are not defined; the theme subscription provides the template.
--- This file is retained for APEX export/import compatibility.
 null;
 wwv_flow_imp.component_end;
 end;

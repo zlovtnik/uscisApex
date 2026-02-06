@@ -117,61 +117,6 @@ body {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Status badges */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  animation: badgeFadeIn 0.4s ease-out;
-}
-
-@keyframes badgeFadeIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.status-approved {
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
-}
-
-.status-denied {
-  background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
-}
-
-.status-pending {
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-  color: #1a1a1a;
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
-}
-
-.status-rfe {
-  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
-}
-
-.status-received {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
-}
-
-.status-unknown {
-  background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
-}
-
 /* Cards with glassmorphism — UT custom properties (P2) */
 .t-Card {
   --a-cv-background-color: rgba(255, 255, 255, 0.95);
@@ -551,33 +496,29 @@ function getStatusClass(status) {
 
 // Visual effects
 function showToast(message, type, duration) {
-    type = type || 'info';
-    duration = duration || 4000;
+  duration = duration || 4000;
+  type = type || 'info';
 
-    const toast = document.createElement('div');
-    toast.className = 'custom-toast custom-toast-' + type;
+  apex.message.clearErrors();
+  apex.message.hidePageSuccess();
 
-    // Use DOM construction to prevent XSS
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'custom-toast-message';
-    msgDiv.textContent = message; // Safe: uses textContent, not innerHTML
-    toast.appendChild(msgDiv);
+  if (type === 'error') {
+    apex.message.showErrors([{
+      type: 'error',
+      location: 'page',
+      message: message,
+      unsafe: false
+    }]);
+  } else {
+    apex.message.showPageSuccess(message);
+  }
 
-    const style = document.createElement('style');
-    style.textContent = '.custom-toast{position:fixed;bottom:24px;right:24px;min-width:320px;padding:16px;border-radius:16px;z-index:10000;backdrop-filter:blur(20px);animation:toastIn .4s cubic-bezier(.68,-.55,.265,1.55)}' +
-    '.custom-toast-info{background:linear-gradient(135deg,rgba(59,130,246,.95),rgba(6,182,212,.9));color:#fff}' +
-    '.custom-toast-success{background:linear-gradient(135deg,rgba(16,185,129,.95),rgba(52,211,153,.9));color:#fff}' +
-    '.custom-toast-error{background:linear-gradient(135deg,rgba(239,68,68,.95),rgba(249,115,22,.9));color:#fff}' +
-    '.custom-toast-message{font-weight:600;font-size:14px}' +
-    '@keyframes toastIn{0%{opacity:0;transform:translateY(30px) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}';
-
-    if (!document.querySelector('#custom-toast-styles')) {
-        style.id = 'custom-toast-styles';
-        document.head.appendChild(style);
-    }
-
-    document.body.appendChild(toast);
-    setTimeout(function() { toast.remove(); }, duration);
+  if (duration > 0) {
+    setTimeout(function() {
+      apex.message.hidePageSuccess();
+      apex.message.clearErrors();
+    }, duration);
+  }
 }
 
 function showConfetti(particleCount) {

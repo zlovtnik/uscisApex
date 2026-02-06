@@ -829,6 +829,7 @@ PROMPT ============================================================
 @@packages/06_uscis_api_pkg.sql
 @@packages/07_uscis_scheduler_pkg.sql
 @@packages/08_uscis_export_pkg.sql
+@@packages/09_uscis_template_components_pkg.sql
 
 PROMPT Full PL/SQL packages installed
 

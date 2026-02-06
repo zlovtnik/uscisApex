@@ -18,33 +18,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'My Cases'
 ,p_autocomplete_on_off=>'OFF'
 ,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'/* Status Badge Styling */',
-'.status-badge {',
-'  display: inline-block;',
-'  padding: 2px 8px;',
-'  border-radius: 4px;',
-'  font-size: 11px;',
-'  font-weight: 600;',
-'  line-height: 1.5;',
-'  border-left: 3px solid currentColor;',
-'  animation: none !important;',
-'  transition: none !important;',
-'  box-shadow: none !important;',
-'  text-transform: none;',
-'  letter-spacing: normal;',
-'  white-space: nowrap;',
-'}',
-'.status-badge::before { display: none !important; }',
-'.status-badge:hover { transform: none !important; }',
-'.status-approved { background: #e6f4ea; color: #1b7a36; }',
-'.status-denied { background: #fce8e8; color: #b71c22; }',
-'.status-rfe { background: #e3f0fa; color: #005a96; }',
-'.status-received { background: #ede3f5; color: #3b2270; }',
-'.status-pending { background: #fff8e1; color: #7a6200; }',
-'.status-transferred { background: #e0f7fa; color: #006064; }',
-'.status-unknown { background: #f0f1f2; color: #3d4551; }',
-'',
-'/* Receipt Number Styling */',
+'/* Page 22 inline styles (UT-compliant) */',
 '.receipt-number {',
 '  font-family: "Courier New", monospace;',
 '  font-weight: bold;',
@@ -61,19 +35,13 @@ wwv_flow_imp_page.create_page(
 '  text-decoration: underline;',
 '  color: #003366;',
 '}',
-'',
-'/* Active/Inactive Row Styling */',
 '.ig-row-inactive {',
 '  opacity: 0.6;',
 '  background-color: #f0f0f0 !important;',
 '}',
-'',
-'/* Toolbar Button Enhancements */',
 '.case-list-toolbar .a-Button--hot {',
 '  margin-left: 8px;',
 '}',
-'',
-'/* Filter Region Styling */',
 '.case-filters {',
 '  padding: 12px 16px;',
 '  background: #f5f5f5;',
@@ -86,8 +54,6 @@ wwv_flow_imp_page.create_page(
 '.case-filters .t-Form-fieldContainer {',
 '  margin-bottom: 0;',
 '}',
-'',
-'/* IG Selected Row - light highlight so text stays readable */',
 '.a-GV-row.is-selected .a-GV-cell,',
 '.a-GV-row.is-active .a-GV-cell,',
 '.a-GV-row.is-focused .a-GV-cell {',
@@ -98,12 +64,6 @@ wwv_flow_imp_page.create_page(
 '.a-GV-row.is-active .receipt-link {',
 '  color: #003d99 !important;',
 '}',
-'.a-GV-row.is-selected .status-badge,',
-'.a-GV-row.is-active .status-badge {',
-'  opacity: 1 !important;',
-'}',
-'',
-'/* IG Edit Mode Styling */',
 '.a-IG .is-changed .a-GV-cell {',
 '  background-color: #fffde7 !important;',
 '}',
@@ -147,43 +107,92 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>40
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'SELECT ',
-'    ch.ROWID AS row_id,',
-'    v.receipt_number,',
-'    v.case_type,',
-'    APEX_ESCAPE.HTML(v.current_status) AS current_status,',
-'    v.last_updated,',
-'    v.tracking_since,',
-'    ch.is_active,',
-'    ch.notes,',
-'    v.total_updates,',
-'    v.last_update_source,',
-'    v.check_frequency,',
-'    v.last_checked_at,',
-'    v.created_by,',
-'    v.days_since_update,',
-'    NVL(TO_CHAR(v.hours_since_check) || '' hrs ago'', ''Never'') AS last_check_display,',
-'    CASE',
-'        WHEN UPPER(v.current_status) LIKE ''%DENIED%'' OR UPPER(v.current_status) LIKE ''%NOT APPROVED%'' OR UPPER(v.current_status) LIKE ''%REJECT%'' OR UPPER(v.current_status) LIKE ''%TERMINAT%'' OR UPPER(v.current_status) LIKE ''%WITHDRAWN%'' OR UPPER(v.cur'
-||'rent_status) LIKE ''%REVOKED%'' THEN ''denied''',
-'        WHEN UPPER(v.current_status) LIKE ''%APPROVED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS PRODUCED%'' OR UPPER(v.current_status) LIKE ''%CARD IS BEING PRODUCED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS DELIVERED%'' OR UPPER(v.current_status) '
-||'LIKE ''%CARD WAS MAILED%'' OR UPPER(v.current_status) LIKE ''%CARD WAS PICKED UP%'' OR UPPER(v.current_status) LIKE ''%OATH CEREMONY%'' OR UPPER(v.current_status) LIKE ''%WELCOME NOTICE%'' THEN ''approved''',
-'        WHEN UPPER(v.current_status) LIKE ''%EVIDENCE%'' OR UPPER(v.current_status) LIKE ''%RFE%'' THEN ''rfe''',
-'        WHEN UPPER(v.current_status) LIKE ''%RECEIVED%'' OR UPPER(v.current_status) LIKE ''%ACCEPTED%'' OR UPPER(v.current_status) LIKE ''%FEE%'' THEN ''received''',
-'        WHEN UPPER(v.current_status) LIKE ''%FINGERPRINT%'' OR UPPER(v.current_status) LIKE ''%INTERVIEW%'' OR UPPER(v.current_status) LIKE ''%PROCESSING%'' OR UPPER(v.current_status) LIKE ''%REVIEW%'' OR UPPER(v.current_status) LIKE ''%PENDING%'' OR UPPER(v.c'
-||'urrent_status) LIKE ''%SCHEDULED%'' THEN ''pending''',
-'        WHEN UPPER(v.current_status) LIKE ''%TRANSFER%'' THEN ''transferred''',
+'WITH base AS (',
+'  SELECT ',
+'      ch.ROWID AS row_id,',
+'      v.receipt_number,',
+'      v.case_type,',
+'      APEX_ESCAPE.HTML(v.current_status) AS current_status,',
+'      v.last_updated,',
+'      v.tracking_since,',
+'      ch.is_active,',
+'      ch.notes,',
+'      v.total_updates,',
+'      v.last_update_source,',
+'      v.check_frequency,',
+'      v.last_checked_at,',
+'      v.created_by,',
+'      v.days_since_update,',
+'      NVL(TO_CHAR(v.hours_since_check) || '' hrs ago'', ''Never'') AS last_check_display,',
+'      CASE',
+'        WHEN v.current_status IS NULL THEN ''unknown''',
+'        WHEN UPPER(v.current_status) LIKE ''%NOT APPROVED%''',
+'          OR UPPER(v.current_status) LIKE ''%DENIED%''',
+'          OR UPPER(v.current_status) LIKE ''%REJECT%''',
+'          OR UPPER(v.current_status) LIKE ''%TERMINAT%''',
+'          OR UPPER(v.current_status) LIKE ''%WITHDRAWN%''',
+'          OR UPPER(v.current_status) LIKE ''%REVOKED%'' THEN ''denied''',
+'        WHEN UPPER(v.current_status) LIKE ''%APPROVED%''',
+'          OR UPPER(v.current_status) LIKE ''%CARD WAS PRODUCED%''',
+'          OR UPPER(v.current_status) LIKE ''%CARD IS BEING PRODUCED%''',
+'          OR UPPER(v.current_status) LIKE ''%CARD WAS DELIVERED%''',
+'          OR UPPER(v.current_status) LIKE ''%CARD WAS MAILED%''',
+'          OR UPPER(v.current_status) LIKE ''%CARD WAS PICKED UP%''',
+'          OR UPPER(v.current_status) LIKE ''%OATH CEREMONY%''',
+'          OR UPPER(v.current_status) LIKE ''%WELCOME NOTICE%'' THEN ''approved''',
+'        WHEN UPPER(v.current_status) LIKE ''%EVIDENCE%''',
+'          OR UPPER(v.current_status) LIKE ''%RFE%'' THEN ''rfe''',
+'        WHEN UPPER(v.current_status) LIKE ''%RECEIVED%''',
+'          OR UPPER(v.current_status) LIKE ''%ACCEPTED%''',
+'          OR UPPER(v.current_status) LIKE ''%FEE WAS%'' THEN ''received''',
+'        WHEN UPPER(v.current_status) LIKE ''%FINGERPRINT%''',
+'          OR UPPER(v.current_status) LIKE ''%INTERVIEW%''',
+'          OR UPPER(v.current_status) LIKE ''%PROCESSING%''',
+'          OR UPPER(v.current_status) LIKE ''%REVIEW%''',
+'          OR UPPER(v.current_status) LIKE ''%PENDING%''',
+'          OR UPPER(v.current_status) LIKE ''%SCHEDULED%'' THEN ''pending''',
+'        WHEN UPPER(v.current_status) LIKE ''%TRANSFER%''',
+'          OR UPPER(v.current_status) LIKE ''%RELOCATED%''',
+'          OR UPPER(v.current_status) LIKE ''%SENT TO%'' THEN ''transferred''',
 '        ELSE ''unknown''',
-'    END AS status_class,',
-'    APEX_PAGE.GET_URL(p_page => 3, p_items => ''P3_RECEIPT_NUMBER'', p_values => v.receipt_number) AS detail_url',
-'FROM v_case_current_status v',
-'JOIN case_history ch ON ch.receipt_number = v.receipt_number',
-'WHERE (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''ALL'' ',
-'       OR (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''ACTIVE'' AND ch.is_active = 1)',
-'       OR (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''INACTIVE'' AND ch.is_active = 0))',
-'  AND (NVL(:P22_STATUS_FILTER, ''ALL'') = ''ALL'' OR v.current_status = :P22_STATUS_FILTER)',
-'  AND (:P22_RECEIPT_SEARCH IS NULL OR UPPER(v.receipt_number) LIKE ''%'' || UPPER(:P22_RECEIPT_SEARCH) || ''%'')',
-'ORDER BY v.last_updated DESC NULLS LAST'))
+'      END AS status_category',
+'  FROM v_case_current_status v',
+'  JOIN case_history ch ON ch.receipt_number = v.receipt_number',
+'  WHERE (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''ALL'' ',
+'         OR (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''ACTIVE'' AND ch.is_active = 1)',
+'         OR (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''INACTIVE'' AND ch.is_active = 0))',
+'    AND (NVL(:P22_STATUS_FILTER, ''ALL'') = ''ALL'' OR v.current_status = :P22_STATUS_FILTER)',
+'    AND (:P22_RECEIPT_SEARCH IS NULL OR UPPER(v.receipt_number) LIKE ''%'' || UPPER(:P22_RECEIPT_SEARCH) || ''%'')',
+')',
+'SELECT ',
+'    b.row_id,',
+'    b.receipt_number,',
+'    b.case_type,',
+'    b.current_status,',
+'    b.last_updated,',
+'    b.tracking_since,',
+'    b.is_active,',
+'    b.notes,',
+'    b.total_updates,',
+'    b.last_update_source,',
+'    b.check_frequency,',
+'    b.last_checked_at,',
+'    b.created_by,',
+'    b.days_since_update,',
+'    b.last_check_display,',
+'    b.status_category,',
+'    CASE b.status_category',
+'      WHEN ''approved''    THEN ''u-success''',
+'      WHEN ''denied''      THEN ''u-danger''',
+'      WHEN ''rfe''         THEN ''u-info''',
+'      WHEN ''received''    THEN ''u-color-14''',
+'      WHEN ''pending''     THEN ''u-warning''',
+'      WHEN ''transferred'' THEN ''u-color-16''',
+'      ELSE ''u-color-7''',
+'    END AS status_ut_class,',
+'    APEX_PAGE.GET_URL(p_page => 3, p_items => ''P3_RECEIPT_NUMBER'', p_values => b.receipt_number) AS detail_url',
+'FROM base b',
+'ORDER BY b.last_updated DESC NULLS LAST'))
 ,p_plug_source_type=>'NATIVE_IG'
 ,p_prn_page_header=>'My Cases'
 );
@@ -264,7 +273,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_display_sequence=>30
 ,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'html_expression', '<span class="status-badge status-&STATUS_CLASS.">&CURRENT_STATUS.</span>')).to_clob
+  'html_expression', '<span class="u-pill &STATUS_UT_CLASS."><span class="u-pill-label">&CURRENT_STATUS.</span></span>')).to_clob
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
@@ -622,14 +631,34 @@ wwv_flow_imp_page.create_region_column(
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13103985039253732)
-,p_name=>'STATUS_CLASS'
+,p_name=>'STATUS_CATEGORY'
 ,p_source_type=>'DB_COLUMN'
-,p_source_expression=>'STATUS_CLASS'
+,p_source_expression=>'STATUS_CATEGORY'
 ,p_data_type=>'VARCHAR2'
 ,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_HIDDEN'
 ,p_display_sequence=>150
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_use_as_row_header=>false
+,p_enable_sort_group=>false
+,p_enable_control_break=>false
+,p_enable_hide=>true
+,p_enable_pivot=>false
+,p_is_primary_key=>false
+,p_include_in_export=>false
+);
+wwv_flow_imp_page.create_region_column(
+ p_id=>wwv_flow_imp.id(13103985039253734)
+,p_name=>'STATUS_UT_CLASS'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'STATUS_UT_CLASS'
+,p_data_type=>'VARCHAR2'
+,p_session_state_data_type=>'VARCHAR2'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>155
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
 ,p_use_as_row_header=>false

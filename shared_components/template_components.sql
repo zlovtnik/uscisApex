@@ -45,36 +45,34 @@ END;
 -- ============================================================
 -- TEMPLATE 1: USCIS Status Badge
 -- ============================================================
--- Usage in page SQL or HTML Expression columns:
+-- Universal Theme pill-based badge (no custom CSS required).
+-- Uses Template Directives to map STATUS_CATEGORY to UT utility
+-- classes for built-in semantic colors that work in Dark Mode.
 --
---   In an IG HTML Expression column:
---     {template:USCIS_STATUS_BADGE/}
+-- Template markup:
 --
---   Or directly via Template Directives in any region:
---     {case STATUS_CATEGORY/}
---     {when approved/}<span class="uscis-badge uscis-badge--approved">
---       <span class="t-Icon fa fa-check-circle uscis-badge-icon"></span>#STATUS_TEXT#</span>
---     {when denied/}<span class="uscis-badge uscis-badge--denied">
---       <span class="t-Icon fa fa-times-circle uscis-badge-icon"></span>#STATUS_TEXT#</span>
---     {when rfe/}<span class="uscis-badge uscis-badge--rfe">
---       <span class="t-Icon fa fa-file-text-o uscis-badge-icon"></span>#STATUS_TEXT#</span>
---     {when received/}<span class="uscis-badge uscis-badge--received">
---       <span class="t-Icon fa fa-inbox uscis-badge-icon"></span>#STATUS_TEXT#</span>
---     {when pending/}<span class="uscis-badge uscis-badge--pending">
---       <span class="t-Icon fa fa-clock-o uscis-badge-icon"></span>#STATUS_TEXT#</span>
---     {when transferred/}<span class="uscis-badge uscis-badge--transferred">
---       <span class="t-Icon fa fa-exchange uscis-badge-icon"></span>#STATUS_TEXT#</span>
---     {otherwise/}<span class="uscis-badge uscis-badge--unknown">
---       <span class="t-Icon fa fa-question-circle uscis-badge-icon"></span>#STATUS_TEXT#</span>
---     {endcase/}
+-- <span class="u-pill {case STATUS_CATEGORY/}
+--   {when approved/}u-success
+--   {when denied/}u-danger
+--   {when pending/}u-warning
+--   {when rfe/}u-info
+--   {when received/}u-color-14
+--   {when transferred/}u-color-16
+--   {otherwise/}u-color-7
+-- {endcase/}">
+--   <span class="u-pill-label">#STATUS_TEXT#</span>
+-- </span>
 --
--- The IG column on page 22 uses the HTML Expression approach:
---   <span class="uscis-badge uscis-badge--&STATUS_CATEGORY.">
---     <span class="t-Icon fa &STATUS_ICON. uscis-badge-icon"></span>&CURRENT_STATUS.</span>
+-- Recommended usage:
+--   - IG/IR column HTML Expression: {template:USCIS_STATUS_BADGE/}
+--   - Provide STATUS_TEXT and STATUS_CATEGORY (via
+--     uscis_template_components_pkg.get_status_category).
+--   - Optional: add STATUS_UT_CLASS column via
+--     uscis_template_components_pkg.get_ut_color_class and bind it
+--     to a Template Directive if you prefer a direct class mapping.
 --
--- For the solid variant (page 3 header):
---   <span class="uscis-badge uscis-badge--solid uscis-badge--&STATUS_CATEGORY.">
---     <span class="t-Icon fa &STATUS_ICON. uscis-badge-icon"></span>&CURRENT_STATUS.</span>
+-- This replaces all .status-badge* custom CSS and any
+-- getStatusClass() JavaScript.
 
 PROMPT Template 1: USCIS Status Badge — defined via HTML Expression
 PROMPT   (No plug-in registration needed — uses inline Template Directives)

@@ -183,19 +183,7 @@ BEGIN
 }
 .uscis-receipt-link:hover { text-decoration: underline; color: var(--a-link-text-hover-color, #003366); }
 
-/* 8. Backward Compatibility */
-.status-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 10px; border-radius: 4px; font-size: 11px;
-    font-weight: 600; line-height: 1.5; border-left: 3px solid currentColor; white-space: nowrap;
-}
-.status-approved    { background: var(--uscis-status-approved-bg);    color: var(--uscis-status-approved-fg); }
-.status-denied      { background: var(--uscis-status-denied-bg);      color: var(--uscis-status-denied-fg); }
-.status-rfe         { background: var(--uscis-status-rfe-bg);         color: var(--uscis-status-rfe-fg); }
-.status-received    { background: var(--uscis-status-received-bg);    color: var(--uscis-status-received-fg); }
-.status-pending     { background: var(--uscis-status-pending-bg);     color: var(--uscis-status-pending-fg); }
-.status-transferred { background: var(--uscis-status-transferred-bg); color: var(--uscis-status-transferred-fg); }
-.status-unknown     { background: var(--uscis-status-unknown-bg);     color: var(--uscis-status-unknown-fg); }
+/* 8. Receipt styling */
 .receipt-number { font-family: "Courier New", Consolas, monospace; font-weight: bold; letter-spacing: 1px; }
 .receipt-link {
     font-family: "Courier New", Consolas, monospace; font-weight: bold; letter-spacing: 1px;

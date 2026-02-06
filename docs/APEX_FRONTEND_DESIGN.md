@@ -200,45 +200,9 @@ body {
 }
 
 /* ---------- Status Badges ---------- */
-.status-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-badge--approved {
-  background-color: var(--status-approved);
-  color: white;
-}
-
-.status-badge--denied {
-  background-color: var(--status-denied);
-  color: white;
-}
-
-.status-badge--pending {
-  background-color: var(--status-pending);
-  color: var(--neutral-900);
-}
-
-.status-badge--rfe {
-  background-color: var(--status-rfe);
-  color: white;
-}
-
-.status-badge--received {
-  background-color: var(--status-received);
-  color: white;
-}
-
-.status-badge--unknown {
-  background-color: var(--status-unknown);
-  color: white;
-}
+/* Rendered via Shared Component Template Component "Status Badge". Styling comes
+   from Universal Theme utility pills (u-pill, u-success, u-danger, etc.) so no
+   custom CSS is required here. */
 
 /* ---------- Cards ---------- */
 .case-card {
@@ -433,22 +397,6 @@ USCIS.formatReceipt = function(receipt) {
     return receipt.substring(0, 3) + '-' + 
            receipt.substring(3, 7) + '-' + 
            receipt.substring(7);
-};
-
-/**
- * Get appropriate CSS class for a status
- * @param {string} status - The case status text
- * @returns {string} CSS class suffix
- */
-USCIS.getStatusClass = function(status) {
-    if (!status) return 'unknown';
-    var s = status.toLowerCase();
-    if (s.includes('approved') || s.includes('card was delivered')) return 'approved';
-    if (s.includes('denied') || s.includes('rejected')) return 'denied';
-    if (s.includes('rfe') || s.includes('evidence')) return 'rfe';
-    if (s.includes('received') || s.includes('accepted')) return 'received';
-    if (s.includes('pending') || s.includes('review')) return 'pending';
-    return 'unknown';
 };
 
 /**
@@ -668,19 +616,11 @@ USCIS.refreshCase = function(receiptNumber) {
 
 // Initialize on page load
 $(document).ready(function() {
-    // Add status badge classes dynamically
-    $('.js-status-text').each(function() {
-        var $el = $(this);
-        var status = $el.text();
-        var className = 'status-badge status-badge--' + USCIS.getStatusClass(status);
-        $el.addClass(className);
-    });
-    
-    // Receipt number input normalization (delegated for dynamic elements)
-    $(document).on('blur', 'input[data-receipt-input]', function() {
-        var $input = $(this);
-        $input.val(USCIS.normalizeReceipt($input.val()));
-    });
+  // Receipt number input normalization (delegated for dynamic elements)
+  $(document).on('blur', 'input[data-receipt-input]', function() {
+    var $input = $(this);
+    $input.val(USCIS.normalizeReceipt($input.val()));
+  });
 });
 ```
 
@@ -977,27 +917,23 @@ Regions:
         
       - Name: CURRENT_STATUS
         Label: Status
-        Type: Plain Text
-        HTML Expression: |
-          <!-- STATUS_CLASS computed server-side via SQL: LOWER(REGEXP_REPLACE(CURRENT_STATUS, '[^a-zA-Z0-9]+', '-')) -->
-          <span class="status-badge status-badge--#STATUS_CLASS#" data-status="#CURRENT_STATUS#">
-            #CURRENT_STATUS#
-          </span>
+        Type: Template Component
+        Template Component: Status Badge (Shared Components)
+        Attributes:
+          - Status Text: #CURRENT_STATUS#
         Width: 200px
         Escape Special Characters: Yes
         Note: |
-          SECURITY: Both #CURRENT_STATUS# and #STATUS_CLASS# MUST be HTML-escaped to prevent XSS.
-          
-          Implementation Requirements:
-          1. Enable "Escape Special Characters" in the Interactive Grid column settings
-             OR use APEX_ESCAPE.HTML() wrapper in the SQL source
-          2. Add STATUS_CLASS to the SQL query with sanitization:
-             REGEXP_REPLACE(LOWER(REGEXP_REPLACE(current_status, '[^a-zA-Z0-9]+', '-')), '[^a-z0-9-]', '') AS status_class
-          3. The REGEXP_REPLACE for STATUS_CLASS already produces only safe characters (a-z, 0-9, hyphen)
-          4. CURRENT_STATUS should be escaped at the source using:
-             APEX_ESCAPE.HTML(current_status) AS current_status
-             OR enable column-level escaping in IG properties
-          5. Validate that user-controlled values are properly encoded before storage
+          SECURITY: Enable column-level "Escape Special Characters" on CURRENT_STATUS — this is
+          sufficient to prevent XSS. Do NOT also call APEX_ESCAPE.HTML(current_status) in the source
+          query, as that would double-escape the value (e.g., "&amp;" becomes "&amp;amp;").
+          Choose exactly one strategy:
+            Preferred: Enable "Escape Special Characters" on the column (default, no query change).
+            Alternative: Disable column-level escaping AND pre-escape via APEX_ESCAPE.HTML() in the
+                         source query — use this only when feeding the value into a Template Component
+                         attribute that does not auto-escape.
+          The Status Badge Template Component renders the badge with built-in utility classes, so
+          column-level escaping is the correct single approach here.
         
       - Name: LAST_UPDATED
         Label: Last Updated
@@ -1241,7 +1177,6 @@ Regions:
           l_receipt_data    VARCHAR2(100);
           l_type_html       VARCHAR2(500);
           l_status_html     VARCHAR2(500);
-          l_status_class    VARCHAR2(100);
           l_updated_html    VARCHAR2(100);
         BEGIN
           SELECT * INTO l_case 
@@ -1254,13 +1189,7 @@ Regions:
           l_type_html    := APEX_ESCAPE.HTML(l_case.case_type);
           l_status_html  := APEX_ESCAPE.HTML(l_case.current_status);
           l_updated_html := APEX_ESCAPE.HTML(TO_CHAR(l_case.last_updated, 'Mon DD, YYYY HH:MI AM'));
-          
-          -- Sanitize status class: only allow lowercase letters, numbers, and hyphens
-          l_status_class := REGEXP_REPLACE(
-            LOWER(REGEXP_REPLACE(l_case.current_status, '[^a-zA-Z0-9]+', '-')),
-            '[^a-z0-9-]', ''
-          );
-          
+
           RETURN '
             <div class="case-header">
               <div class="case-header__receipt">
@@ -1273,15 +1202,60 @@ Regions:
               </div>
               <div class="case-header__type">' || l_type_html || '</div>
               <div class="case-header__status">
-                <span class="status-badge status-badge--' || l_status_class || '">
-                  ' || l_status_html || '
-                </span>
+                <!-- #STATUS_BADGE# is a region substitution placeholder.
+                     It is replaced at render time by the Status Badge Template Component
+                     invocation defined below. -->
+                #STATUS_BADGE#
               </div>
               <div class="case-header__updated">
                 Last updated: ' || l_updated_html || '
               </div>
             </div>';
         END;
+
+      Status Badge Template Component:
+        Definition (Shared Components → Template Components → "Status Badge"):
+          Type: Partial
+          Template HTML:
+            <span class="u-pill #BADGE_CLASS#">
+              <span class="fa #ICON_CLASS#" aria-hidden="true"></span>
+              <span class="u-pill-label">#STATUS_TEXT#</span>
+            </span>
+          Attributes:
+            - STATUS_TEXT  (VARCHAR2) — The display status text.
+            - BADGE_CLASS  (VARCHAR2) — UT color class (e.g. u-success, u-danger).
+            - ICON_CLASS   (VARCHAR2) — Font Awesome icon (e.g. fa-check-circle).
+
+        Usage in Page 3 (Case Details):
+          P3_CURRENT_STATUS is a hidden page item populated by the Before Header process.
+          It is NOT a region source column — it is a page item.
+          Pass it to the Template Component via the &ITEM. substitution syntax:
+            Attribute 1 (STATUS_TEXT)  = &P3_CURRENT_STATUS.
+            Attribute 2 (BADGE_CLASS) = &P3_STATUS_UT_CLASS.
+            Attribute 3 (ICON_CLASS)  = &P3_STATUS_ICON.
+          The placeholder #STATUS_BADGE# in the region HTML is replaced by the
+          Template Component invocation at render time.
+
+        Usage in Page 22 (Interactive Grid):
+          CURRENT_STATUS is a region source column.
+          Pass it using the #COLUMN# syntax:
+            Attribute 1 (STATUS_TEXT)  = #CURRENT_STATUS#
+            Attribute 2 (BADGE_CLASS) = #STATUS_UT_CLASS#
+            Attribute 3 (ICON_CLASS)  = #STATUS_ICON#
+
+        PL/SQL Function Body example (Page 3 region source):
+          RETURN '<div class="case-header__status">' ||
+                 apex_string.format(
+                     '<span class="u-pill %1"><span class="fa %2" aria-hidden="true"></span>'
+                     || '<span class="u-pill-label">%0</span></span>',
+                     apex_escape.html(:P3_CURRENT_STATUS),
+                     :P3_STATUS_UT_CLASS,
+                     :P3_STATUS_ICON
+                 ) ||
+                 '</div>';
+          Note: When rendering via PL/SQL, call apex_escape.html() on P3_CURRENT_STATUS
+          because you are building raw HTML. When using the declarative Template Component,
+          enable "Escape Special Characters" on P3_CURRENT_STATUS instead (do not do both).
         
     Dynamic Actions:
       - Name: Copy Receipt Handler
@@ -2617,7 +2591,7 @@ Custom Templates:
         <div class="case-card__receipt receipt-number">#RECEIPT_NUMBER#</div>
         <div class="case-card__type">#CASE_TYPE#</div>
         <div class="case-card__status">
-          <span class="status-badge js-status-text">#CURRENT_STATUS#</span>
+          #STATUS_BADGE#
         </div>
         <div class="case-card__updated">#LAST_UPDATED#</div>
       </div>
@@ -2729,9 +2703,9 @@ PWA:
 ### 7.2 ARIA Attributes
 
 ```html
-<!-- Status badges -->
-<span class="status-badge" role="status" aria-label="Case status: Approved">
-  Approved
+<!-- Status badges (rendered by Status Badge template component) -->
+<span class="u-pill u-success" role="status" aria-label="Case status: Approved">
+  <span class="u-pill-label">Approved</span>
 </span>
 
 <!-- Loading states -->

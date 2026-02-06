@@ -268,99 +268,6 @@ body .t-TreeNav .a-TreeView-content:hover [class*="fa-"] {
 }
 
 
-/* =============================================
-   STATUS BADGES - GLOWING & ANIMATED
-   ============================================= */
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
-  transition: all var(--transition-normal);
-  animation: badgeFadeIn 0.4s ease-out;
-}
-
-.status-badge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.status-badge:hover::before {
-  left: 100%;
-}
-
-.status-badge:hover {
-  transform: scale(1.05);
-}
-
-@keyframes badgeFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.status-approved { 
-  background: var(--gradient-success);
-  color: var(--neutral-100); 
-  box-shadow: 0 4px 15px var(--status-approved-glow);
-}
-
-.status-denied { 
-  background: var(--gradient-danger);
-  color: var(--neutral-100); 
-  box-shadow: 0 4px 15px var(--status-denied-glow);
-}
-
-.status-pending { 
-  background: var(--gradient-warning);
-  color: var(--neutral-900); 
-  box-shadow: 0 4px 15px var(--status-pending-glow);
-}
-
-.status-rfe { 
-  background: var(--gradient-secondary);
-  color: var(--neutral-100); 
-  box-shadow: 0 4px 15px var(--status-rfe-glow);
-}
-
-.status-received { 
-  background: var(--gradient-purple);
-  color: var(--neutral-100); 
-  box-shadow: 0 4px 15px var(--status-received-glow);
-}
-
-.status-transferred { 
-  background: linear-gradient(135deg, #789ca8 0%, #6b8cae 100%);
-  color: var(--neutral-100); 
-  box-shadow: 0 4px 15px var(--status-transferred-glow);
-}
-
-.status-unknown { 
-  background: linear-gradient(135deg, #5a6674 0%, #7a8279 100%);
-  color: var(--neutral-100); 
-  box-shadow: 0 4px 15px var(--status-unknown-glow);
-}
-
 /* Status dot indicator with pulse animation */
 .status-dot {
   display: inline-block;
@@ -1064,106 +971,6 @@ input:checked + .toggle-slider::before {
 }
 
 
-/* =============================================
-   INTERACTIVE GRID CUSTOMIZATIONS - PREMIUM LOOK
-   ============================================= */
-
-/* Grid container */
-body .a-GV {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--neutral-300);
-  background: var(--bg-card);
-}
-
-/* Status column centering */
-body .a-GV-cell.status-cell {
-  text-align: center;
-}
-
-/* Grid table wrapper */
-body .a-GV-w-scroll {
-  background: var(--bg-card);
-}
-
-/* Row styling */
-body .a-GV-row {
-  transition: all var(--transition-fast);
-  border-bottom: 1px solid var(--neutral-300);
-  background: var(--bg-card);
-}
-
-/* Alternating row colors */
-body .a-GV-row:nth-child(even) {
-  background: var(--neutral-150);
-}
-
-/* Row hover effect - gradient highlight */
-body .a-GV-row:hover {
-  background: linear-gradient(90deg, rgba(74, 95, 127, 0.12) 0%, rgba(120, 156, 168, 0.08) 100%);
-  transform: scale(1.001);
-}
-
-/* Selected row - vibrant highlight */
-body .a-GV-row.is-selected {
-  background: linear-gradient(90deg, rgba(74, 95, 127, 0.2) 0%, rgba(120, 156, 168, 0.12) 100%);
-  box-shadow: inset 4px 0 0 var(--uscis-secondary);
-}
-
-/* Header styling - gradient */
-body .a-GV-header {
-  background: var(--gradient-dark);
-  border-bottom: 3px solid var(--uscis-accent);
-}
-
-body .a-GV-headerLabel {
-  color: var(--neutral-100);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  font-size: 12px;
-  padding: 16px 12px;
-}
-
-/* Grid header cells */
-body .a-GV-header .a-GV-headerCell {
-  padding: 0;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Grid cells - more padding */
-body .a-GV-cell {
-  padding: 16px 18px;
-  font-size: 14px;
-  color: var(--neutral-800);
-  border-right: 1px solid var(--neutral-200);
-}
-
-body .a-GV-cell:last-child {
-  border-right: none;
-}
-
-/* Grid toolbar */
-body .a-GV-toolbar {
-  background: var(--neutral-150);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 2px solid var(--neutral-300);
-  padding: 16px 20px;
-  min-height: 60px;
-}
-
-
-/* =============================================
-   INTERACTIVE REPORT TABLE - PREMIUM STYLING
-   ============================================= */
-
-/* IR Container */
-body .t-Report,
-body .t-IRR-region {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--neutral-300);
 }
@@ -1945,11 +1752,6 @@ body .t-Region--hideShow .t-Region-header:hover {
     -webkit-backdrop-filter: none !important;
   }
   
-  .status-badge {
-    border: 1px solid currentColor;
-    box-shadow: none !important;
-  }
-  
   * {
     animation: none !important;
     transition: none !important;
@@ -1990,10 +1792,6 @@ body .t-Region--hideShow .t-Region-header:hover {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .status-badge {
-    border: 2px solid currentColor;
-  }
-  
   body .t-Card,
   body .t-Region,
   .widget {

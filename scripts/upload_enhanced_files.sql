@@ -292,139 +292,6 @@ body::before {
   color: #4a9eff;
 }
 
-/* =============================================
-   STATUS BADGES - GLOWING & ANIMATED
-   ============================================= */
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
-  transition: all var(--transition-normal);
-  animation: badgeFadeIn 0.4s ease-out;
-}
-
-.status-badge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.status-badge:hover::before {
-  left: 100%;
-}
-
-.status-badge:hover {
-  transform: scale(1.05);
-}
-
-@keyframes badgeFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.status-approved {
-  background: var(--gradient-success);
-  color: var(--neutral-100);
-  box-shadow: 0 4px 15px var(--status-approved-glow);
-}
-
-.status-denied {
-  background: var(--gradient-danger);
-  color: var(--neutral-100);
-  box-shadow: 0 4px 15px var(--status-denied-glow);
-}
-
-.status-pending {
-  background: var(--gradient-warning);
-  color: var(--neutral-900);
-  box-shadow: 0 4px 15px var(--status-pending-glow);
-}
-
-.status-rfe {
-  background: var(--gradient-secondary);
-  color: var(--neutral-100);
-  box-shadow: 0 4px 15px var(--status-rfe-glow);
-}
-
-.status-received {
-  background: var(--gradient-purple);
-  color: var(--neutral-100);
-  box-shadow: 0 4px 15px var(--status-received-glow);
-}
-
-.status-transferred {
-  background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
-  color: var(--neutral-100);
-  box-shadow: 0 4px 15px var(--status-transferred-glow);
-}
-
-.status-unknown {
-  background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
-  color: var(--neutral-100);
-  box-shadow: 0 4px 15px var(--status-unknown-glow);
-}
-
-/* Status dot indicator with pulse animation */
-.status-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin-right: 8px;
-  position: relative;
-}
-
-.status-dot::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: dotPulse 2s ease-in-out infinite;
-}
-
-@keyframes dotPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 currentColor;
-    opacity: 0.7;
-  }
-  50% {
-    box-shadow: 0 0 0 8px currentColor;
-    opacity: 0;
-  }
-}
-
-.status-dot.approved { background: #10b981; color: rgba(16, 185, 129, 0.5); }
-.status-dot.denied { background: #ef4444; color: rgba(239, 68, 68, 0.5); }
-.status-dot.pending { background: #f59e0b; color: rgba(245, 158, 11, 0.5); }
-.status-dot.rfe { background: #3b82f6; color: rgba(59, 130, 246, 0.5); }
-.status-dot.received { background: #8b5cf6; color: rgba(139, 92, 246, 0.5); }
-.status-dot.transferred { background: #06b6d4; color: rgba(6, 182, 212, 0.5); }
-.status-dot.unknown { background: #64748b; color: rgba(100, 116, 139, 0.5); }
 
 /* =============================================
    CARDS & CONTAINERS - GLASSMORPHISM STYLE
@@ -1252,10 +1119,6 @@ body::before {
 }
 
 @media (prefers-contrast: high) {
-  .status-badge {
-    border: 2px solid currentColor;
-  }
-
   .t-Card,
   .t-Region,
   .widget {
@@ -1516,14 +1379,7 @@ function applyStatusStyle(element, status) {
 
     const className = getStatusClass(status);
 
-    // Remove all status classes
-    element.classList.remove(
-        'status-approved', 'status-denied', 'status-pending',
-        'status-rfe', 'status-received', 'status-transferred', 'status-unknown'
-    );
-
-    // Add badge class and new status class
-    element.classList.add('status-badge', className);
+    // Legacy badge styling removed; status classes now provided server-side via UT pills.
 }
 
 /* =============================================
@@ -1538,72 +1394,37 @@ function applyStatusStyle(element, status) {
  * @param {number} duration - Duration in ms (default 4000)
  */
 function showToast(message, type, duration) {
-    type = type || 'info';
-    duration = duration || 4000;
+  duration = duration || 4000;
+  type = type || 'info';
 
-    // Remove existing toasts
-    document.querySelectorAll('.custom-toast').forEach(function(t) { t.remove(); });
+  apex.message.clearErrors();
+  apex.message.hidePageSuccess();
 
-    var toast = document.createElement('div');
-    toast.className = 'custom-toast custom-toast-' + type;
+  if (type === 'error') {
+    apex.message.showErrors([{
+      type: 'error',
+      location: 'page',
+      message: message,
+      unsafe: false
+    }]);
+  } else if (type === 'warning') {
+    apex.message.showErrors([{
+      type: 'warning',
+      location: 'page',
+      message: message,
+      unsafe: false
+    }]);
+  } else {
+    // 'success' and 'info' both render as page success banner
+    apex.message.showPageSuccess(message);
+  }
 
-    // Icon based on type
-    var icons = {
-        success: '\u2713',
-        error: '\u2715',
-        warning: '\u26A0',
-        info: '\u2139'
-    };
-
-    // Build toast content using DOM methods to prevent XSS
-    var iconDiv = document.createElement('div');
-    iconDiv.className = 'custom-toast-icon';
-    iconDiv.textContent = icons[type] || icons.info;
-
-    var contentDiv = document.createElement('div');
-    contentDiv.className = 'custom-toast-content';
-
-    var messageDiv = document.createElement('div');
-    messageDiv.className = 'custom-toast-message';
-    messageDiv.textContent = message; // Safe: uses textContent, not innerHTML
-
-    contentDiv.appendChild(messageDiv);
-
-    var closeBtn = document.createElement('button');
-    closeBtn.className = 'custom-toast-close';
-    closeBtn.textContent = '\u2715';
-    closeBtn.addEventListener('click', function() { toast.remove(); });
-
-    toast.appendChild(iconDiv);
-    toast.appendChild(contentDiv);
-    toast.appendChild(closeBtn);
-
-    // Add styles dynamically
-    var style = document.createElement('style');
-    style.textContent = '.custom-toast{position:fixed;bottom:24px;right:24px;min-width:320px;max-width:450px;padding:16px 20px;border-radius:16px;display:flex;align-items:center;gap:14px;z-index:10000;animation:toastIn .4s cubic-bezier(.68,-.55,.265,1.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.25),0 0 40px rgba(59,130,246,.2)}' +
-    '.custom-toast-success{background:linear-gradient(135deg,rgba(16,185,129,.95),rgba(52,211,153,.9));color:#fff}' +
-    '.custom-toast-error{background:linear-gradient(135deg,rgba(239,68,68,.95),rgba(249,115,22,.9));color:#fff}' +
-    '.custom-toast-warning{background:linear-gradient(135deg,rgba(245,158,11,.95),rgba(251,191,36,.9));color:#1a1a1a}' +
-    '.custom-toast-info{background:linear-gradient(135deg,rgba(59,130,246,.95),rgba(6,182,212,.9));color:#fff}' +
-    '.custom-toast-icon{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}' +
-    '.custom-toast-message{font-weight:600;font-size:14px;line-height:1.4}' +
-    '.custom-toast-close{background:none;border:none;color:inherit;opacity:.7;cursor:pointer;padding:4px;font-size:14px;margin-left:auto}' +
-    '.custom-toast-close:hover{opacity:1}' +
-    '@keyframes toastIn{0%{opacity:0;transform:translateY(30px) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}' +
-    '@keyframes toastOut{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-20px)}}';
-
-    if (!document.querySelector('#custom-toast-styles')) {
-        style.id = 'custom-toast-styles';
-        document.head.appendChild(style);
-    }
-
-    document.body.appendChild(toast);
-
-    // Auto remove
+  if (duration > 0) {
     setTimeout(function() {
-        toast.style.animation = 'toastOut .3s ease forwards';
-        setTimeout(function() { toast.remove(); }, 300);
+      apex.message.hidePageSuccess();
+      apex.message.clearErrors();
     }, duration);
+  }
 }
 
 /**

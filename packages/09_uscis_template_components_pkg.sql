@@ -150,7 +150,27 @@ CREATE OR REPLACE PACKAGE BODY uscis_template_components_pkg AS
             RETURN gc_status_denied;
         END IF;
 
-        -- Approved / Positive outcomes
+        -- Pending / In Progress (check before Approved —
+        -- "APPROVAL PENDING" must match pending, not approved)
+        IF    l_upper LIKE '%PENDING%'
+           OR l_upper LIKE '%FINGERPRINT%'
+           OR l_upper LIKE '%INTERVIEW%'
+           OR l_upper LIKE '%PROCESSING%'
+           OR l_upper LIKE '%REVIEW%'
+           OR l_upper LIKE '%SCHEDULED%'
+        THEN
+            RETURN gc_status_pending;
+        END IF;
+
+        -- Request for Evidence
+        IF    l_upper LIKE '%EVIDENCE%'
+           OR l_upper LIKE '%RFE%'
+        THEN
+            RETURN gc_status_rfe;
+        END IF;
+
+        -- Approved / Positive outcomes (after pending so compound
+        -- phrases like "APPROVAL PENDING" resolve correctly)
         IF    l_upper LIKE '%APPROVED%'
            OR l_upper LIKE '%CARD WAS PRODUCED%'
            OR l_upper LIKE '%CARD IS BEING PRODUCED%'
@@ -163,30 +183,12 @@ CREATE OR REPLACE PACKAGE BODY uscis_template_components_pkg AS
             RETURN gc_status_approved;
         END IF;
 
-        -- Request for Evidence
-        IF    l_upper LIKE '%EVIDENCE%'
-           OR l_upper LIKE '%RFE%'
-        THEN
-            RETURN gc_status_rfe;
-        END IF;
-
         -- Received / Accepted
         IF    l_upper LIKE '%RECEIVED%'
            OR l_upper LIKE '%ACCEPTED%'
            OR l_upper LIKE '%FEE WAS%'
         THEN
             RETURN gc_status_received;
-        END IF;
-
-        -- Pending / In Progress
-        IF    l_upper LIKE '%FINGERPRINT%'
-           OR l_upper LIKE '%INTERVIEW%'
-           OR l_upper LIKE '%PROCESSING%'
-           OR l_upper LIKE '%REVIEW%'
-           OR l_upper LIKE '%PENDING%'
-           OR l_upper LIKE '%SCHEDULED%'
-        THEN
-            RETURN gc_status_pending;
         END IF;
 
         -- Transferred

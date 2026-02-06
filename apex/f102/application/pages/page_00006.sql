@@ -245,14 +245,16 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_imp.id(90006002)
 ,p_prompt=>'Select File'
-,p_source=>'null'
-,p_source_type=>'EXPRESSION'
-,p_source_language=>'PLSQL'
 ,p_display_as=>'NATIVE_FILE'
 ,p_cSize=>60
 ,p_field_template=>wwv_flow_imp.id(2674044836607413070)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_help_text=>'Select a JSON file to import. Maximum file size is 10 MB. CSV import coming soon.'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'storage_type', 'APEX_APPLICATION_TEMP_FILES',
+  'purge_file_at', 'END_OF_SESSION',
+  'allow_multiple_files', 'N',
+  'max_file_size', '10000')).to_clob
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(90006202)

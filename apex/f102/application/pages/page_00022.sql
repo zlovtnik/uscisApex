@@ -26,6 +26,7 @@ wwv_flow_imp_page.create_page(
 '  font-size: 12px;',
 '  font-weight: 600;',
 '  text-transform: uppercase;',
+'  line-height: 1.4;',
 '}',
 '.status-approved { background-color: #2e8540; color: #fff; }',
 '.status-denied { background-color: #cd2026; color: #fff; }',
@@ -39,6 +40,17 @@ wwv_flow_imp_page.create_page(
 '  font-family: "Courier New", monospace;',
 '  font-weight: bold;',
 '  letter-spacing: 1px;',
+'}',
+'.receipt-link {',
+'  font-family: "Courier New", monospace;',
+'  font-weight: bold;',
+'  letter-spacing: 1px;',
+'  color: #0071bc;',
+'  text-decoration: none;',
+'}',
+'.receipt-link:hover {',
+'  text-decoration: underline;',
+'  color: #003366;',
 '}',
 '',
 '/* Active/Inactive Row Styling */',
@@ -64,6 +76,14 @@ wwv_flow_imp_page.create_page(
 '}',
 '.case-filters .t-Form-fieldContainer {',
 '  margin-bottom: 0;',
+'}',
+'',
+'/* IG Edit Mode Styling */',
+'.a-IG .is-changed .a-GV-cell {',
+'  background-color: #fffde7 !important;',
+'}',
+'.a-IG-button--save {',
+'  margin-left: 8px;',
 '}'))
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
@@ -103,37 +123,51 @@ wwv_flow_imp_page.create_page_plug(
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'SELECT ',
-'    receipt_number,',
-'    case_type,',
-'    current_status,',
-'    last_updated,',
-'    tracking_since,',
-'    is_active,',
-'    notes,',
-'    total_updates,',
-'    last_update_source,',
-'    check_frequency,',
-'    last_checked_at,',
-'    created_by,',
-'    days_since_update,',
-'    NVL(TO_CHAR(hours_since_check) || '' hrs ago'', ''Never'') AS last_check_display,',
-'    CASE ',
-'        WHEN UPPER(current_status) LIKE ''%APPROVED%'' THEN ''approved''',
-'        WHEN UPPER(current_status) LIKE ''%DENIED%'' THEN ''denied''',
-'        WHEN UPPER(current_status) LIKE ''%RFE%'' THEN ''rfe''',
-'        WHEN UPPER(current_status) LIKE ''%RECEIVED%'' THEN ''received''',
-'        ELSE ''pending''',
-'    END AS status_class,',
-'    ''/ords/f?p='' || :APP_ID || '':3:::NO::P3_RECEIPT_NUMBER:'' || receipt_number AS detail_url',
-'FROM v_case_current_status',
+'    ch.ROWID AS row_id,',
+'    v.receipt_number,',
+'    v.case_type,',
+'    APEX_ESCAPE.HTML(v.current_status) AS current_status,',
+'    v.last_updated,',
+'    v.tracking_since,',
+'    ch.is_active,',
+'    ch.notes,',
+'    v.total_updates,',
+'    v.last_update_source,',
+'    v.check_frequency,',
+'    v.last_checked_at,',
+'    v.created_by,',
+'    v.days_since_update,',
+'    NVL(TO_CHAR(v.hours_since_check) || '' hrs ago'', ''Never'') AS last_check_display,',
+'    REGEXP_REPLACE(LOWER(REGEXP_REPLACE(v.current_status, ''[^a-zA-Z0-9]+'', ''-'')), ''[^a-z0-9-]'', '''') AS status_class,',
+'    APEX_PAGE.GET_URL(p_page => 3, p_items => ''P3_RECEIPT_NUMBER'', p_values => v.receipt_number) AS detail_url',
+'FROM v_case_current_status v',
+'JOIN case_history ch ON ch.receipt_number = v.receipt_number',
 'WHERE (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''ALL'' ',
-'       OR (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''ACTIVE'' AND is_active = 1)',
-'       OR (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''INACTIVE'' AND is_active = 0))',
-'  AND (NVL(:P22_STATUS_FILTER, ''ALL'') = ''ALL'' OR current_status = :P22_STATUS_FILTER)',
-'  AND (:P22_RECEIPT_SEARCH IS NULL OR UPPER(receipt_number) LIKE ''%'' || UPPER(:P22_RECEIPT_SEARCH) || ''%'')',
-'ORDER BY last_updated DESC NULLS LAST'))
+'       OR (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''ACTIVE'' AND ch.is_active = 1)',
+'       OR (NVL(:P22_ACTIVE_FILTER, ''ALL'') = ''INACTIVE'' AND ch.is_active = 0))',
+'  AND (NVL(:P22_STATUS_FILTER, ''ALL'') = ''ALL'' OR v.current_status = :P22_STATUS_FILTER)',
+'  AND (:P22_RECEIPT_SEARCH IS NULL OR UPPER(v.receipt_number) LIKE ''%'' || UPPER(:P22_RECEIPT_SEARCH) || ''%'')',
+'ORDER BY v.last_updated DESC NULLS LAST'))
 ,p_plug_source_type=>'NATIVE_IG'
 ,p_prn_page_header=>'My Cases'
+);
+-- ROW_ID column for DML operations
+wwv_flow_imp_page.create_region_column(
+ p_id=>wwv_flow_imp.id(13106000000253740)
+,p_name=>'ROW_ID'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'ROW_ID'
+,p_data_type=>'ROWID'
+,p_session_state_data_type=>'VARCHAR2'
+,p_is_query_only=>false
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>5
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_use_as_row_header=>false
+,p_is_primary_key=>true
+,p_duplicate_value=>false
+,p_include_in_export=>false
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13090010413253679)
@@ -143,17 +177,13 @@ wwv_flow_imp_page.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
-,p_item_type=>'NATIVE_TEXT_FIELD'
+,p_item_type=>'NATIVE_HTML_EXPRESSION'
 ,p_heading=>'Receipt #'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>10
 ,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'disabled', 'Y',
-  'send_on_page_submit', 'N',
-  'submit_when_enter_pressed', 'N',
-  'subtype', 'TEXT',
-  'trim_spaces', 'BOTH')).to_clob
+  'html_expression', '<a href="&DETAIL_URL." class="receipt-link">&RECEIPT_NUMBER.</a>')).to_clob
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
@@ -166,7 +196,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_control_break=>true
 ,p_enable_hide=>false
 ,p_enable_pivot=>false
-,p_is_primary_key=>true
+,p_is_primary_key=>false
 ,p_duplicate_value=>false
 ,p_include_in_export=>true
 );
@@ -177,20 +207,16 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'CASE_TYPE'
 ,p_data_type=>'VARCHAR2'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Case Type'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_heading=>'Form Type'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>20
 ,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'disabled', 'N',
-  'send_on_page_submit', 'N',
-  'submit_when_enter_pressed', 'N',
-  'subtype', 'TEXT',
-  'trim_spaces', 'BOTH')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
-,p_max_length=>100
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
@@ -214,19 +240,14 @@ wwv_flow_imp_page.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
-,p_item_type=>'NATIVE_TEXT_FIELD'
+,p_item_type=>'NATIVE_HTML_EXPRESSION'
 ,p_heading=>'Status'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>30
 ,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'disabled', 'Y',
-  'send_on_page_submit', 'N',
-  'submit_when_enter_pressed', 'N',
-  'subtype', 'TEXT',
-  'trim_spaces', 'BOTH')).to_clob
+  'html_expression', '<span class="status-badge status-&STATUS_CLASS.">&CURRENT_STATUS.</span>')).to_clob
 ,p_is_required=>false
-,p_max_length=>500
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
@@ -249,22 +270,16 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'LAST_UPDATED'
 ,p_data_type=>'TIMESTAMP'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_DATE_PICKER_APEX'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Last Updated'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>40
 ,p_value_alignment=>'LEFT'
+,p_format_mask=>'SINCE'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'appearance_and_behavior', 'MONTH-PICKER:YEAR-PICKER:TODAY-BUTTON',
-  'days_outside_month', 'VISIBLE',
-  'display_as', 'POPUP',
-  'max_date', 'NONE',
-  'min_date', 'NONE',
-  'multiple_months', 'N',
-  'show_on', 'FOCUS',
-  'show_time', 'N',
-  'use_defaults', 'Y')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -286,23 +301,17 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'TRACKING_SINCE'
 ,p_data_type=>'TIMESTAMP'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_DATE_PICKER_APEX'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Tracking Since'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>50
 ,p_value_alignment=>'LEFT'
+,p_format_mask=>'SINCE'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'appearance_and_behavior', 'MONTH-PICKER:YEAR-PICKER:TODAY-BUTTON',
-  'days_outside_month', 'VISIBLE',
-  'display_as', 'POPUP',
-  'max_date', 'NONE',
-  'min_date', 'NONE',
-  'multiple_months', 'N',
-  'show_on', 'FOCUS',
-  'show_time', 'N',
-  'use_defaults', 'Y')).to_clob
-,p_is_required=>true
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
+,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
 ,p_filter_date_ranges=>'ALL'
@@ -360,11 +369,13 @@ wwv_flow_imp_page.create_region_column(
 ,p_display_sequence=>70
 ,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'auto_height', 'N',
-  'character_counter', 'N',
+  'auto_height', 'Y',
+  'character_counter', 'Y',
+  'max_characters', '4000',
   'resizable', 'Y',
   'trim_spaces', 'BOTH')).to_clob
 ,p_is_required=>false
+,p_max_length=>4000
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
@@ -385,15 +396,15 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'TOTAL_UPDATES'
 ,p_data_type=>'NUMBER'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_NUMBER_FIELD'
-,p_heading=>'Total Updates'
-,p_heading_alignment=>'RIGHT'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_heading=>'Updates'
+,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>80
-,p_value_alignment=>'RIGHT'
+,p_value_alignment=>'CENTER'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'number_alignment', 'left',
-  'virtual_keyboard', 'decimal')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -414,20 +425,16 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'LAST_UPDATE_SOURCE'
 ,p_data_type=>'VARCHAR2'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Last Update Source'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_heading=>'Source'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>90
 ,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'disabled', 'N',
-  'send_on_page_submit', 'N',
-  'submit_when_enter_pressed', 'N',
-  'subtype', 'TEXT',
-  'trim_spaces', 'BOTH')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
-,p_max_length=>20
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
@@ -450,15 +457,15 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'CHECK_FREQUENCY'
 ,p_data_type=>'NUMBER'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_NUMBER_FIELD'
-,p_heading=>'Check Frequency'
-,p_heading_alignment=>'RIGHT'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_heading=>'Check Freq (hrs)'
+,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>100
-,p_value_alignment=>'RIGHT'
+,p_value_alignment=>'CENTER'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'number_alignment', 'left',
-  'virtual_keyboard', 'decimal')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -479,22 +486,16 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'LAST_CHECKED_AT'
 ,p_data_type=>'TIMESTAMP'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_DATE_PICKER_APEX'
-,p_heading=>'Last Checked At'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_heading=>'Last Checked'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>110
 ,p_value_alignment=>'LEFT'
+,p_format_mask=>'SINCE'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'appearance_and_behavior', 'MONTH-PICKER:YEAR-PICKER:TODAY-BUTTON',
-  'days_outside_month', 'VISIBLE',
-  'display_as', 'POPUP',
-  'max_date', 'NONE',
-  'min_date', 'NONE',
-  'multiple_months', 'N',
-  'show_on', 'FOCUS',
-  'show_time', 'N',
-  'use_defaults', 'Y')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -516,20 +517,16 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'CREATED_BY'
 ,p_data_type=>'VARCHAR2'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_TEXT_FIELD'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Created By'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>120
 ,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'disabled', 'N',
-  'send_on_page_submit', 'N',
-  'submit_when_enter_pressed', 'N',
-  'subtype', 'TEXT',
-  'trim_spaces', 'BOTH')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
-,p_max_length=>255
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
@@ -552,15 +549,15 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'DAYS_SINCE_UPDATE'
 ,p_data_type=>'NUMBER'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_NUMBER_FIELD'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Days Since Update'
-,p_heading_alignment=>'RIGHT'
+,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>130
-,p_value_alignment=>'RIGHT'
+,p_value_alignment=>'CENTER'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'number_alignment', 'left',
-  'virtual_keyboard', 'decimal')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -581,26 +578,21 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'LAST_CHECK_DISPLAY'
 ,p_data_type=>'VARCHAR2'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Last Check Display'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_heading=>'Last Check'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>140
 ,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'disabled', 'N',
-  'send_on_page_submit', 'N',
-  'submit_when_enter_pressed', 'N',
-  'subtype', 'TEXT',
-  'trim_spaces', 'BOTH')).to_clob
+  'based_on', 'VALUE',
+  'format', 'PLAIN')).to_clob
 ,p_is_required=>false
-,p_max_length=>48
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
 ,p_filter_text_case=>'MIXED'
-,p_filter_exact_match=>true
-,p_filter_lov_type=>'DISTINCT'
+,p_filter_lov_type=>'NONE'
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
 ,p_enable_control_break=>true
@@ -608,7 +600,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_pivot=>false
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
-,p_include_in_export=>true
+,p_include_in_export=>false
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13103985039253732)
@@ -617,74 +609,47 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_expression=>'STATUS_CLASS'
 ,p_data_type=>'VARCHAR2'
 ,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Status Class'
-,p_heading_alignment=>'LEFT'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_HIDDEN'
 ,p_display_sequence=>150
-,p_value_alignment=>'LEFT'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'disabled', 'N',
-  'send_on_page_submit', 'N',
-  'submit_when_enter_pressed', 'N',
-  'subtype', 'TEXT',
-  'trim_spaces', 'BOTH')).to_clob
-,p_is_required=>false
-,p_max_length=>8
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
-,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_exact_match=>true
-,p_filter_lov_type=>'DISTINCT'
-,p_use_as_row_header=>false
-,p_enable_sort_group=>true
-,p_enable_control_break=>true
-,p_enable_hide=>true
-,p_enable_pivot=>false
-,p_is_primary_key=>false
-,p_duplicate_value=>true
-,p_include_in_export=>true
-);
-wwv_flow_imp_page.create_region_column(
- p_id=>wwv_flow_imp.id(13104920563253736)
-,p_name=>'DETAIL_URL'
-,p_source_type=>'DB_COLUMN'
-,p_source_expression=>'DETAIL_URL'
-,p_data_type=>'VARCHAR2'
-,p_session_state_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_TEXTAREA'
-,p_heading=>'Detail Url'
-,p_heading_alignment=>'LEFT'
-,p_display_sequence=>160
-,p_value_alignment=>'LEFT'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'auto_height', 'N',
-  'character_counter', 'N',
-  'resizable', 'Y',
-  'trim_spaces', 'BOTH')).to_clob
-,p_is_required=>false
-,p_max_length=>32767
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
-,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_exact_match=>true
-,p_filter_lov_type=>'NONE'
+  'value_protected', 'Y')).to_clob
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>false
 ,p_enable_control_break=>false
 ,p_enable_hide=>true
 ,p_enable_pivot=>false
 ,p_is_primary_key=>false
-,p_duplicate_value=>true
-,p_include_in_export=>true
+,p_include_in_export=>false
+);
+-- DETAIL_URL column - checksummed URL for receipt link
+wwv_flow_imp_page.create_region_column(
+ p_id=>wwv_flow_imp.id(13103985039253733)
+,p_name=>'DETAIL_URL'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'DETAIL_URL'
+,p_data_type=>'VARCHAR2'
+,p_session_state_data_type=>'VARCHAR2'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>160
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'N')).to_clob
+,p_use_as_row_header=>false
+,p_enable_sort_group=>false
+,p_enable_control_break=>false
+,p_enable_hide=>true
+,p_enable_pivot=>false
+,p_is_primary_key=>false
+,p_include_in_export=>false
 );
 wwv_flow_imp_page.create_interactive_grid(
  p_id=>wwv_flow_imp.id(13089201375253664)
 ,p_internal_uid=>13089201375253664
-,p_is_editable=>false
+,p_is_editable=>true
+,p_edit_operations=>'u:d'
+,p_lost_update_check_type=>'VALUES'
+,p_submit_checked_rows=>false
 ,p_lazy_loading=>false
 ,p_requires_filter=>false
 ,p_select_first_row=>true
@@ -692,7 +657,7 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_pagination_type=>'SET'
 ,p_show_total_row_count=>true
 ,p_show_toolbar=>true
-,p_toolbar_buttons=>'SEARCH_COLUMN:SEARCH_FIELD:ACTIONS_MENU:RESET'
+,p_toolbar_buttons=>'SEARCH_COLUMN:SEARCH_FIELD:ACTIONS_MENU:SAVE:RESET'
 ,p_enable_save_public_report=>false
 ,p_enable_subscriptions=>true
 ,p_enable_flashback=>true
@@ -706,16 +671,74 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function(config) {',
 '    // Add row class based on is_active status',
+'    config.defaultGridViewOptions = {',
+'        rowHeader: "sequence"',
+'    };',
 '    config.initActions = function(actions) {',
+'        // Custom action: View Details',
+'        actions.add({',
+'            name: "view-details",',
+'            label: "View Details",',
+'            icon: "fa fa-eye",',
+'            action: function(event, element, args) {',
+'                var model = this.model;',
+'                var url;',
+'                if (model && args.selectedRecords && args.selectedRecords.length > 0) {',
+'                    url = model.getValue(args.selectedRecords[0], "DETAIL_URL");',
+'                }',
+'                if (url) {',
+'                    apex.navigation.redirect(url);',
+'                }',
+'            }',
+'        });',
 '        // Custom action: Refresh case status',
 '        actions.add({',
 '            name: "refresh-case",',
 '            label: "Refresh Status",',
 '            icon: "fa fa-refresh",',
 '            action: function(event, element, args) {',
-'                var receipt = args.data.RECEIPT_NUMBER;',
-'                if (receipt && typeof USCIS !== "undefined") {',
-'                    USCIS.refreshCase(receipt);',
+'                var model = this.model;',
+'                var receipt;',
+'                if (model && args.selectedRecords && args.selectedRecords.length > 0) {',
+'                    receipt = model.getValue(args.selectedRecords[0], "RECEIPT_NUMBER");',
+'                }',
+'                if (receipt) {',
+'                    apex.server.process("REFRESH_CASE_STATUS", {',
+'                        x01: receipt',
+'                    }, {',
+'                        success: function(data) {',
+'                            if (data.success) {',
+'                                apex.message.showPageSuccess("Status refreshed: " + data.status);',
+'                                apex.region("case_list_ig").refresh();',
+'                            } else {',
+'                                apex.message.alert(data.message || "Failed to refresh status.");',
+'                            }',
+'                        },',
+'                        error: function() {',
+'                            apex.message.alert("An error occurred. Please try again.");',
+'                        }',
+'                    });',
+'                }',
+'            }',
+'        });',
+'        // Custom action: Delete case',
+'        actions.add({',
+'            name: "delete-case",',
+'            label: "Delete Case",',
+'            icon: "fa fa-trash-o u-danger-text",',
+'            action: function(event, element, args) {',
+'                var model = this.model;',
+'                var receipt;',
+'                if (model && args.selectedRecords && args.selectedRecords.length > 0) {',
+'                    receipt = model.getValue(args.selectedRecords[0], "RECEIPT_NUMBER");',
+'                }',
+'                if (receipt) {',
+'                    apex.message.confirm("Are you sure you want to delete case " + receipt + "?", function(ok) {',
+'                        if (ok) {',
+'                            apex.item("P22_SELECTED_RECEIPT").setValue(receipt);',
+'                            apex.page.submit({request: "DELETE_CASE", showWait: true});',
+'                        }',
+'                    });',
 '                }',
 '            }',
 '        });',
@@ -739,6 +762,15 @@ wwv_flow_imp_page.create_ig_report_view(
 ,p_srv_exclude_null_values=>false
 ,p_srv_only_display_columns=>true
 ,p_edit_mode=>false
+);
+-- ROW_ID column (hidden)
+wwv_flow_imp_page.create_ig_report_column(
+ p_id=>wwv_flow_imp.id(13106100000253741)
+,p_view_id=>wwv_flow_imp.id(13089822797253670)
+,p_display_seq=>0
+,p_column_id=>wwv_flow_imp.id(13106000000253740)
+,p_is_visible=>false
+,p_is_frozen=>false
 );
 wwv_flow_imp_page.create_ig_report_column(
  p_id=>wwv_flow_imp.id(13090446580253682)
@@ -857,17 +889,10 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_view_id=>wwv_flow_imp.id(13089822797253670)
 ,p_display_seq=>15
 ,p_column_id=>wwv_flow_imp.id(13103985039253732)
-,p_is_visible=>true
+,p_is_visible=>false
 ,p_is_frozen=>false
 );
-wwv_flow_imp_page.create_ig_report_column(
- p_id=>wwv_flow_imp.id(13105399707253737)
-,p_view_id=>wwv_flow_imp.id(13089822797253670)
-,p_display_seq=>16
-,p_column_id=>wwv_flow_imp.id(13104920563253736)
-,p_is_visible=>true
-,p_is_frozen=>false
-);
+-- DETAIL_URL report column removed (column no longer exists)
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(13107600000471606)
 ,p_button_sequence=>10
@@ -991,6 +1016,59 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_imp.id(13088711960253661)
 );
+-- Save IG Changes - Automatic Row Processing (DML)
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(13108500000471615)
+,p_process_sequence=>5
+,p_process_point=>'AFTER_SUBMIT'
+,p_region_id=>wwv_flow_imp.id(13088711960253661)
+,p_process_type=>'NATIVE_IG_DML'
+,p_process_name=>'Save IG Changes'
+,p_attribute_01=>'REGION_SOURCE'
+,p_attribute_05=>'Y'
+,p_attribute_06=>'Y'
+,p_attribute_08=>'Y'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>13108500000471615
+);
+-- Delete Case Process (from row action)
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(13108600000471616)
+,p_process_sequence=>10
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Delete Case'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'BEGIN',
+'  IF :P22_SELECTED_RECEIPT IS NOT NULL THEN',
+'    -- Use bind variable only (never substitution strings)',
+'    uscis_case_pkg.delete_case(',
+'      p_receipt_number => :P22_SELECTED_RECEIPT',
+'    );',
+'    ',
+'    -- Log deletion audit',
+'    apex_debug.info(',
+'      p_message => ''Case deleted by user %s: %s'',',
+'      p0 => :APP_USER,',
+'      p1 => uscis_util_pkg.mask_receipt_number(:P22_SELECTED_RECEIPT)',
+'    );',
+'  END IF;',
+'EXCEPTION',
+'  WHEN OTHERS THEN',
+'    apex_debug.error(''Delete Case error: '' || SQLERRM);',
+'    apex_error.add_error(',
+'      p_message => ''An error occurred while deleting the case. Please try again.'',',
+'      p_display_location => apex_error.c_inline_in_notification',
+'    );',
+'    RAISE;',
+'END;'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when=>'DELETE_CASE'
+,p_process_when_type=>'REQUEST_EQUALS_CONDITION'
+,p_internal_uid=>13108600000471616
+);
+-- AJAX Callback: Refresh Case Status
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(13108200000471612)
 ,p_process_sequence=>10
@@ -1045,6 +1123,50 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>13108200000471612
+);
+-- Dialog Closed - Refresh Case List Grid
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(13108300000471613)
+,p_name=>'Refresh Grid on Dialog Close'
+,p_event_sequence=>20
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_imp.id(13107600000471606)
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'apexafterclosedialog'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(13108400000471614)
+,p_event_id=>wwv_flow_imp.id(13108300000471613)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(13088711960253661)
+);
+-- Note: Delete case is handled by the IG custom 'delete-case' action in JavaScript.
+-- No separate DA needed since the IG action directly sets P22_SELECTED_RECEIPT and submits.
+-- Show success message after delete
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(13108800000471620)
+,p_name=>'After Delete Refresh'
+,p_event_sequence=>40
+,p_triggering_element_type=>'JQUERY_SELECTOR'
+,p_triggering_element=>'body'
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'apexafterclosedialog'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(13108810000471621)
+,p_event_id=>wwv_flow_imp.id(13108800000471620)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(13088711960253661)
 );
 wwv_flow_imp.component_end;
 end;

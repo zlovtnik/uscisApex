@@ -1,6 +1,6 @@
 /**
  * Maine Pine v5 — USCIS Case Tracker Theme
- * Build: 2026-02-08 | Modules: 8
+ * Build: 2026-02-09 | Modules: 8
  * DO NOT EDIT — edit individual modules then run: make css-build
  */
 
@@ -406,6 +406,17 @@ body .t-Region--hideShow .t-Region-header:hover {
 /* =============================================
    MODAL DIALOGS
    ============================================= */
+
+@keyframes mp-modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
 body .t-Dialog {
   border-radius: var(--mp-radius-xl);
@@ -2888,7 +2899,7 @@ body .t-Login-footer a:hover {
 /* Border gradient */
 .border-gradient {
   position: relative;
-  background: var(--mp-color-bg-card);
+  background: var(--mp-color-surface);
 }
 .border-gradient::before {
   content: '';

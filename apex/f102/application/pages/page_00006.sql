@@ -195,7 +195,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_prompt=>'Export Format'
 ,p_display_as=>'NATIVE_RADIOGROUP'
 ,p_lov=>'STATIC:JSON;JSON,CSV;CSV'
-,p_field_template=>wwv_flow_imp.id(2674044706498413069)
+,p_field_template=>1609121967514267634
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'
 ,p_lov_display_extra=>'NO'
 ,p_help_text=>'Select the format for your export file. JSON includes full case history; CSV is simpler but lacks history.'
@@ -210,7 +210,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cSize=>30
 ,p_cMaxlength=>50
-,p_field_template=>wwv_flow_imp.id(2674044706498413069)
+,p_field_template=>1609121967514267634
 ,p_item_template_options=>'#DEFAULT#'
 ,p_help_text=>'Optional: Enter a receipt number prefix to filter cases (e.g., IOE to export only IOE cases).'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
@@ -227,7 +227,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_default=>'Y'
 ,p_prompt=>'Include Status History'
 ,p_display_as=>'NATIVE_YES_NO'
-,p_field_template=>wwv_flow_imp.id(2674044706498413069)
+,p_field_template=>1609121967514267634
 ,p_item_template_options=>'#DEFAULT#'
 ,p_help_text=>'Include the full status history for each case in the JSON export. Not applicable for CSV format.'
 );
@@ -239,7 +239,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_default=>'N'
 ,p_prompt=>'Export Active Cases Only'
 ,p_display_as=>'NATIVE_YES_NO'
-,p_field_template=>wwv_flow_imp.id(2674044706498413069)
+,p_field_template=>1609121967514267634
 ,p_item_template_options=>'#DEFAULT#'
 ,p_help_text=>'When enabled, only cases marked as active will be exported.'
 );
@@ -251,7 +251,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_prompt=>'Select File'
 ,p_display_as=>'NATIVE_FILE'
 ,p_cSize=>60
-,p_field_template=>wwv_flow_imp.id(2674044836607413070)
+,p_field_template=>1609122147107268652
 ,p_item_template_options=>'#DEFAULT#'
 ,p_help_text=>'Select a JSON file to import. Maximum file size is 10 MB. CSV import coming soon.'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
@@ -268,7 +268,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_default=>'N'
 ,p_prompt=>'Replace Existing Cases'
 ,p_display_as=>'NATIVE_YES_NO'
-,p_field_template=>wwv_flow_imp.id(2674044706498413069)
+,p_field_template=>1609121967514267634
 ,p_item_template_options=>'#DEFAULT#'
 ,p_help_text=>'When enabled, if a case with the same receipt number already exists, it will be replaced with the imported data. Otherwise, duplicates will be skipped.'
 );
@@ -279,9 +279,13 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_plug_id=>wwv_flow_imp.id(90006002)
 ,p_prompt=>'Import Preview'
 ,p_display_as=>'NATIVE_DISPLAY_ONLY'
-,p_field_template=>wwv_flow_imp.id(2674044706498413069)
+,p_escape_on_http_output=>'N'
+,p_field_template=>1609121967514267634
 ,p_item_css_classes=>'import-preview'
 ,p_item_template_options=>'#DEFAULT#'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'based_on', 'VALUE',
+  'format', 'HTML')).to_clob
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(90006301)

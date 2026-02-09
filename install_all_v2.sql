@@ -189,7 +189,10 @@ CREATE TABLE case_audit_log (
     CONSTRAINT pk_case_audit_log 
         PRIMARY KEY (audit_id),
     CONSTRAINT chk_audit_action 
-        CHECK (action IN ('INSERT', 'UPDATE', 'DELETE', 'CHECK', 'EXPORT', 'IMPORT'))
+        CHECK (action IN ('INSERT', 'UPDATE', 'DELETE', 'CHECK', 'EXPORT', 'IMPORT',
+                          'SETTINGS_UPDATED', 'ADMIN_CLEAR_TOKEN', 'ADMIN_PURGE_AUDIT',
+                          'ADMIN_RUN_NOW', 'ADMIN_CREATE_JOBS', 'ADMIN_DROP_JOBS',
+                          'API_TEST'))
 );
 
 COMMENT ON TABLE case_audit_log IS 'Audit trail for all case operations';
@@ -256,6 +259,21 @@ CREATE INDEX idx_audit_date ON case_audit_log(performed_at DESC);
 CREATE INDEX idx_audit_action ON case_audit_log(action, performed_at DESC);
 
 PROMPT Created 7 indexes
+
+-- Widen audit action constraint for admin/settings actions
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER TABLE case_audit_log DROP CONSTRAINT chk_audit_action';
+    EXECUTE IMMEDIATE 'ALTER TABLE case_audit_log ADD CONSTRAINT chk_audit_action '
+        || 'CHECK (action IN (''INSERT'', ''UPDATE'', ''DELETE'', ''CHECK'', ''EXPORT'', ''IMPORT'','
+        || '''SETTINGS_UPDATED'', ''ADMIN_CLEAR_TOKEN'', ''ADMIN_PURGE_AUDIT'','
+        || '''ADMIN_RUN_NOW'', ''ADMIN_CREATE_JOBS'', ''ADMIN_DROP_JOBS'','
+        || '''API_TEST''))';
+    DBMS_OUTPUT.PUT_LINE('Widened chk_audit_action constraint');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('chk_audit_action migration: ' || SQLERRM);
+END;
+/
 
 
 -- ============================================================
@@ -830,6 +848,7 @@ PROMPT ============================================================
 @@packages/07_uscis_scheduler_pkg.sql
 @@packages/08_uscis_export_pkg.sql
 @@packages/09_uscis_template_components_pkg.sql
+@@packages/10_uscis_error_pkg.sql
 
 PROMPT Full PL/SQL packages installed
 
@@ -1098,10 +1117,13 @@ INSERT INTO scheduler_config (config_key, config_value, description) VALUES
 -- The OAuth package should retrieve credentials from the secure store.
 
 INSERT INTO scheduler_config (config_key, config_value, description) VALUES
-    ('RATE_LIMIT_REQUESTS_PER_SECOND', '10', 'Maximum API requests per second (USCIS limit)');
+    ('RATE_LIMIT_REQUESTS_PER_SECOND', '5', 'Max API requests per second (Sandbox: 5 tps)');
 
 INSERT INTO scheduler_config (config_key, config_value, description) VALUES
-    ('RATE_LIMIT_MIN_INTERVAL_MS', '100', 'Minimum milliseconds between API requests');
+    ('RATE_LIMIT_MIN_INTERVAL_MS', '200', 'Min ms between API requests (Sandbox: 1 req/200ms)');
+
+INSERT INTO scheduler_config (config_key, config_value, description) VALUES
+    ('RATE_LIMIT_DAILY_QUOTA', '1000', 'Daily API call quota (Sandbox: 1,000)');
 
 INSERT INTO scheduler_config (config_key, config_value, description) VALUES
     ('AUTO_CHECK_ENABLED', 'Y', 'Enable automatic status checks (Y/N)');

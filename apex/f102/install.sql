@@ -19,6 +19,7 @@ prompt --install
 @@application/shared_components/files/js_page_0006_import_export_js.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/administration_rights.sql
+@@application/shared_components/security/acl_roles.sql
 @@application/shared_components/navigation/navigation_bar.sql
 @@application/shared_components/logic/application_settings.sql
 @@application/shared_components/navigation/tabs/standard.sql
@@ -44,6 +45,8 @@ prompt --install
 @@application/pages/page_00003.sql
 @@application/pages/page_00004.sql
 @@application/pages/page_00006.sql
+@@application/pages/page_00007.sql
+@@application/pages/page_00008.sql
 @@application/pages/page_00022.sql
 @@application/pages/page_09999.sql
 @@application/deployment/definition.sql

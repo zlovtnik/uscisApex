@@ -49,6 +49,24 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-exchange-alt'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(90007900)
+,p_list_item_display_sequence=>50
+,p_list_item_link_text=>'Settings'
+,p_list_item_link_target=>'f?p=&APP_ID.:7:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-gear'
+,p_security_scheme=>wwv_flow_imp.id(13056708774297879)
+,p_list_item_current_type=>'TARGET_PAGE'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(90008900)
+,p_list_item_display_sequence=>60
+,p_list_item_link_text=>'Administration'
+,p_list_item_link_target=>'f?p=&APP_ID.:8:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-wrench'
+,p_security_scheme=>wwv_flow_imp.id(13056708774297879)
+,p_list_item_current_type=>'TARGET_PAGE'
+);
 wwv_flow_imp.component_end;
 end;
 /

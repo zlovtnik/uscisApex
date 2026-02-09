@@ -35,6 +35,20 @@ wwv_flow_imp_shared.create_menu_option(
 ,p_link=>'f?p=&APP_ID.:3:&APP_SESSION.::&DEBUG.::P3_RECEIPT_NUMBER:&P3_RECEIPT_NUMBER.'
 ,p_page_id=>3
 );
+wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(90007950)
+,p_parent_id=>wwv_flow_imp.id(13051773748297768)
+,p_short_name=>'Settings'
+,p_link=>'f?p=&APP_ID.:7:&APP_SESSION.::&DEBUG.:::'
+,p_page_id=>7
+);
+wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(90008950)
+,p_parent_id=>wwv_flow_imp.id(13051773748297768)
+,p_short_name=>'Administration'
+,p_link=>'f?p=&APP_ID.:8:&APP_SESSION.::&DEBUG.:::'
+,p_page_id=>8
+);
 wwv_flow_imp.component_end;
 end;
 /

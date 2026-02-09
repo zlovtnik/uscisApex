@@ -537,7 +537,7 @@ Content-Security-Policy:
 ### S-1: SQL Injection Risk in Row Actions
 
 **Severity:** 🔴 **CRITICAL**  
-**Files:** `APEX_INSTRUCTIONS.md` Page 2 (Case List) — Row Actions  
+**Files:** `APEX_FRONTEND_DESIGN.md` Page 2 (Case List) — Row Actions (implementation also referenced in `APEX_INSTRUCTIONS.md`)  
 **Impact:** SQL injection vulnerability  
 
 **Issue:**
@@ -572,12 +572,18 @@ PL/SQL: |
 ```
 
 **Action Items:**
-- [ ] Update all Row Actions to use "Set Items" + bind variables
-- [ ] Audit all PL/SQL processes for substitution string usage
-- [ ] Test with malicious input (e.g., `'; DROP TABLE case_history; --`)
-- [ ] Document secure pattern in developer guide
+- [ ] Update all Row Actions to use "Set Items" + bind variables — ⏳ pending test verification
+- [ ] Audit all PL/SQL processes for substitution string usage — ⏳ pending test verification
+- [ ] Test Row Actions and PL/SQL with malicious input
+- [ ] Document secure pattern in developer guide — ⏳ **blocked:** cannot mark complete until Row Actions and PL/SQL items are validated with malicious-input tests and evidence is attached (see evidence requirement below)
 
-**Reference:** APEX_24_REVIEW.md § R-12, APEX_INSTRUCTIONS.md Page 2
+> **Note:** Implementation items above must remain unchecked until the malicious-input test is performed and evidence (logs/screenshots/test report) is attached confirming queries are parameterized and no injection occurs.
+>
+> **Evidence requirement:** Test with payload `'; DROP TABLE case_history; --` against all updated Row Actions and PL/SQL procedures. Attach logs, screenshots, or a test report proving no injection occurred. The "Document secure pattern" item cannot be checked until this evidence is recorded.
+>
+> **Test steps:** Run targeted tests against updated Row Actions and PL/SQL procedures using payloads such as `'; DROP TABLE case_history; --`, capture test logs/screenshots, and attach evidence before marking implementation items complete.
+
+**Reference:** APEX_24_REVIEW.md § R-12, APEX_FRONTEND_DESIGN.md Page 2 Row Actions
 
 ---
 
@@ -615,10 +621,15 @@ Security:
 ```
 
 **Action Items:**
-- [ ] Update Page 3 PL/SQL Function Body to escape all output
-- [ ] Enable "Escape Special Characters" on all report columns
-- [ ] Use `apex.util.escapeHTML()` in JavaScript
-- [ ] Test with malicious input (e.g., `<script>alert('XSS')</script>`)
+- [x] Implemented: `apex_escape.html()` applied to P3_CASE_TYPE, P3_CURRENT_STATUS, P3_LAST_UPDATED, P3_TRACKING_SINCE, P3_NOTES, status history and audit trail loop columns
+- [ ] Verified with XSS tests: server-side escaping prevents injection (run XSS payloads and attach evidence)
+- [x] Implemented: Server-side pre-escaping via `apex_escape.html()` + `!RAW` substitution pattern on Page 3 PL/SQL-generated HTML tables
+- [ ] Verified with XSS tests: `apex_escape.html()` + `!RAW` substitution pattern blocks injection (run XSS payloads and attach evidence)
+- [x] Implemented: `showToast()` uses `textContent` (inherently XSS-safe); `confirmDelete()` delegates to `apex.message.confirm()`; `apex.util.escapeHTML()` applied where needed
+- [ ] Verified with XSS tests: client-side functions behave safely with XSS payloads (test and attach evidence)
+- [ ] Test with malicious input (e.g., `<script>alert('XSS')</script>`) — run XSS payload tests against all fields listed above; record test evidence in completion notes; only then mark "Verified" checkboxes above complete
+
+> **Note:** "Implemented" checkboxes indicate code changes are done. "Verified" checkboxes must remain unchecked until XSS payload tests are performed and evidence (test logs/screenshots/test report) is attached confirming all user-controlled values are properly escaped. No "Verified" item should be marked complete without recorded proof of XSS-safe behavior.
 
 **Reference:** APEX_24_REVIEW.md § R-13
 
@@ -871,16 +882,18 @@ END;
 
 ### `APEX_FRONTEND_DESIGN.md` (CSS)
 - [x] Replace 30+ `!important` rules with `--ut-*` variables (H-1)
-- [ ] Remove `.custom-toast` styles (H-2)
-- [ ] Remove `.status-badge-*` styles (H-3)
-- [ ] Move `@keyframes` to static file (M-4)
+- [ ] Remove `.custom-toast` styles (H-2) — ⏳ blocked: detailed task "Remove custom CSS for .custom-toast" not yet implemented
+- [ ] Remove `.status-badge-*` styles (H-3) — ⏳ blocked: detailed task "Create Template Component" and "Remove custom CSS for .status-badge-*" not yet implemented
+- [ ] Move `@keyframes` to static file (M-4) — ⏳ blocked: detailed task "Move all @keyframes to app-styles.css" not yet implemented
 
 ### `APEX_FRONTEND_DESIGN.md` (JavaScript)
-- [ ] Replace `showToast()` with `apex.message` (H-2)
-- [ ] Create Template Component for status badges (H-3)
-- [ ] Replace `apexreadyend` with `apex.page.ready()` (M-2)
-- [ ] Wrap utilities in IIFE (M-3)
-- [ ] Remove runtime `<style>` injection (M-4)
+- [ ] Replace `showToast()` with `apex.message` (H-2) — ⏳ detailed task not yet implemented
+- [ ] Create Template Component for status badges (H-3) — ⏳ detailed task not yet implemented
+- [ ] Replace `apexreadyend` with `apex.page.ready()` (M-2) — ⏳ detailed task not yet implemented
+- [ ] Wrap utilities in IIFE (M-3) — ⏳ detailed task not yet implemented
+- [ ] Remove runtime `<style>` injection (M-4) — ⏳ detailed task not yet implemented
+
+> **⚠️ Summary ↔ Detail Consistency Rule:** Summary checkboxes in this section must match the corresponding detailed section checkboxes. Do not mark a summary item complete unless every related detailed task is also checked. When completing detailed tasks, update the summary to match.
 
 ### `APEX_INSTRUCTIONS.md` (Page 2)
 - [ ] Update Row Actions to use bind variables (S-1)

@@ -1,70 +1,88 @@
 /**
  * USCIS Case Tracker - Application Styles
- * Version: 3.0.0 - NEW ENGLAND COASTAL EDITION
- * Date: February 4, 2026
+ * Version: 4.0.0 - MAINE PROFESSIONAL EDITION
+ * Date: February 8, 2026
  * 
  * Upload to: Shared Components → Static Application Files
  * Reference as: #APP_FILES#css/app-styles.css
  * 
- * Features: New England Coastal Palette, Glassmorphism, Animations
+ * Features: Maine Professional Palette, Inter Font, WCAG 2.1 AA Compliance
+ *
+ * Color Palette (Maine.gov Brand Guidelines):
+ *   Primary (Coastal Navy): #082E58  — Pantone 289
+ *   Secondary (Pine Green): #004832  — Pantone 330
+ *   Highlight (Resurgam Yellow): #FFE84F — CTAs only, sparingly
+ *   Background (Fog): #F4F7F6
+ *   Text/Border (Teakwood): #6F513E
+ *
+ * Typography: Inter (primary), system-ui fallback
  */
 
 /* =============================================
-   CSS VARIABLES (New England Coastal Palette)
+   WEB FONT - Inter (Government-grade clarity)
+   ============================================= */
+/* Inter font: self-host the files under your static assets for production,
+   or rely on the system font stack below.  Removed external @import to
+   avoid leaking user IPs to fonts.googleapis.com.
+   To self-host: download Inter from https://rsms.me/inter/ and place
+   the woff2 files in #APP_FILES#fonts/, then add @font-face rules here. */
+
+/* =============================================
+   CSS VARIABLES (Maine Professional Palette)
    ============================================= */
 
 :root {
-  /* Primary Colors - New England Coastal */
-  --uscis-primary: #1a3a2e;
-  --uscis-primary-light: #0d2b3e;
-  --uscis-secondary: #4a5f7f;
-  --uscis-secondary-dark: #1c2841;
-  --uscis-accent: #789ca8;
-  --uscis-accent-glow: rgba(120, 156, 168, 0.4);
+  /* Primary Colors - Maine Professional */
+  --uscis-primary: #082E58;
+  --uscis-primary-light: #0A3D73;
+  --uscis-secondary: #004832;
+  --uscis-secondary-dark: #002E20;
+  --uscis-accent: #FFE84F;            /* Resurgam Yellow - CTAs only */
+  --uscis-accent-glow: rgba(255, 232, 79, 0.4);
   
-  /* Gradient Definitions */
-  --gradient-primary: linear-gradient(135deg, #4a5f7f 0%, #1c2841 100%);
-  --gradient-secondary: linear-gradient(135deg, #4a5f7f 0%, #789ca8 100%);
-  --gradient-success: linear-gradient(135deg, #1a3a2e 0%, #2a5e4a 100%);
-  --gradient-danger: linear-gradient(135deg, #8b2e2e 0%, #a84a3d 100%);
-  --gradient-warning: linear-gradient(135deg, #9d5a3c 0%, #b87a5a 100%);
-  --gradient-purple: linear-gradient(135deg, #789ca8 0%, #6b8cae 100%);
-  --gradient-dark: linear-gradient(135deg, #1a3a2e 0%, #0d2b3e 100%);
-  --gradient-hero: linear-gradient(135deg, #0d2b3e 0%, #1a3a2e 50%, #1a3a2e 100%);
+  /* Gradient Definitions - Maine Professional */
+  --gradient-primary: linear-gradient(135deg, #082E58 0%, #051D3A 100%);
+  --gradient-secondary: linear-gradient(135deg, #004832 0%, #082E58 100%);
+  --gradient-success: linear-gradient(135deg, #004832 0%, #006B4C 100%);
+  --gradient-danger: linear-gradient(135deg, #8B1A1A 0%, #B22222 100%);
+  --gradient-warning: linear-gradient(135deg, #6F513E 0%, #8B6914 100%);
+  --gradient-purple: linear-gradient(135deg, #4A2D73 0%, #082E58 100%);
+  --gradient-dark: linear-gradient(135deg, #082E58 0%, #051D3A 100%);
+  --gradient-hero: linear-gradient(135deg, #051D3A 0%, #082E58 50%, #082E58 100%);
   --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
   
-  /* Status Colors - Coastal Inspired */
-  --status-approved: #1a3a2e;
-  --status-approved-glow: rgba(26, 58, 46, 0.5);
-  --status-denied: #8b2e2e;
-  --status-denied-glow: rgba(139, 46, 46, 0.5);
-  --status-pending: #9d5a3c;
-  --status-pending-glow: rgba(157, 90, 60, 0.5);
-  --status-rfe: #4a5f7f;
-  --status-rfe-glow: rgba(74, 95, 127, 0.5);
-  --status-received: #789ca8;
-  --status-received-glow: rgba(120, 156, 168, 0.5);
-  --status-transferred: #789ca8;
-  --status-transferred-glow: rgba(120, 156, 168, 0.5);
-  --status-unknown: #5a6674;
-  --status-unknown-glow: rgba(90, 102, 116, 0.5);
+  /* Status Colors - Maine Professional */
+  --status-approved: #004832;
+  --status-approved-glow: rgba(0, 72, 50, 0.5);
+  --status-denied: #8B1A1A;
+  --status-denied-glow: rgba(139, 26, 26, 0.5);
+  --status-pending: #6F513E;
+  --status-pending-glow: rgba(111, 81, 62, 0.5);
+  --status-rfe: #082E58;
+  --status-rfe-glow: rgba(8, 46, 88, 0.5);
+  --status-received: #4A2D73;
+  --status-received-glow: rgba(74, 45, 115, 0.5);
+  --status-transferred: #006064;
+  --status-transferred-glow: rgba(0, 96, 100, 0.5);
+  --status-unknown: #5A5A5A;
+  --status-unknown-glow: rgba(90, 90, 90, 0.5);
   
-  /* Neutral Colors - Weathered & Natural */
-  --neutral-100: #e8eae6;
-  --neutral-150: #dddfd9;
-  --neutral-200: #d2d5cd;
-  --neutral-300: #b8bdb3;
-  --neutral-400: #7a8279;
-  --neutral-500: #5a6674;
-  --neutral-600: #4d4437;
-  --neutral-700: #3d4550;
-  --neutral-800: #0d2b3e;
-  --neutral-900: #1a3a2e;
+  /* Neutral Colors - Fog & Granite */
+  --neutral-100: #FFFFFF;
+  --neutral-150: #EDF0EF;
+  --neutral-200: #E8ECEB;
+  --neutral-300: #CCD3D1;
+  --neutral-400: #8A9490;
+  --neutral-500: #6F513E;
+  --neutral-600: #5A4A3C;
+  --neutral-700: #3D3028;
+  --neutral-800: #1A2B3D;
+  --neutral-900: #0F1B2A;
   
   /* Background colors */
-  --bg-page: #dde0d8;
-  --bg-card: #edeee9;
-  --bg-card-hover: #f5f4f0;
+  --bg-page: #F4F7F6;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F8FAF9;
   
   /* Glassmorphism */
   --glass-bg: rgba(255, 255, 255, 0.08);
@@ -76,8 +94,8 @@
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.12);
-  --shadow-glow-blue: 0 0 30px rgba(74, 95, 127, 0.3), 0 0 60px rgba(74, 95, 127, 0.1);
-  --shadow-glow-cyan: 0 0 30px rgba(120, 156, 168, 0.3), 0 0 60px rgba(120, 156, 168, 0.1);
+  --shadow-glow-blue: 0 0 30px rgba(8, 46, 88, 0.3), 0 0 60px rgba(8, 46, 88, 0.1);
+  --shadow-glow-cyan: 0 0 30px rgba(0, 72, 50, 0.3), 0 0 60px rgba(0, 72, 50, 0.1);
   --shadow-float: 0 20px 50px rgba(0, 0, 0, 0.25);
   
   /* Border Radius */
@@ -98,17 +116,17 @@
   --ut-palette-primary:               var(--uscis-primary);
   --ut-palette-primary-contrast:      var(--neutral-100);
   --ut-palette-primary-shade:         var(--uscis-primary-light);
-  --ut-palette-success:               var(--status-approved);
-  --ut-palette-success-contrast:      #e8eae6;
-  --ut-palette-success-shade:         #2a5e4a;
+  --ut-palette-success:               #004832;
+  --ut-palette-success-contrast:      #FFFFFF;
+  --ut-palette-success-shade:         #006B4C;
   --ut-palette-danger:                var(--status-denied);
-  --ut-palette-danger-contrast:       #e8eae6;
-  --ut-palette-danger-shade:          #a84a3d;
+  --ut-palette-danger-contrast:       #FFFFFF;
+  --ut-palette-danger-shade:          #B22222;
   --ut-palette-warning:               var(--status-pending);
   --ut-palette-warning-contrast:      var(--neutral-900);
-  --ut-palette-warning-shade:         #b87a5a;
+  --ut-palette-warning-shade:         #8B6914;
   --ut-palette-info:                  var(--uscis-secondary);
-  --ut-palette-info-contrast:         #e8eae6;
+  --ut-palette-info-contrast:         #FFFFFF;
   --ut-palette-info-shade:            var(--uscis-secondary-dark);
   --ut-header-background-color:       var(--uscis-primary);
   --ut-nav-background-color:          var(--uscis-primary);
@@ -117,13 +135,13 @@
   --ut-login-background-color:        var(--uscis-primary-light);
   --ut-component-background-color:    var(--bg-card);
   --ut-component-border-color:        var(--neutral-300);
-  --ut-component-border-radius:       var(--radius-lg);
+  --ut-component-border-radius:       var(--radius-md);
   --ut-component-shadow:              var(--shadow-md);
   --ut-component-text-default-color:  var(--neutral-700);
   --ut-component-text-title-color:    var(--neutral-900);
   --ut-component-text-muted-color:    var(--neutral-500);
   --ut-link-text-color:               var(--uscis-secondary);
-  --ut-focus-outline-color:           rgba(120, 156, 168, 0.6);
+  --ut-focus-outline-color:           rgba(8, 46, 88, 0.6);
 
 }
 
@@ -135,6 +153,8 @@ body {
   background: var(--gradient-hero);
   background-attachment: fixed;
   min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+               'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Animated background mesh */
@@ -146,9 +166,9 @@ body::before {
   right: 0;
   bottom: 0;
   background-image: 
-    radial-gradient(ellipse at 20% 30%, rgba(74, 95, 127, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(120, 156, 168, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(120, 156, 168, 0.08) 0%, transparent 60%);
+    radial-gradient(ellipse at 20% 30%, rgba(0, 72, 50, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(0, 72, 50, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 72, 50, 0.08) 0%, transparent 60%);
   pointer-events: none;
   z-index: -1;
 }
@@ -217,54 +237,11 @@ body .t-Header-logo-link:hover {
   text-shadow: 0 0 20px var(--uscis-accent-glow);
 }
 
-/* Navigation - Modern Sidebar */
+/* Navigation - Modern Sidebar
+   (Main rules; the FULL OVERRIDE section near EOF refines selectors) */
 body .t-TreeNav {
-  background: var(--gradient-dark);
-  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.2);
-}
-
-body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content {
-  color: var(--neutral-300);
-  transition: all var(--transition-normal);
-  border-radius: var(--radius-md);
-  margin: 4px 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--gradient-secondary);
-  transform: scaleY(0);
-  transition: transform var(--transition-normal);
-}
-
-body .t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content,
-body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content:hover {
-  background: linear-gradient(90deg, rgba(74, 95, 127, 0.2) 0%, transparent 100%);
-  color: var(--neutral-100);
-}
-
-body .t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content::before,
-body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content:hover::before {
-  transform: scaleY(1);
-}
-
-/* Navigation icons glow */
-body .t-TreeNav .fa,
-body .t-TreeNav [class*="fa-"] {
-  transition: all var(--transition-fast);
-}
-
-body .t-TreeNav .a-TreeView-content:hover .fa,
-body .t-TreeNav .a-TreeView-content:hover [class*="fa-"] {
-  color: var(--uscis-accent);
-  filter: drop-shadow(0 0 8px var(--uscis-accent-glow));
+  background: linear-gradient(180deg, #0A3D73 0%, #082E58 100%);
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.15);
 }
 
 
@@ -341,18 +318,18 @@ body .t-TreeNav .a-TreeView-content:hover [class*="fa-"] {
   font-weight: 700;
   letter-spacing: 1.5px;
   color: var(--uscis-primary);
-  background: linear-gradient(135deg, rgba(74, 95, 127, 0.08) 0%, rgba(120, 156, 168, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(0, 72, 50, 0.08) 0%, rgba(0, 72, 50, 0.08) 100%);
   padding: 6px 12px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(74, 95, 127, 0.2);
+  border: 1px solid rgba(0, 72, 50, 0.2);
   display: inline-block;
   transition: all var(--transition-normal);
 }
 
 .receipt-number:hover {
-  background: linear-gradient(135deg, rgba(74, 95, 127, 0.15) 0%, rgba(120, 156, 168, 0.15) 100%);
-  border-color: rgba(74, 95, 127, 0.4);
-  box-shadow: 0 4px 12px rgba(74, 95, 127, 0.15);
+  background: linear-gradient(135deg, rgba(0, 72, 50, 0.15) 0%, rgba(0, 72, 50, 0.15) 100%);
+  border-color: rgba(0, 72, 50, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 72, 50, 0.15);
 }
 
 .receipt-number-link {
@@ -412,9 +389,9 @@ body .t-Card::before {
 }
 
 body .t-Card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-6px);
-  border-color: rgba(74, 95, 127, 0.3);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: rgba(0, 72, 50, 0.2);
 }
 
 body .t-Card:hover::before {
@@ -453,23 +430,27 @@ body .t-Card:hover::before {
   right: -50%;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(74, 95, 127, 0.08) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(0, 72, 50, 0.08) 0%, transparent 60%);
   pointer-events: none;
 }
 
 .summary-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: var(--shadow-xl), var(--shadow-glow-blue);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
 }
 
 .summary-card-icon {
-  font-size: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
   background: var(--gradient-secondary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--neutral-100);
+  font-size: 24px;
   margin-bottom: 14px;
-  filter: drop-shadow(0 4px 8px rgba(74, 95, 127, 0.3));
+  -webkit-text-fill-color: currentColor;
 }
 
 .summary-card-value {
@@ -503,8 +484,8 @@ body .t-Card:hover::before {
 
 .summary-card-change.positive {
   color: var(--status-approved);
-  background: rgba(26, 58, 46, 0.1);
-  border: 1px solid rgba(26, 58, 46, 0.2);
+  background: rgba(0, 72, 50, 0.1);
+  border: 1px solid rgba(0, 72, 50, 0.2);
 }
 
 .summary-card-change.negative {
@@ -575,7 +556,7 @@ body .t-Card:hover::before {
   background: var(--neutral-100);
   box-shadow: var(--shadow-lg);
   transform: translateX(8px);
-  border-color: rgba(74, 95, 127, 0.3);
+  border-color: rgba(0, 72, 50, 0.3);
 }
 
 .timeline-item::before {
@@ -588,14 +569,14 @@ body .t-Card:hover::before {
   background: var(--gradient-secondary);
   border-radius: 50%;
   border: 3px solid var(--neutral-100);
-  box-shadow: var(--shadow-md), 0 0 0 4px rgba(74, 95, 127, 0.2);
+  box-shadow: var(--shadow-md), 0 0 0 4px rgba(0, 72, 50, 0.2);
   z-index: 1;
   transition: all var(--transition-fast);
 }
 
 .timeline-item:hover::before {
   transform: scale(1.2);
-  box-shadow: var(--shadow-lg), 0 0 0 6px rgba(74, 95, 127, 0.3);
+  box-shadow: var(--shadow-lg), 0 0 0 6px rgba(0, 72, 50, 0.3);
 }
 
 .timeline-item:first-child::before {
@@ -609,13 +590,13 @@ body .t-Card:hover::before {
 
 @keyframes pulseRing {
   0% {
-    box-shadow: var(--shadow-md), 0 0 0 0 rgba(74, 95, 127, 0.5);
+    box-shadow: var(--shadow-md), 0 0 0 0 rgba(0, 72, 50, 0.5);
   }
   70% {
-    box-shadow: var(--shadow-md), 0 0 0 12px rgba(74, 95, 127, 0);
+    box-shadow: var(--shadow-md), 0 0 0 12px rgba(0, 72, 50, 0);
   }
   100% {
-    box-shadow: var(--shadow-md), 0 0 0 0 rgba(74, 95, 127, 0);
+    box-shadow: var(--shadow-md), 0 0 0 0 rgba(0, 72, 50, 0);
   }
 }
 
@@ -641,7 +622,7 @@ body .t-Card:hover::before {
   margin-top: 8px;
   line-height: 1.6;
   padding-left: 12px;
-  border-left: 3px solid rgba(74, 95, 127, 0.2);
+  border-left: 3px solid rgba(0, 72, 50, 0.2);
 }
 
 
@@ -722,10 +703,74 @@ body .t-Card:hover::before {
 
 
 /* =============================================
-   FORM ENHANCEMENTS - MODERN INPUTS
+   FORM ENHANCEMENTS - CLEAN & MODERN
    ============================================= */
 
-/* Filter Bar / Search Region - Taller & More Prominent */
+/* ---- Floating-Label Fix ----
+   Force APEX floating labels to behave as stacked labels
+   so the label never sits on top of the typed text.
+   Uses !important to override APEX JS inline styles.       */
+body .t-Form-fieldContainer--floatingLabel .t-Form-labelContainer {
+  position: relative !important;
+  transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  pointer-events: auto !important;
+  padding: 0 !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+  width: 100% !important;
+  z-index: 1;
+}
+
+body .t-Form-fieldContainer--floatingLabel .t-Form-labelContainer label,
+body .t-Form-fieldContainer--floatingLabel .t-Form-label {
+  position: relative !important;
+  transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  font-size: 13px !important;
+  font-weight: 600;
+  color: var(--neutral-700) !important;
+  opacity: 1 !important;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Remove the floating-label padding hack on the input wrapper */
+body .t-Form-fieldContainer--floatingLabel .t-Form-inputContainer {
+  padding-top: 0 !important;
+}
+
+/* Also handle the js-show-label state that APEX toggles */
+body .t-Form-fieldContainer--floatingLabel.js-show-label .t-Form-labelContainer,
+body .t-Form-fieldContainer--floatingLabel.apex-item-wrapper--has-initial-value .t-Form-labelContainer {
+  position: relative !important;
+  transform: none !important;
+  top: auto !important;
+}
+
+/* Select lists inside floating-label containers */
+body .t-Form-fieldContainer--floatingLabel .apex-item-select,
+body .t-Form-fieldContainer--floatingLabel select.selectlist {
+  padding-top: 10px !important;
+  min-height: 42px;
+}
+
+/* ---- Stacked & Above Labels ---- */
+body .t-Form-labelContainer label,
+body .t-Form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-700);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+  text-transform: none;
+}
+
+/* ---- Filter Bar / Search Region ---- */
 body .t-Region--hideShow,
 body .t-Region.js-showMaximizeButton,
 [id*="filter"],
@@ -737,7 +782,6 @@ body .a-IG-controlsContainer {
   background: var(--bg-card);
 }
 
-/* Filter region with better spacing */
 .filter-region,
 body .t-Region--noPadding .t-Region-body,
 body .a-IRR-controlsContainer,
@@ -746,60 +790,77 @@ body .a-IG-controls {
   min-height: 80px;
 }
 
-/* Filter items container */
+/* Field container spacing */
 body .t-Form--stretchInputs .t-Form-fieldContainer,
 body .a-IG-controlsContainer .a-IG-controls,
 body .t-Form-labelContainer,
 body .t-Form-inputContainer {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
-/* Filter inputs - Taller */
+/* ---- All Text Inputs, Selects, Textareas ---- */
 body .t-Form-inputContainer input[type="text"],
 body .t-Form-inputContainer input[type="search"],
+body .t-Form-inputContainer input[type="password"],
+body .t-Form-inputContainer input[type="email"],
+body .t-Form-inputContainer input[type="number"],
+body .t-Form-inputContainer input[type="url"],
+body .t-Form-inputContainer input[type="tel"],
 body .t-Form-inputContainer select,
+body .t-Form-inputContainer textarea,
 body .a-IRR-search-field input,
 body .a-IG-searchField input,
 .apex-item-select,
-.apex-item-text {
-  min-height: 48px;
-  padding: 12px 16px;
-  font-size: 15px;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--neutral-300);
+.apex-item-text,
+.apex-item-textarea {
+  min-height: 42px;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--neutral-300);
   background: var(--neutral-100);
-  transition: all var(--transition-fast);
+  color: var(--neutral-800);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+/* Textarea gets a bit more room */
+body .t-Form-inputContainer textarea,
+.apex-item-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Focus ring */
 body .t-Form-inputContainer input:focus,
 body .t-Form-inputContainer select:focus,
+body .t-Form-inputContainer textarea:focus,
 body .a-IRR-search-field input:focus,
 body .a-IG-searchField input:focus,
 .apex-item-select:focus,
-.apex-item-text:focus {
+.apex-item-text:focus,
+.apex-item-textarea:focus {
   border-color: var(--uscis-secondary);
-  box-shadow: 0 0 0 4px rgba(74, 95, 127, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
   outline: none;
 }
 
-/* Filter labels */
-body .t-Form-labelContainer label,
-body .t-Form-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--neutral-700);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+/* Readonly / display-only fields */
+body .t-Form-inputContainer .display_only,
+body .t-Form-inputContainer input[readonly] {
+  background: var(--neutral-150);
+  border-color: var(--neutral-200);
+  color: var(--neutral-600);
+  cursor: default;
 }
 
-/* Filter buttons - Taller */
+/* ---- Filter Buttons ---- */
 body .t-Region-buttons .t-Button,
 body .a-IRR-controlsContainer .a-Button,
 body .a-IG-controlsContainer .a-Button,
 [class*="filter"] .t-Button {
-  min-height: 48px;
-  padding: 12px 24px;
+  min-height: 42px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 600;
 }
@@ -808,63 +869,65 @@ body .a-IG-controlsContainer .a-Button,
 .apex-item-has-icon .apex-item-icon,
 body .a-IRR-search-field .a-IRR-button,
 body .a-IG-searchField button {
-  min-height: 48px;
-  min-width: 48px;
+  min-height: 42px;
+  min-width: 42px;
 }
 
-/* Select dropdowns - Taller */
+/* Select dropdowns */
 select.apex-item-select,
 body .t-Form-inputContainer select {
-  min-height: 48px;
-  padding: 12px 40px 12px 16px;
-  background-position: right 16px center;
+  min-height: 42px;
+  padding: 10px 36px 10px 14px;
+  background-position: right 12px center;
+  appearance: none;
 }
 
-/* Checkbox and radio groups - More spacing */
+/* Checkbox and radio groups */
 .apex-item-checkbox,
 .apex-item-radio {
-  padding: 10px 0;
+  padding: 8px 0;
 }
 
 .apex-item-checkbox label,
 .apex-item-radio label {
-  padding: 8px 12px;
+  padding: 6px 10px;
   font-size: 14px;
 }
 
 /* Interactive Report filter bar */
 body .a-IRR-controlsContainer {
   background: var(--neutral-150);
-  border-bottom: 2px solid var(--neutral-300);
-  padding: 20px 24px;
-  min-height: 80px;
+  border-bottom: 1px solid var(--neutral-300);
+  padding: 16px 20px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* IG Filter toolbar */
 body .a-IG-controls {
-  padding: 16px 20px;
+  padding: 14px 20px;
   background: var(--neutral-150);
-  border-bottom: 2px solid var(--neutral-300);
-  min-height: 70px;
+  border-bottom: 1px solid var(--neutral-300);
+  min-height: 56px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
-/* Faceted Search styling */
+/* Faceted Search */
 .a-SearchBox {
-  min-height: 48px;
+  min-height: 42px;
 }
 
 .a-SearchBox-input {
-  padding: 14px 18px;
-  font-size: 15px;
+  padding: 10px 14px;
+  font-size: 14px;
 }
 
+/* Required field indicator */
 .required-field label::after,
 .is-required label::after {
   content: ' *';
@@ -876,44 +939,44 @@ body .a-IG-controls {
 input.receipt-input,
 .apex-item-text.receipt-input {
   font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  font-size: 18px;
+  font-size: 16px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 14px 18px;
-  border: 2px solid var(--neutral-300);
-  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--radius-sm);
   background: var(--neutral-100);
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 input.receipt-input:focus,
 .apex-item-text.receipt-input:focus {
   border-color: var(--uscis-secondary);
-  box-shadow: 0 0 0 4px rgba(74, 95, 127, 0.15), var(--shadow-md);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
   outline: none;
 }
 
-/* Modern Form Styling */
+/* General form container */
 body .t-Form-labelContainer {
   font-weight: 600;
   color: var(--neutral-700);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 body .t-Form-inputContainer input,
 body .t-Form-inputContainer textarea,
 body .t-Form-inputContainer select {
-  border-radius: var(--radius-md);
-  border: 2px solid var(--neutral-300);
-  padding: 12px 14px;
-  transition: all var(--transition-fast);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--neutral-300);
+  padding: 10px 14px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 body .t-Form-inputContainer input:focus,
 body .t-Form-inputContainer textarea:focus,
 body .t-Form-inputContainer select:focus {
   border-color: var(--uscis-secondary);
-  box-shadow: 0 0 0 4px rgba(74, 95, 127, 0.12);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
   outline: none;
 }
 
@@ -951,7 +1014,7 @@ body .t-Form-inputContainer select:focus {
   width: 22px;
   left: 3px;
   bottom: 3px;
-  background: linear-gradient(135deg, #fff, #edeee9);
+  background: #FFFFFF;
   transition: var(--transition-normal);
   border-radius: 50%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -970,11 +1033,6 @@ input:checked + .toggle-slider::before {
   outline-offset: 2px;
 }
 
-
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--neutral-300);
-}
-
 /* IR Table */
 body .t-Report-report,
 body .t-IRR-table {
@@ -987,15 +1045,15 @@ body .t-IRR-table {
 /* IR Header */
 body .t-Report-colHead,
 body .t-IRR-colHead {
-  background: var(--gradient-dark);
-  color: var(--neutral-100);
+  background: var(--neutral-150);
+  color: var(--neutral-800);
   font-weight: 700;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 18px 16px;
-  border-bottom: 3px solid var(--uscis-accent);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--neutral-300);
+  border-right: 1px solid var(--neutral-200);
   text-align: left;
 }
 
@@ -1022,7 +1080,7 @@ body .t-IRR-table tr:nth-child(odd) {
 
 body .t-Report-report tr:hover,
 body .t-IRR-table tr:hover {
-  background: linear-gradient(90deg, rgba(74, 95, 127, 0.12) 0%, rgba(120, 156, 168, 0.08) 100%);
+  background: rgba(0, 72, 50, 0.06);
 }
 
 /* IR Cells */
@@ -1062,7 +1120,7 @@ body .t-Button--hot {
   font-weight: 600;
   padding: 12px 24px;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 15px rgba(74, 95, 127, 0.35);
+  box-shadow: 0 4px 15px rgba(0, 72, 50, 0.35);
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
@@ -1084,7 +1142,7 @@ body .t-Button--hot::before {
 body .t-Button--hot:hover {
   background: var(--gradient-primary);
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(74, 95, 127, 0.45);
+  box-shadow: 0 8px 25px rgba(0, 72, 50, 0.45);
 }
 
 .btn-primary:hover::before,
@@ -1107,8 +1165,8 @@ body .t-Button {
 }
 
 body .t-Button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Danger button - Red gradient */
@@ -1131,11 +1189,11 @@ body .t-Button--success {
   background: var(--gradient-success);
   border: none;
   color: var(--neutral-100);
-  box-shadow: 0 4px 15px rgba(26, 58, 46, 0.35);
+  box-shadow: 0 4px 15px rgba(8, 46, 88, 0.35);
 }
 
 body .t-Button--success:hover {
-  box-shadow: 0 8px 25px rgba(26, 58, 46, 0.45);
+  box-shadow: 0 8px 25px rgba(8, 46, 88, 0.45);
   transform: translateY(-3px);
 }
 
@@ -1168,11 +1226,11 @@ body .t-Button--success:hover {
   transform: translateY(-2px);
 }
 
-/* Icon buttons */
+/* Icon buttons — consistent rounded-square shape */
 body .t-Button--icon {
-  border-radius: var(--radius-full);
-  width: 42px;
-  height: 42px;
+  border-radius: var(--radius-md);
+  width: 38px;
+  height: 38px;
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -1182,8 +1240,8 @@ body .t-Button--icon {
 body .t-Button--icon:hover {
   background: var(--gradient-secondary);
   color: var(--neutral-100);
-  box-shadow: var(--shadow-glow-blue);
-  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+  transform: scale(1.05);
 }
 
 
@@ -1197,7 +1255,7 @@ body .t-Button--icon:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(26, 58, 46, 0.85);
+  background: rgba(8, 46, 88, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -1215,7 +1273,7 @@ body .t-Button--icon:hover {
   border-right-color: var(--uscis-secondary);
   border-radius: 50%;
   animation: spinGradient 1s linear infinite;
-  box-shadow: 0 0 30px rgba(120, 156, 168, 0.3);
+  box-shadow: 0 0 30px rgba(0, 72, 50, 0.3);
 }
 
 .loading-text {
@@ -1228,6 +1286,10 @@ body .t-Button--icon:hover {
 }
 
 @keyframes spinGradient {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin {
   to { transform: rotate(360deg); }
 }
 
@@ -1305,9 +1367,9 @@ body .t-Button--icon:hover {
 }
 
 .alert-info {
-  background: linear-gradient(135deg, rgba(74, 95, 127, 0.12) 0%, rgba(120, 156, 168, 0.08) 100%);
-  border: 1px solid rgba(74, 95, 127, 0.25);
-  box-shadow: 0 4px 20px rgba(74, 95, 127, 0.15);
+  background: linear-gradient(135deg, rgba(0, 72, 50, 0.12) 0%, rgba(0, 72, 50, 0.08) 100%);
+  border: 1px solid rgba(0, 72, 50, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 72, 50, 0.15);
 }
 
 .alert-info::before {
@@ -1315,9 +1377,9 @@ body .t-Button--icon:hover {
 }
 
 .alert-success {
-  background: linear-gradient(135deg, rgba(26, 58, 46, 0.12) 0%, rgba(42, 94, 74, 0.08) 100%);
-  border: 1px solid rgba(26, 58, 46, 0.25);
-  box-shadow: 0 4px 20px rgba(26, 58, 46, 0.15);
+  background: linear-gradient(135deg, rgba(8, 46, 88, 0.12) 0%, rgba(0, 107, 76, 0.08) 100%);
+  border: 1px solid rgba(8, 46, 88, 0.25);
+  box-shadow: 0 4px 20px rgba(8, 46, 88, 0.15);
 }
 
 .alert-success::before {
@@ -1325,9 +1387,9 @@ body .t-Button--icon:hover {
 }
 
 .alert-warning {
-  background: linear-gradient(135deg, rgba(157, 90, 60, 0.15) 0%, rgba(184, 122, 90, 0.1) 100%);
-  border: 1px solid rgba(157, 90, 60, 0.3);
-  box-shadow: 0 4px 20px rgba(157, 90, 60, 0.15);
+  background: linear-gradient(135deg, rgba(111, 81, 62, 0.15) 0%, rgba(139, 105, 20, 0.1) 100%);
+  border: 1px solid rgba(111, 81, 62, 0.3);
+  box-shadow: 0 4px 20px rgba(111, 81, 62, 0.15);
 }
 
 .alert-warning::before {
@@ -1335,7 +1397,7 @@ body .t-Button--icon:hover {
 }
 
 .alert-error {
-  background: linear-gradient(135deg, rgba(139, 46, 46, 0.12) 0%, rgba(168, 74, 61, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(139, 46, 46, 0.12) 0%, rgba(178, 34, 34, 0.08) 100%);
   border: 1px solid rgba(139, 46, 46, 0.25);
   box-shadow: 0 4px 20px rgba(139, 46, 46, 0.15);
 }
@@ -1351,7 +1413,7 @@ body .t-Button--icon:hover {
   right: 24px;
   padding: 16px 24px;
   border-radius: var(--radius-lg);
-  background: rgba(26, 58, 46, 0.95);
+  background: rgba(8, 46, 88, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   color: var(--neutral-100);
@@ -1439,8 +1501,8 @@ body .t-Button--icon:hover {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(ellipse at 30% 20%, rgba(74, 95, 127, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 80%, rgba(120, 156, 168, 0.15) 0%, transparent 50%);
+    radial-gradient(ellipse at 30% 20%, rgba(0, 72, 50, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(0, 72, 50, 0.15) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -1487,7 +1549,7 @@ body .t-Button--icon:hover {
 
 .fab:hover {
   transform: scale(1.1) rotate(90deg);
-  box-shadow: var(--shadow-float), 0 0 40px rgba(74, 95, 127, 0.5);
+  box-shadow: var(--shadow-float), 0 0 40px rgba(0, 72, 50, 0.5);
 }
 
 .fab:active {
@@ -1538,13 +1600,13 @@ body .t-Button--icon:hover {
 }
 
 .widget-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-lg);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 18px;
   color: var(--neutral-100);
 }
 
@@ -1642,15 +1704,15 @@ body .t-Dialog {
 }
 
 body .t-Dialog-header {
-  background: var(--gradient-dark);
-  padding: 20px 24px;
-  border-bottom: 2px solid var(--uscis-accent);
+  background: var(--neutral-150);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--neutral-300);
 }
 
 body .t-Dialog-title {
-  color: var(--neutral-100);
+  color: var(--neutral-800);
   font-weight: 700;
-  font-size: 18px;
+  font-size: 17px;
 }
 
 body .t-Dialog-body {
@@ -1666,9 +1728,169 @@ body .t-Dialog-footer {
 
 /* Dialog backdrop */
 .ui-widget-overlay {
-  background: rgba(26, 58, 46, 0.7);
+  background: rgba(8, 46, 88, 0.7);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+}
+
+
+/* =============================================
+   CHECK STATUS MODAL (Page 5)
+   Tasks 3.3.1–3.3.6
+   ============================================= */
+
+/* -- Dialog size constraint -- */
+.check-status-dialog .t-Dialog {
+  max-width: 600px;
+}
+
+/* -- Loading state (inside modal) -- */
+.check-status-loading {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.check-status-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* -- Result Card -- */
+.check-result-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neutral-300);
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.check-result-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--neutral-150);
+  border-bottom: 1px solid var(--neutral-300);
+}
+
+.check-result-card__receipt-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.check-result-card__header .uscis-receipt {
+  color: var(--neutral-800);
+  font-size: 16px;
+}
+
+.check-result-card__body {
+  padding: 20px;
+}
+
+.check-result-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+  .check-result-card__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.check-result-card__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.check-result-card__label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--neutral-500);
+}
+
+.check-result-card__value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-900);
+}
+
+.check-result-card__details {
+  padding-top: 16px;
+  border-top: 1px solid var(--neutral-300);
+}
+
+.check-result-card__detail-text {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--neutral-700);
+}
+
+/* -- Error Card -- */
+.check-error-card {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--status-denied);
+  border-left-width: 4px;
+  background: rgba(139, 46, 46, 0.06);
+}
+
+.check-error-card__icon {
+  flex-shrink: 0;
+  font-size: 24px;
+  color: var(--status-denied);
+  line-height: 1;
+}
+
+.check-error-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.check-error-card__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--status-denied);
+}
+
+.check-error-card__message {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--neutral-900);
+}
+
+.check-error-card__hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--neutral-500);
+}
+
+/* -- Receipt input styling inside modal -- */
+.check-status-dialog [data-receipt-input="true"] {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-weight: 600;
+  font-size: 1.15em;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* -- Disabled check button during AJAX -- */
+.check-status-dialog .js-check-status-btn.apex_disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 
@@ -1677,26 +1899,24 @@ body .t-Dialog-footer {
    ============================================= */
 
 body .t-Region {
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   border: 1px solid var(--neutral-300);
   overflow: hidden;
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 }
 
 body .t-Region-header {
-  background: var(--gradient-dark);
-  padding: 18px 24px;
-  border-bottom: 2px solid var(--uscis-accent);
+  background: var(--neutral-150);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--neutral-300);
 }
 
 body .t-Region-title {
-  color: var(--neutral-100);
+  color: var(--neutral-800);
   font-weight: 700;
-  font-size: 16px;
-  letter-spacing: 0.3px;
+  font-size: 15px;
+  letter-spacing: 0.2px;
 }
 
 body .t-Region-body {
@@ -1710,7 +1930,7 @@ body .t-Region--hideShow .t-Region-header {
 }
 
 body .t-Region--hideShow .t-Region-header:hover {
-  background: linear-gradient(135deg, #0d2b3e 0%, #1a3a2e 100%);
+  background: linear-gradient(135deg, #0A3D73 0%, #082E58 100%);
 }
 
 
@@ -1767,7 +1987,7 @@ body .t-Region--hideShow .t-Region-header:hover {
 *:focus-visible {
   outline: 3px solid var(--uscis-accent);
   outline-offset: 3px;
-  box-shadow: 0 0 0 6px rgba(120, 156, 168, 0.2);
+  box-shadow: 0 0 0 6px rgba(0, 72, 50, 0.2);
 }
 
 /* Reduce motion for users who prefer it */
@@ -1810,7 +2030,7 @@ body .t-Region--hideShow .t-Region-header:hover {
 
 /* Animated gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #4a5f7f, #1c2841, #a84a3d, #8b2e2e, #4a5f7f);
+  background: linear-gradient(135deg, #004832, #002E20, #B22222, #8B1A1A, #004832);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1929,7 +2149,7 @@ body .t-Region--hideShow .t-Region-header:hover {
 
 /* Dark frosted glass */
 .frosted-glass-dark {
-  background: rgba(26, 58, 46, 0.8);
+  background: rgba(8, 46, 88, 0.8);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2106,14 +2326,14 @@ body .t-Body-contentInner {
 
 /* Success message styling */
 body .t-Alert--success {
-  background: linear-gradient(135deg, rgba(26, 58, 46, 0.12) 0%, rgba(42, 94, 74, 0.08) 100%);
-  border: 1px solid rgba(26, 58, 46, 0.25);
+  background: linear-gradient(135deg, rgba(8, 46, 88, 0.12) 0%, rgba(0, 107, 76, 0.08) 100%);
+  border: 1px solid rgba(8, 46, 88, 0.25);
   border-radius: var(--radius-lg);
 }
 
 /* Error message styling */
 body .t-Alert--danger {
-  background: linear-gradient(135deg, rgba(139, 46, 46, 0.12) 0%, rgba(168, 74, 61, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(139, 46, 46, 0.12) 0%, rgba(178, 34, 34, 0.08) 100%);
   border: 1px solid rgba(139, 46, 46, 0.25);
   border-radius: var(--radius-lg);
 }
@@ -2157,50 +2377,53 @@ body .t-Footer {
 body .t-PageBody,
 body {
   /* Override UT accent / primary / hero colors */
-  --ut-palette-primary: #1a3a2e;
-  --ut-palette-primary-contrast: #e8eae6;
-  --ut-palette-primary-shade: #0d2b3e;
-  --ut-palette-primary-text: #1a3a2e;
-  --ut-palette-success: #1a3a2e;
-  --ut-palette-success-contrast: #e8eae6;
-  --ut-palette-danger: #8b2e2e;
-  --ut-palette-danger-contrast: #e8eae6;
-  --ut-palette-warning: #9d5a3c;
-  --ut-palette-warning-contrast: #e8eae6;
-  --ut-palette-info: #4a5f7f;
-  --ut-palette-info-contrast: #e8eae6;
+  --ut-palette-primary: #082E58;
+  --ut-palette-primary-contrast: #FFFFFF;
+  --ut-palette-primary-shade: #0A3D73;
+  --ut-palette-primary-text: #082E58;
+  --ut-palette-success: #004832;
+  --ut-palette-success-contrast: #FFFFFF;
+  --ut-palette-danger: #8B1A1A;
+  --ut-palette-danger-contrast: #FFFFFF;
+  --ut-palette-warning: #6F513E;
+  --ut-palette-warning-contrast: #FFFFFF;
+  --ut-palette-info: #004832;
+  --ut-palette-info-contrast: #FFFFFF;
 
   /* UT body/component colors */
-  --ut-body-actions-background-color: #0d2b3e;
+  --ut-body-actions-background-color: #0A3D73;
   --ut-body-title-background-color: transparent;
-  --ut-component-highlight-background-color: rgba(74, 95, 127, 0.12);
-  --ut-login-background-color: #040d09;
+  --ut-component-highlight-background-color: rgba(0, 72, 50, 0.12);
+  --ut-login-background-color: #020E1F;
 
   /* UT header */
-  --ut-header-background-color: #1a3a2e;
-  --ut-header-text-color: #e8eae6;
-  --ut-header-nav-color: #b8bdb3;
-  --ut-header-nav-hover-color: #e8eae6;
+  --ut-header-background-color: #082E58;
+  --ut-header-text-color: #FFFFFF;
+  --ut-header-nav-color: #CCD3D1;
+  --ut-header-nav-hover-color: #FFFFFF;
 
   /* UT navigation / menu */
-  --ut-nav-background-color: #0d2b3e;
-  --ut-nav-text-color: #b8bdb3;
-  --ut-nav-hover-background-color: rgba(74, 95, 127, 0.25);
-  --ut-nav-hover-text-color: #e8eae6;
-  --ut-nav-selected-background-color: rgba(26, 58, 46, 0.4);
-  --ut-nav-selected-text-color: #e8eae6;
-  --ut-nav-badge-background-color: #8b2e2e;
-  --ut-nav-badge-text-color: #e8eae6;
+  --ut-nav-background-color: #082E58;
+  --ut-nav-text-color: #CCD3D1;
+  --ut-nav-hover-background-color: rgba(0, 72, 50, 0.20);
+  --ut-nav-hover-text-color: #FFFFFF;
+  --ut-nav-selected-background-color: rgba(0, 72, 50, 0.35);
+  --ut-nav-selected-text-color: #FFFFFF;
+  --ut-nav-badge-background-color: #8B1A1A;
+  --ut-nav-badge-text-color: #FFFFFF;
 
   /* UT button base */
-  --ut-button-background-color: #3d4550;
-  --ut-button-text-color: #e8eae6;
+  --ut-button-background-color: #3D3028;
+  --ut-button-text-color: #FFFFFF;
 
   /* Focus ring color */
-  --ut-focus-outline-color: rgba(74, 95, 127, 0.6);
+  --ut-focus-outline-color: rgba(8, 46, 88, 0.6);
 
   /* Link color */
-  --ut-link-text-color: #4a5f7f;
+  --ut-link-text-color: #004832;
+
+  /* Font family */
+  --ut-body-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 
@@ -2212,7 +2435,7 @@ body {
 body.t-PageBody--login,
 body.t-PageBody--login .t-Body,
 body .t-PageBody--login {
-  background: linear-gradient(160deg, #040d09 0%, #03080f 35%, #060a14 70%, #040d09 100%);
+  background: linear-gradient(160deg, #020E1F 0%, #020A14 35%, #030D1A 70%, #020E1F 100%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -2222,9 +2445,9 @@ body.t-PageBody--login::before {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background-image:
-    radial-gradient(ellipse at 15% 25%, rgba(16, 38, 30, 0.3) 0%, transparent 45%),
-    radial-gradient(ellipse at 85% 75%, rgba(8, 25, 38, 0.25) 0%, transparent 45%),
-    radial-gradient(ellipse at 50% 50%, rgba(15, 22, 38, 0.2) 0%, transparent 55%);
+    radial-gradient(ellipse at 15% 25%, rgba(8, 32, 64, 0.3) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 75%, rgba(8, 32, 64, 0.25) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 46, 32, 0.2) 0%, transparent 55%);
   pointer-events: none;
   z-index: 0;
 }
@@ -2246,9 +2469,9 @@ body .t-Login-container.t-Login-container {
 /* Login header - dark gradient banner */
 body .t-Login-header,
 body .t-Login-container .t-Login-header {
-  background: linear-gradient(135deg, #1a3a2e 0%, #0d2b3e 60%, #1c2841 100%);
+  background: linear-gradient(135deg, #082E58 0%, #0A3D73 60%, #002E20 100%);
   padding: 36px 32px;
-  border-bottom: 2px solid rgba(120, 156, 168, 0.3);
+  border-bottom: 2px solid rgba(0, 72, 50, 0.3);
   position: relative;
 }
 
@@ -2259,7 +2482,7 @@ body .t-Login-header::after {
   left: 20%;
   right: 20%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #789ca8, transparent);
+  background: linear-gradient(90deg, transparent, #FFE84F, transparent);
 }
 
 /* Login logo text */
@@ -2267,7 +2490,7 @@ body .t-Login-logo,
 body .t-Login-header .t-Login-logo {
   font-size: 26px;
   font-weight: 800;
-  color: #f5f7f4;
+  color: #F8FAF9;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
   letter-spacing: -0.02em;
 }
@@ -2278,20 +2501,20 @@ body .t-Login-header .t-Login-icon,
 body .t-Login-header .t-Login-icon .t-Icon,
 body .t-Login-header .fa,
 body .t-Login-container .t-Login-icon {
-  color: #789ca8;
+  color: #FFE84F;
 }
 
 /* Override any blue APEX icon on login */
 body .t-Login-container .t-Icon,
 body .t-Login-container .fa,
 body .t-Login-container [class*="fa-"] {
-  color: #5a6674;
+  color: #6F513E;
 }
 
 body .t-Login-header .t-Icon,
 body .t-Login-header .fa,
 body .t-Login-header [class*="fa-"] {
-  color: #789ca8;
+  color: #FFE84F;
 }
 
 /* Login region image (app icon) tinting */
@@ -2311,7 +2534,7 @@ body .t-Login-body {
 /* Login form labels */
 body .t-Login-body .t-Form-label,
 body .t-Login-body label {
-  color: #1a2530;
+  color: #082E58;
   font-weight: 600;
 }
 
@@ -2320,11 +2543,11 @@ body .t-Login-body .t-Form-inputContainer input[type="text"],
 body .t-Login-body .t-Form-inputContainer input[type="password"],
 body .t-Login-body input.text_field,
 body .t-Login-body input.apex-item-text {
-  border: 2px solid #b8bdb3;
+  border: 2px solid #CCD3D1;
   border-radius: 10px;
   padding: 12px 16px 12px 42px;
-  background: #f5f4f0;
-  color: #1a3a2e;
+  background: #F8FAF9;
+  color: #082E58;
   transition: all 0.25s ease;
   font-size: 15px;
 }
@@ -2343,7 +2566,7 @@ body .t-Login-body .t-Form-itemWrapper .t-Icon {
   width: 20px;
   text-align: center;
   pointer-events: none;
-  color: #5a6674;
+  color: #6F513E;
 }
 
 /* Ensure the input wrapper is positioned for icon */
@@ -2355,16 +2578,16 @@ body .t-Login-body .t-Form-inputContainer {
 body .t-Login-body .t-Form-inputContainer input:focus,
 body .t-Login-body input.text_field:focus,
 body .t-Login-body input.apex-item-text:focus {
-  border-color: #4a5f7f;
-  box-shadow: 0 0 0 3px rgba(74, 95, 127, 0.2);
+  border-color: #004832;
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.2);
   outline: none;
-  background: #f5f4f0;
+  background: #F8FAF9;
 }
 
 /* Login form input icons */
 body .t-Login-body .t-Form-itemWrapper .t-Icon,
 body .t-Login-body .t-Form-inputContainer .t-Icon {
-  color: #5a6674;
+  color: #6F513E;
 }
 
 /* Login Sign-In button */
@@ -2372,14 +2595,14 @@ body .t-Login-body .t-Button--hot,
 body .t-Login .t-Button--hot,
 body .t-Login-body .t-Button.t-Button--hot,
 button.t-Button.t-Button--hot[type="submit"] {
-  background: linear-gradient(135deg, #1a3a2e 0%, #0d2b3e 100%);
+  background: linear-gradient(135deg, #082E58 0%, #0A3D73 100%);
   border: none;
-  color: #e8eae6;
+  color: #FFFFFF;
   font-weight: 700;
   font-size: 15px;
   padding: 14px 32px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(26, 58, 46, 0.4);
+  box-shadow: 0 4px 20px rgba(8, 46, 88, 0.4);
   letter-spacing: 0.02em;
   text-transform: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2388,9 +2611,9 @@ button.t-Button.t-Button--hot[type="submit"] {
 
 body .t-Login-body .t-Button--hot:hover,
 body .t-Login .t-Button--hot:hover {
-  background: linear-gradient(135deg, #0d2b3e 0%, #1c2841 100%);
+  background: linear-gradient(135deg, #0A3D73 0%, #002E20 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(26, 58, 46, 0.5);
+  box-shadow: 0 8px 30px rgba(8, 46, 88, 0.5);
 }
 
 body .t-Login-body .t-Button--hot:active,
@@ -2421,7 +2644,7 @@ body .t-Login-body .t-Button--passwordVisibility .apex-item-icon,
 body .t-Login-container .t-Button--passwordVisibility .fa,
 body .t-Button--passwordVisibility .fa,
 body .t-Button--passwordVisibility .apex-item-icon {
-  color: #5a6674;
+  color: #6F513E;
   font-size: 16px;
   pointer-events: auto;
 }
@@ -2429,13 +2652,13 @@ body .t-Button--passwordVisibility .apex-item-icon {
 body .t-Login-body .t-Button--passwordVisibility:hover,
 body .t-Login-container .t-Button--passwordVisibility:hover,
 body .t-Button--passwordVisibility:hover {
-  background: rgba(90, 102, 116, 0.1);
+  background: rgba(111, 81, 62, 0.1);
 }
 
 body .t-Login-body .t-Button--passwordVisibility:hover .fa,
 body .t-Login-container .t-Button--passwordVisibility:hover .fa,
 body .t-Button--passwordVisibility:hover .fa {
-  color: #1a3a2e;
+  color: #082E58;
 }
 
 /* Ensure password input wrapper is relative for the eye button */
@@ -2452,7 +2675,7 @@ body .t-Login-body .apex-item-group--password input {
 /* Remember me checkbox styling */
 body .t-Login-body .u-checkbox,
 body .t-Login-body .apex-item-single-checkbox label {
-  color: #2a3540;
+  color: #0A3D73;
   font-weight: 500;
 }
 
@@ -2465,12 +2688,12 @@ body .t-Login-container .t-Login-footer {
 }
 
 body .t-Login-footer a {
-  color: #4a5f7f;
+  color: #004832;
   font-weight: 600;
 }
 
 body .t-Login-footer a:hover {
-  color: #1a3a2e;
+  color: #082E58;
 }
 
 
@@ -2480,8 +2703,8 @@ body .t-Login-footer a:hover {
 
 body .t-Header,
 body .t-Header.t-Header {
-  background: linear-gradient(135deg, #1a3a2e 0%, #0d2b3e 100%);
-  border-bottom: 1px solid rgba(120, 156, 168, 0.2);
+  background: linear-gradient(135deg, #082E58 0%, #0A3D73 100%);
+  border-bottom: 1px solid rgba(0, 72, 50, 0.2);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
 }
 
@@ -2492,7 +2715,7 @@ body .t-Header .t-Button--navBar,
 body .t-Header .t-Header-navBar .t-Button,
 body .t-NavigationBar .t-Button,
 body .t-NavigationBar-item .t-Button {
-  color: #b8bdb3;
+  color: #CCD3D1;
   background: transparent;
   border: none;
 }
@@ -2502,103 +2725,199 @@ body .t-Header .t-Button--header:hover,
 body .t-Header .t-Button--navBar:hover,
 body .t-NavigationBar .t-Button:hover,
 body .t-NavigationBar-item .t-Button:hover {
-  color: #e8eae6;
-  background: rgba(74, 95, 127, 0.2);
+  color: #FFFFFF;
+  background: rgba(0, 72, 50, 0.2);
 }
 
 /* Header branding text */
 body .t-Header-logo-link {
-  color: #e8eae6;
+  color: #FFFFFF;
   font-weight: 700;
   font-size: 1.2rem;
 }
 
 body .t-Header-logo-link:hover {
-  color: #789ca8;
+  color: #FFE84F;
 }
 
 /* User menu / navigation bar items */
 body .t-NavigationBar-item,
 body .t-NavigationBar-item a {
-  color: #b8bdb3;
+  color: #CCD3D1;
 }
 
 body .t-NavigationBar-item:hover,
 body .t-NavigationBar-item a:hover {
-  color: #e8eae6;
+  color: #FFFFFF;
+}
+
+/* User menu button — polished pill style */
+body .t-NavigationBar-item.has-username .t-Button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  padding: 6px 16px 6px 12px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+body .t-NavigationBar-item.has-username .t-Button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+body .t-NavigationBar-item.has-username .t-Button .t-Icon {
+  background: rgba(0, 72, 50, 0.35);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #FFFFFF;
+}
+
+body .t-NavigationBar-item.has-username .t-Button .t-Button-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #FFFFFF;
+  letter-spacing: 0.3px;
+}
+
+body .t-NavigationBar-item.has-username .t-Button .icon-down-arrow {
+  font-size: 10px;
+  opacity: 0.6;
 }
 
 /* Navigation bar badge */
 body .t-NavigationBar .t-Button-badge {
-  background: #8b2e2e;
-  color: #e8eae6;
+  background: #8B1A1A;
+  color: #FFFFFF;
 }
 
 
 /* =============================================
    SIDE NAVIGATION MENU - FULL OVERRIDE
+   Uses Maine-palette colors throughout.
+   Selected = Pine Green highlight (not random blue).
    ============================================= */
 
 body .t-TreeNav,
 body .t-Body-nav,
 body .t-PageBody .t-Body-nav {
-  background: linear-gradient(180deg, #0d2b3e 0%, #1a3a2e 100%);
+  background: linear-gradient(180deg, #0A3D73 0%, #082E58 100%);
 }
 
-/* Nav menu items */
+/* ---- Nav item labels ---- */
 body .t-TreeNav .a-TreeView-content,
 body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content {
-  color: #b8bdb3;
+  color: #CCD3D1;
   border-radius: 8px;
   margin: 3px 8px;
   padding: 10px 12px;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* Nav menu hover */
+/* ---- The row highlight bar (rendered behind .a-TreeView-content) ----
+   This is the element APEX paints with its own selection color.
+   We override it so it doesn't flash a random blue/purple.          */
+body .t-TreeNav .a-TreeView-row {
+  background: transparent;
+  border-radius: 8px;
+  margin: 0 4px;
+  transition: background 0.2s ease;
+}
+
+body .t-TreeNav .a-TreeView-row:hover {
+  background: transparent;          /* hover handled on .a-TreeView-content */
+}
+
+body .t-TreeNav .a-TreeView-row.is-selected,
+body .t-TreeNav .a-TreeView-row.is-selected.is-current--top,
+body .t-TreeNav .a-TreeView-row.is-current--top {
+  background: rgba(0, 72, 50, 0.35);  /* Pine Green tint */
+}
+
+/* ---- Hover state ---- */
 body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content:hover,
 body .t-TreeNav .a-TreeView-content:hover {
-  background: rgba(74, 95, 127, 0.25);
-  color: #e8eae6;
+  background: rgba(0, 72, 50, 0.2);
+  color: #FFFFFF;
 }
 
-/* Nav menu selected/active */
+/* ---- Selected / Active state ---- */
 body .t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content,
-body .t-TreeNav .a-TreeView-node.is-selected > .a-TreeView-content {
-  background: linear-gradient(90deg, rgba(26, 58, 46, 0.5), rgba(74, 95, 127, 0.2));
-  color: #e8eae6;
+body .t-TreeNav .a-TreeView-node.is-selected > .a-TreeView-content,
+body .t-TreeNav .a-TreeView-content.is-selected,
+body .t-TreeNav .a-TreeView-content.is-current--top {
+  background: rgba(0, 72, 50, 0.30);
+  color: #FFFFFF;
   font-weight: 600;
 }
 
-/* Nav menu selected left accent bar */
-body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content::before {
-  background: linear-gradient(180deg, #789ca8, #4a5f7f);
+/* Selected anchor / label text — <a> tags ignore inherited color */
+body .t-TreeNav .a-TreeView-content.is-selected a,
+body .t-TreeNav .a-TreeView-content.is-selected .a-TreeView-label,
+body .t-TreeNav .a-TreeView-content.is-current--top a,
+body .t-TreeNav .a-TreeView-content.is-current--top .a-TreeView-label,
+body .t-TreeNav .is-selected .a-TreeView-label,
+body .t-TreeNav .a-TreeView-label.is-current {
+  color: #FFFFFF !important;
+  text-decoration: none;
 }
 
-/* Nav icons */
+/* Hover anchor text too */
+body .t-TreeNav .a-TreeView-content:hover a,
+body .t-TreeNav .a-TreeView-content:hover .a-TreeView-label {
+  color: #FFFFFF !important;
+  text-decoration: none;
+}
+
+/* Default (unselected) nav link color */
+body .t-TreeNav .a-TreeView-label,
+body .t-TreeNav .a-TreeView-content a {
+  color: #CCD3D1;
+  text-decoration: none;
+}
+
+/* ---- Selected left accent bar ---- */
+body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content::before {
+  background: var(--uscis-secondary);  /* solid Pine Green #004832 */
+}
+
+body .t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content::before {
+  transform: scaleY(1);
+}
+
+/* ---- Nav icons ---- */
 body .t-TreeNav .fa,
 body .t-TreeNav [class*="fa-"],
 body .t-TreeNav .a-TreeView-content .fa {
-  color: #7a8279;
-  transition: all 0.2s ease;
+  color: #8A9490;                  /* muted gray */
+  transition: color 0.2s ease;
 }
 
 body .t-TreeNav .a-TreeView-content:hover .fa,
-body .t-TreeNav .a-TreeView-content:hover [class*="fa-"],
-body .t-TreeNav .is-selected .fa {
-  color: #789ca8;
-  filter: drop-shadow(0 0 6px rgba(120, 156, 168, 0.4));
+body .t-TreeNav .a-TreeView-content:hover [class*="fa-"] {
+  color: #FFFFFF;                  /* white on hover */
 }
 
-/* Nav collapsed state (hamburger icon bar) */
+body .t-TreeNav .is-selected .fa,
+body .t-TreeNav .a-TreeView-content.is-selected .fa,
+body .t-TreeNav .a-TreeView-content.is-selected [class*="fa-"] {
+  color: #FFFFFF;                  /* white when selected */
+}
+
+/* ---- Nav collapsed state ---- */
 body .t-TreeNav .t-TreeNav-toggle,
 .js-navCollapsed .t-Body-nav {
-  background: #0d2b3e;
+  background: #0A3D73;
 }
 
-/* Navigation dividers */
+/* ---- Dividers between items ---- */
 body .t-TreeNav .a-TreeView-node--topLevel + .a-TreeView-node--topLevel {
-  border-top: 1px solid rgba(120, 156, 168, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 
@@ -2611,62 +2930,62 @@ body .t-Button--hot,
 a.t-Button.t-Button--hot,
 button.t-Button.t-Button--hot,
 body .t-Region .t-Button--hot {
-  background: linear-gradient(135deg, #1a3a2e 0%, #0d2b3e 100%);
+  background: linear-gradient(135deg, #082E58 0%, #0A3D73 100%);
   border: none;
-  color: #e8eae6;
+  color: #FFFFFF;
   font-weight: 600;
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(26, 58, 46, 0.35);
+  box-shadow: 0 4px 15px rgba(8, 46, 88, 0.35);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body .t-Button--hot:hover,
 a.t-Button.t-Button--hot:hover,
 button.t-Button.t-Button--hot:hover {
-  background: linear-gradient(135deg, #0d2b3e 0%, #1c2841 100%);
+  background: linear-gradient(135deg, #0A3D73 0%, #002E20 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(26, 58, 46, 0.45);
-  color: #e8eae6;
+  box-shadow: 0 8px 25px rgba(8, 46, 88, 0.45);
+  color: #FFFFFF;
 }
 
 body .t-Button--hot:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(26, 58, 46, 0.3);
+  box-shadow: 0 2px 10px rgba(8, 46, 88, 0.3);
 }
 
 /* === Standard / Normal buttons === */
 body .t-Button:not(.t-Button--hot):not(.t-Button--danger):not(.t-Button--success):not(.t-Button--warning):not(.t-Button--navBar):not(.t-Button--header):not([class*="js-"]):not(.a-Button):not(.t-Button--passwordVisibility),
 body .t-Region .t-Button:not(.t-Button--hot):not(.t-Button--danger):not(.t-Button--success):not(.t-Button--warning):not(.t-Button--passwordVisibility) {
-  background: linear-gradient(135deg, #4a5f7f 0%, #3d4550 100%);
+  background: linear-gradient(135deg, #004832 0%, #3D3028 100%);
   border: none;
-  color: #e8eae6;
+  color: #FFFFFF;
   font-weight: 600;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(74, 95, 127, 0.25);
+  box-shadow: 0 2px 10px rgba(0, 72, 50, 0.25);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body .t-Button:not(.t-Button--hot):not(.t-Button--danger):not(.t-Button--success):not(.t-Button--warning):not(.t-Button--navBar):not(.t-Button--header):not([class*="js-"]):not(.a-Button):not(.t-Button--passwordVisibility):hover {
-  background: linear-gradient(135deg, #3d4550 0%, #1c2841 100%);
+  background: linear-gradient(135deg, #3D3028 0%, #002E20 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 95, 127, 0.35);
-  color: #e8eae6;
+  box-shadow: 0 6px 20px rgba(0, 72, 50, 0.35);
+  color: #FFFFFF;
 }
 
 /* === Danger / Delete buttons === */
 body .t-Button--danger,
 a.t-Button.t-Button--danger,
 button.t-Button.t-Button--danger {
-  background: linear-gradient(135deg, #8b2e2e 0%, #a84a3d 100%);
+  background: linear-gradient(135deg, #8B1A1A 0%, #B22222 100%);
   border: none;
-  color: #e8eae6;
+  color: #FFFFFF;
   font-weight: 600;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(139, 46, 46, 0.35);
 }
 
 body .t-Button--danger:hover {
-  background: linear-gradient(135deg, #a84a3d 0%, #9d5a3c 100%);
+  background: linear-gradient(135deg, #B22222 0%, #6F513E 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(139, 46, 46, 0.45);
 }
@@ -2675,54 +2994,54 @@ body .t-Button--danger:hover {
 body .t-Button--success,
 a.t-Button.t-Button--success,
 button.t-Button.t-Button--success {
-  background: linear-gradient(135deg, #1a3a2e 0%, #2a5e4a 100%);
+  background: linear-gradient(135deg, #082E58 0%, #006B4C 100%);
   border: none;
-  color: #e8eae6;
+  color: #FFFFFF;
   font-weight: 600;
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(26, 58, 46, 0.35);
+  box-shadow: 0 4px 15px rgba(8, 46, 88, 0.35);
 }
 
 body .t-Button--success:hover {
-  background: linear-gradient(135deg, #2a5e4a 0%, #1a3a2e 100%);
+  background: linear-gradient(135deg, #006B4C 0%, #082E58 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(26, 58, 46, 0.45);
+  box-shadow: 0 8px 25px rgba(8, 46, 88, 0.45);
 }
 
 /* === Warning buttons === */
 body .t-Button--warning,
 a.t-Button.t-Button--warning,
 button.t-Button.t-Button--warning {
-  background: linear-gradient(135deg, #9d5a3c 0%, #b87a5a 100%);
+  background: linear-gradient(135deg, #6F513E 0%, #8B6914 100%);
   border: none;
-  color: #e8eae6;
+  color: #FFFFFF;
   font-weight: 600;
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(157, 90, 60, 0.35);
+  box-shadow: 0 4px 15px rgba(111, 81, 62, 0.35);
 }
 
 body .t-Button--warning:hover {
-  background: linear-gradient(135deg, #b87a5a 0%, #9d5a3c 100%);
+  background: linear-gradient(135deg, #8B6914 0%, #6F513E 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(157, 90, 60, 0.45);
+  box-shadow: 0 8px 25px rgba(111, 81, 62, 0.45);
 }
 
 /* === Simple / link-style buttons (keep subtle) === */
 body .t-Button--simple,
 body .t-Button--link {
   background: transparent;
-  border: 2px solid #4a5f7f;
-  color: #4a5f7f;
+  border: 2px solid #004832;
+  color: #004832;
   box-shadow: none;
 }
 
 body .t-Button--simple:hover,
 body .t-Button--link:hover {
-  background: rgba(74, 95, 127, 0.1);
-  border-color: #1a3a2e;
-  color: #1a3a2e;
+  background: rgba(0, 72, 50, 0.1);
+  border-color: #082E58;
+  color: #082E58;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(74, 95, 127, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 72, 50, 0.15);
 }
 
 /* === Small / icon-only buttons (less aggressive styling) === */
@@ -2735,8 +3054,8 @@ body .t-Button--tiny {
 body .a-IG .t-Button,
 body .a-Toolbar .t-Button,
 body .a-IRR-toolbar .t-Button {
-  background: #3d4550;
-  color: #e8eae6;
+  background: #3D3028;
+  color: #FFFFFF;
   border: none;
   border-radius: 6px;
   font-weight: 500;
@@ -2745,53 +3064,53 @@ body .a-IRR-toolbar .t-Button {
 body .a-IG .t-Button:hover,
 body .a-Toolbar .t-Button:hover,
 body .a-IRR-toolbar .t-Button:hover {
-  background: #4a5f7f;
-  color: #e8eae6;
+  background: #004832;
+  color: #FFFFFF;
 }
 
 /* === Dialog / Modal close button === */
 .ui-dialog-titlebar-close,
 body .t-Dialog-closeButton {
-  color: #5a6674;
+  color: #6F513E;
   background: transparent;
 }
 
 .ui-dialog-titlebar-close:hover,
 body .t-Dialog-closeButton:hover {
-  color: #8b2e2e;
+  color: #8B1A1A;
   background: rgba(139, 46, 46, 0.1);
 }
 
 /* === APEX Region action buttons === */
 body .t-Region-headerItems .t-Button {
   background: transparent;
-  color: #4a5f7f;
-  border: 1px solid rgba(74, 95, 127, 0.3);
+  color: #004832;
+  border: 1px solid rgba(0, 72, 50, 0.3);
 }
 
 body .t-Region-headerItems .t-Button:hover {
-  background: rgba(74, 95, 127, 0.1);
-  color: #1a3a2e;
+  background: rgba(0, 72, 50, 0.1);
+  color: #082E58;
 }
 
 /* === Pagination buttons === */
 body .t-Report-paginationLink,
 body .a-IRR-pagination .t-Button {
-  background: #3d4550;
-  color: #e8eae6;
+  background: #3D3028;
+  color: #FFFFFF;
   border-radius: 6px;
 }
 
 body .t-Report-paginationLink:hover,
 body .a-IRR-pagination .t-Button:hover {
-  background: #4a5f7f;
+  background: #004832;
 }
 
 /* === Focus states for accessibility === */
 body .t-Button:focus-visible {
-  outline: 2px solid #789ca8;
+  outline: 2px solid #FFE84F;
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(120, 156, 168, 0.25);
+  box-shadow: 0 0 0 4px rgba(0, 72, 50, 0.25);
 }
 
 
@@ -2802,38 +3121,273 @@ body .t-Button:focus-visible {
 /* General links */
 a,
 body .t-Body a {
-  color: #4a5f7f;
+  color: #004832;
 }
 
 a:hover,
 body .t-Body a:hover {
-  color: #1a3a2e;
+  color: #082E58;
 }
 
 /* Region title accent */
 body .t-Region-title {
-  color: #1a3a2e;
+  color: var(--neutral-800);
 }
 
 /* Tab / pill navigation */
 body .t-Tabs-item.is-active .t-Tabs-link {
-  color: #1a3a2e;
-  border-bottom-color: #1a3a2e;
+  color: #082E58;
+  border-bottom-color: #082E58;
 }
 
 body .t-Tabs-item .t-Tabs-link:hover {
-  color: #4a5f7f;
+  color: #004832;
 }
 
 /* Badge colors */
 body .t-Badge--hot,
 body .t-Badge--primary {
-  background: #1a3a2e;
-  color: #e8eae6;
+  background: #082E58;
+  color: #FFFFFF;
 }
 
 /* Selection highlight */
 ::selection {
-  background: rgba(74, 95, 127, 0.3);
-  color: #1a3a2e;
+  background: rgba(0, 72, 50, 0.3);
+  color: #082E58;
+}
+
+
+/* =============================================
+   PAGE 6 — IMPORT / EXPORT (Transfer)
+   Task 4.2.4: Import progress indicator
+   ============================================= */
+
+/* --- Transfer card layout --- */
+.transfer-card {
+  border: 1px solid var(--ut-component-border-color, #d4d9dd);
+  border-radius: var(--ut-component-border-radius, 8px);
+  background: var(--ut-component-background-color, #fff);
+  padding: 24px;
+  transition: box-shadow 0.2s ease;
+}
+
+.transfer-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Drag-and-drop overlay --- */
+.drag-over {
+  position: relative;
+}
+
+.drag-over::after {
+  content: "Drop JSON file here";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 46, 88, 0.06);
+  border: 2px dashed var(--ut-palette-primary, #082E58);
+  border-radius: var(--ut-component-border-radius, 8px);
+  color: var(--ut-palette-primary, #082E58);
+  font-size: 1.125rem;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* --- Import progress state --- */
+.is-importing {
+  position: relative;
+  min-height: 120px;
+}
+
+.is-importing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: var(--ut-component-border-radius, 8px);
+  z-index: 90;
+}
+
+/* The APEX spinner (.u-Processing) is z-index 100+ by default,
+   so it renders above the overlay. */
+
+.js-import-progress-msg {
+  display: none;
+  text-align: center;
+  padding: 8px 0;
+  font-size: 0.875rem;
+  color: var(--ut-body-text-color, #404040);
+  position: relative;
+  z-index: 91;
+}
+
+.is-importing .js-import-progress-msg {
+  display: block;
+}
+
+/* --- Export loading state --- */
+.is-exporting {
+  position: relative;
+  min-height: 80px;
+}
+
+.is-exporting::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: var(--ut-component-border-radius, 8px);
+  z-index: 90;
+}
+
+/* --- Import preview area --- */
+.import-preview .display_only {
+  padding: 12px 16px;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+.import-preview--valid {
+  background: rgba(0, 72, 50, 0.08);
+  border-left: 4px solid var(--status-approved);
+  padding: 12px 16px;
+  border-radius: 0 6px 6px 0;
+}
+
+.import-preview--invalid {
+  background: rgba(139, 26, 26, 0.06);
+  border-left: 4px solid var(--status-denied);
+  padding: 12px 16px;
+  border-radius: 0 6px 6px 0;
+}
+
+/* --- Import result alert region --- */
+.import-result-alert .t-Alert--success {
+  border-left-color: var(--status-approved);
+}
+
+.import-result-alert .t-Alert--warning {
+  border-left-color: var(--status-pending);
+}
+
+.import-result-alert .t-Alert--danger {
+  border-left-color: var(--status-denied);
+}
+
+/* --- Progress bar (for large file imports) --- */
+.import-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--ut-component-border-color, #d4d9dd);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.import-progress-bar__fill {
+  height: 100%;
+  background: var(--ut-palette-primary, #082E58);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.import-progress-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: var(--ut-body-text-color, #666);
+  margin-top: 4px;
+}
+
+/* --- Transfer page icon decorations --- */
+.transfer-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: rgba(8, 46, 88, 0.08);
+  color: var(--ut-palette-primary, #082E58);
+  font-size: 1.125rem;
+  margin-bottom: 12px;
+}
+
+/* ============================================================
+   Settings Page (Page 7)
+   ============================================================ */
+
+/* Credentials status indicators */
+.u-success-text {
+  color: var(--ut-palette-success, #2e8540);
+  font-weight: 600;
+}
+
+.u-danger-text {
+  color: var(--ut-palette-danger, #cd2026);
+  font-weight: 600;
+}
+
+.u-success-text .fa,
+.u-danger-text .fa {
+  margin-right: 4px;
+}
+
+/* ============================================================
+   Administration Page (Page 8)
+   ============================================================ */
+
+/* Health cards — equal height */
+.admin-health-cards .t-Cards-item {
+  min-height: 120px;
+}
+
+/* Audit action badges */
+.admin-audit .t-Badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Scheduler job state badges */
+.admin-scheduler .t-Badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   Hero Region - Hide Empty Icon & Clean Up
+   ============================================================ */
+
+/* When the icon span has no icon class, hide it */
+.t-HeroRegion-icon.t-Icon:empty,
+.t-HeroRegion-icon:not([class*="fa-"]):not([class*="icon-"]) {
+  display: none;
+}
+
+/* If the left column only holds the empty icon, collapse it */
+.t-HeroRegion-col--left:has(.t-HeroRegion-icon:empty),
+.t-HeroRegion-col--left:has(.t-HeroRegion-icon:not([class*="fa-"]):not([class*="icon-"])) {
+  display: none;
+}
+
+/* When hero DOES have an icon, style it nicely */
+.t-HeroRegion-icon.t-Icon[class*="fa-"],
+.t-HeroRegion-icon[class*="icon-"] {
+  background: rgba(0, 72, 50, 0.1);
+  border-radius: var(--radius-md);
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--uscis-secondary);
 }

@@ -1,10 +1,8 @@
 # USCIS Case Tracker - Oracle APEX Makefile
 # Database and APEX application management
 
-# Use bash and run all recipe lines in one shell (enables heredocs)
+# Use bash (compatible with macOS default GNU Make 3.81 — no .ONESHELL)
 SHELL := /bin/bash
-.ONESHELL:
-.SHELLFLAGS := -e -o pipefail -c
 
 .PHONY: help import export upload deploy install test connect connections \
         packages-install packages-compile watch clean backup restore \
@@ -140,44 +138,32 @@ install: check-sqlcl
 	$(SQL_CMD) -name $(CONNECTION) @install_all_v2.sql
 	@echo "$(GREEN)✓ Installation complete$(NC)"
 
-# Install packages only (01-08)
+# Install packages only (01-10)
 packages-install: check-sqlcl
 	@echo "$(BLUE)Installing PL/SQL packages...$(NC)"
-	$(SQL_CMD) -name $(CONNECTION) <<-'EOSQL'
-		@packages/01_uscis_types_pkg.sql
-		@packages/02_uscis_util_pkg.sql
-		@packages/03_uscis_audit_pkg.sql
-		@packages/04_uscis_case_pkg.sql
-		@packages/05_uscis_oauth_pkg.sql
-		@packages/06_uscis_api_pkg.sql
-		@packages/07_uscis_scheduler_pkg.sql
-		@packages/08_uscis_export_pkg.sql
-		exit
-	EOSQL
+	$(SQL_CMD) -name $(CONNECTION) @install_packages.sql
 	@echo "$(GREEN)✓ Packages installed$(NC)"
 
 # Recompile invalid objects
 packages-compile: check-sqlcl
 	@echo "$(BLUE)Recompiling invalid objects...$(NC)"
-	$(SQL_CMD) -name $(CONNECTION) <<-'EOSQL'
-		BEGIN
-			DBMS_UTILITY.compile_schema(schema => USER, compile_all => FALSE);
-		END;
-		/
-		SELECT object_name, object_type, status 
-		FROM user_objects 
-		WHERE status = 'INVALID';
-		exit
-	EOSQL
+	@printf '%s\n' \
+		"BEGIN" \
+		"  DBMS_UTILITY.compile_schema(schema => USER, compile_all => FALSE);" \
+		"END;" \
+		"/" \
+		"SELECT object_name, object_type, status FROM user_objects WHERE status = 'INVALID';" \
+		"exit" \
+	| $(SQL_CMD) -name $(CONNECTION)
 
 # Run PL/SQL unit tests (utPLSQL)
 test: check-sqlcl
 	@echo "$(BLUE)Running PL/SQL unit tests...$(NC)"
-	$(SQL_CMD) -name $(CONNECTION) <<-'EOSQL'
-		SET SERVEROUTPUT ON SIZE UNLIMITED
-		exec ut.run()
-		exit
-	EOSQL
+	@printf '%s\n' \
+		"SET SERVEROUTPUT ON SIZE UNLIMITED" \
+		"exec ut.run()" \
+		"exit" \
+	| $(SQL_CMD) -name $(CONNECTION)
 
 # Interactive database connection
 connect: check-sqlcl
@@ -196,19 +182,15 @@ connections: check-sqlcl
 # List static files in the application
 static-list: check-sqlcl
 	@echo "$(BLUE)Static files in Application $(APP_ID):$(NC)"
-	@$(SQL_CMD) -name $(CONNECTION) -S <<-'EOSQL'
-		SET PAGESIZE 100
-		SET LINESIZE 120
-		COLUMN file_name FORMAT A40
-		COLUMN mime_type FORMAT A30
-		COLUMN last_updated_on FORMAT A20
-		SELECT file_name, mime_type, 
-		       TO_CHAR(last_updated_on, 'YYYY-MM-DD HH24:MI') as last_updated_on
-		FROM apex_application_static_files
-		WHERE application_id = $(APP_ID)
-		ORDER BY file_name;
-		exit
-	EOSQL
+	@printf '%s\n' \
+		"SET PAGESIZE 100" \
+		"SET LINESIZE 120" \
+		"COLUMN file_name FORMAT A40" \
+		"COLUMN mime_type FORMAT A30" \
+		"COLUMN last_updated_on FORMAT A20" \
+		"SELECT file_name, mime_type, TO_CHAR(last_updated_on, 'YYYY-MM-DD HH24:MI') as last_updated_on FROM apex_application_static_files WHERE application_id = $(APP_ID) ORDER BY file_name;" \
+		"exit" \
+	| $(SQL_CMD) -name $(CONNECTION) -S
 
 # Delete a static file (use: make static-delete FILE=old-file.js)
 static-delete: check-sqlcl
@@ -216,37 +198,34 @@ static-delete: check-sqlcl
 		echo "$(RED)Usage: make static-delete FILE=filename.js$(NC)"; \
 		exit 1; \
 	fi
+	@# Validate FILE contains only safe characters (alphanumeric, dash, underscore, dot)
+	@if echo "$(FILE)" | grep -qE '[^a-zA-Z0-9._-]'; then \
+		echo "$(RED)Error: FILE contains invalid characters. Only alphanumeric, dash, underscore, and dot are allowed.$(NC)"; \
+		exit 1; \
+	fi
 	@echo "$(YELLOW)Deleting static file: $(FILE)$(NC)"
-	@$(SQL_CMD) -name $(CONNECTION) <<-EOSQL
-		DECLARE
-			l_file_id NUMBER;
-			l_workspace_id NUMBER;
-		BEGIN
-			SELECT workspace_id INTO l_workspace_id
-			FROM apex_applications WHERE application_id = $(APP_ID);
-			apex_session.create_session(
-				p_app_id                   => $(APP_ID),
-				p_page_id                  => 1,
-				p_username                 => 'ADMIN',
-				p_call_post_authentication => FALSE
-			);
-			
-			SELECT application_file_id INTO l_file_id
-			FROM apex_application_static_files
-			WHERE application_id = $(APP_ID) AND file_name = '$(FILE)';
-			
-			wwv_flow_api.remove_app_static_file(p_id => l_file_id, p_flow_id => $(APP_ID));
-			COMMIT;
-			DBMS_OUTPUT.PUT_LINE('Deleted: $(FILE)');
-			apex_session.delete_session;
-		EXCEPTION
-			WHEN NO_DATA_FOUND THEN
-				BEGIN apex_session.delete_session; EXCEPTION WHEN OTHERS THEN NULL; END;
-				DBMS_OUTPUT.PUT_LINE('File not found: $(FILE)');
-		END;
-		/
-		exit
-	EOSQL
+	@printf '%s\n' \
+		"DEFINE STATIC_FILENAME = '$(FILE)'" \
+		"DECLARE" \
+		"  l_file_id NUMBER;" \
+		"  l_workspace_id NUMBER;" \
+		"  l_filename VARCHAR2(255) := '&STATIC_FILENAME.';" \
+		"BEGIN" \
+		"  SELECT workspace_id INTO l_workspace_id FROM apex_applications WHERE application_id = $(APP_ID);" \
+		"  apex_session.create_session(p_app_id => $(APP_ID), p_page_id => 1, p_username => 'ADMIN', p_call_post_authentication => FALSE);" \
+		"  SELECT application_file_id INTO l_file_id FROM apex_application_static_files WHERE application_id = $(APP_ID) AND file_name = l_filename;" \
+		"  wwv_flow_api.remove_app_static_file(p_id => l_file_id, p_flow_id => $(APP_ID));" \
+		"  COMMIT;" \
+		"  DBMS_OUTPUT.PUT_LINE('Deleted: ' || l_filename);" \
+		"  apex_session.delete_session;" \
+		"EXCEPTION" \
+		"  WHEN NO_DATA_FOUND THEN" \
+		"    BEGIN apex_session.delete_session; EXCEPTION WHEN OTHERS THEN NULL; END;" \
+		"    DBMS_OUTPUT.PUT_LINE('File not found: ' || l_filename);" \
+		"END;" \
+		"/" \
+		"exit" \
+	| $(SQL_CMD) -name $(CONNECTION)
 
 # ============================================================
 # Utilities
@@ -255,41 +234,39 @@ static-delete: check-sqlcl
 # View recent audit logs
 logs: check-sqlcl
 	@echo "$(BLUE)Recent audit log entries:$(NC)"
-	@$(SQL_CMD) -name $(CONNECTION) -S <<-'EOSQL'
-		SET PAGESIZE 50
-		SET LINESIZE 150
-		COLUMN event_time FORMAT A20
-		COLUMN event_type FORMAT A15
-		COLUMN receipt_number FORMAT A15
-		COLUMN description FORMAT A60
-		SELECT TO_CHAR(event_time, 'MM-DD HH24:MI:SS') as event_time,
-		       event_type, receipt_number, 
-		       SUBSTR(description, 1, 60) as description
-		FROM case_audit_log
-		ORDER BY event_time DESC
-		FETCH FIRST 20 ROWS ONLY;
-		exit
-	EOSQL
+	@printf '%s\n' \
+		"SET PAGESIZE 50" \
+		"SET LINESIZE 150" \
+		"COLUMN event_time FORMAT A20" \
+		"COLUMN event_type FORMAT A15" \
+		"COLUMN receipt_number FORMAT A15" \
+		"COLUMN description FORMAT A60" \
+		"SELECT TO_CHAR(event_time, 'MM-DD HH24:MI:SS') as event_time, event_type, receipt_number, SUBSTR(description, 1, 60) as description FROM case_audit_log ORDER BY event_time DESC FETCH FIRST 20 ROWS ONLY;" \
+		"exit" \
+	| $(SQL_CMD) -name $(CONNECTION) -S
 
 # Backup database objects (export DDL)
 backup: check-sqlcl
 	@echo "$(BLUE)Backing up database objects...$(NC)"
 	@mkdir -p backups
-	@$(SQL_CMD) -name $(CONNECTION) <<-'EOSQL'
-		SET LONG 1000000
-		SET PAGESIZE 0
-		SET LINESIZE 32767
-		SET TRIMSPOOL ON
-		SET FEEDBACK OFF
-		SPOOL backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
-		SELECT DBMS_METADATA.get_ddl(object_type, object_name)
-		FROM user_objects
-		WHERE object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'SEQUENCE', 'TRIGGER')
-		ORDER BY object_type, object_name;
-		SPOOL OFF
-		exit
-	EOSQL
-	@echo "$(GREEN)✓ Backup saved to backups/$(NC)"
+	@BACKUP_FILE="backups/backup_$$(date +%Y%m%d_%H%M%S).sql"; \
+	printf '%s\n' \
+		"SET LONG 1000000" \
+		"SET PAGESIZE 0" \
+		"SET LINESIZE 32767" \
+		"SET TRIMSPOOL ON" \
+		"SET FEEDBACK OFF" \
+		"SPOOL $$BACKUP_FILE" \
+		"SELECT DBMS_METADATA.get_ddl(object_type, object_name) FROM user_objects WHERE object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'SEQUENCE', 'TRIGGER') ORDER BY object_type, object_name;" \
+		"SPOOL OFF" \
+		"exit" \
+	| $(SQL_CMD) -name $(CONNECTION); \
+	if [ -s "$$BACKUP_FILE" ]; then \
+		echo "$(GREEN)✓ Backup saved to backups/$(NC)"; \
+	else \
+		echo "$(RED)✗ Backup failed — file missing or empty$(NC)"; \
+		exit 1; \
+	fi
 
 # Show application and connection info
 info: check-sqlcl

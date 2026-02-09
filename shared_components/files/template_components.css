@@ -2,17 +2,12 @@
    USCIS Case Tracker - Unified Template Component CSS
    ============================================================
    File: shared_components/files/template_components.css
+   Version: 2.0.0 - Maine Professional Edition
    
    Purpose:
      Single source of truth for all status badge, case card,
      and dashboard metric card styling. Uses UT --ut-* / --a-*
      CSS custom properties per P2 (no !important).
-   
-   Replaces:
-     - page_00022.sql inline_css status-badge block
-     - page_00003.sql inline_css status-badge block
-     - upload_enhanced_files.sql animated badge styles
-     - upload_inline.sql badge styles
    
    Follows: APEX_CONTEXTUAL_ANCHOR.md P2, P7
    ============================================================ */
@@ -21,33 +16,34 @@
    1. Status Color Custom Properties (design tokens)
    ============================================================ */
 :root {
-    --uscis-status-approved-bg:     #e6f4ea;
-    --uscis-status-approved-fg:     #1b7a36;
-    --uscis-status-approved-solid:  #2e8540;
+    /* Maine Professional Status Colors */
+    --uscis-status-approved-bg:     #E6F2EE;
+    --uscis-status-approved-fg:     #003D2A;
+    --uscis-status-approved-solid:  #004832;
     
-    --uscis-status-denied-bg:       #fce8e8;
-    --uscis-status-denied-fg:       #b71c22;
-    --uscis-status-denied-solid:    #cd2026;
+    --uscis-status-denied-bg:       #FCE8E8;
+    --uscis-status-denied-fg:       #6E1111;
+    --uscis-status-denied-solid:    #8B1A1A;
     
-    --uscis-status-rfe-bg:          #e3f0fa;
-    --uscis-status-rfe-fg:          #005a96;
-    --uscis-status-rfe-solid:       #0071bc;
+    --uscis-status-rfe-bg:          #E3ECF5;
+    --uscis-status-rfe-fg:          #051D3A;
+    --uscis-status-rfe-solid:       #082E58;
     
-    --uscis-status-received-bg:     #ede3f5;
-    --uscis-status-received-fg:     #3b2270;
-    --uscis-status-received-solid:  #4c2c92;
+    --uscis-status-received-bg:     #EDE3F5;
+    --uscis-status-received-fg:     #301B56;
+    --uscis-status-received-solid:  #4A2D73;
     
-    --uscis-status-pending-bg:      #fff8e1;
-    --uscis-status-pending-fg:      #7a6200;
-    --uscis-status-pending-solid:   #fdb81e;
+    --uscis-status-pending-bg:      #FFF8E1;
+    --uscis-status-pending-fg:      #5C3F2E;
+    --uscis-status-pending-solid:   #FFE84F;
     
-    --uscis-status-transferred-bg:  #e0f7fa;
-    --uscis-status-transferred-fg:  #006064;
+    --uscis-status-transferred-bg:  #E0F7FA;
+    --uscis-status-transferred-fg:  #004044;
     --uscis-status-transferred-solid: #006064;
     
-    --uscis-status-unknown-bg:      #f0f1f2;
-    --uscis-status-unknown-fg:      #3d4551;
-    --uscis-status-unknown-solid:   #5b616b;
+    --uscis-status-unknown-bg:      #F0F1F2;
+    --uscis-status-unknown-fg:      #3A3A3A;
+    --uscis-status-unknown-solid:   #5A5A5A;
 }
 
 /* ============================================================

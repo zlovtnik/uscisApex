@@ -1,20 +1,21 @@
 # USCIS Case Tracker: Oracle PL/SQL & APEX Migration Roadmap
 
 **Project Start Date:** 2026-02-04  
-**Target Completion:** 12 Weeks  
-**Last Updated:** February 5, 2026  
+**Target Completion:** 14 Weeks  
+**Last Updated:** February 8, 2026  
 
 ---
 
 ## Executive Timeline
 
 ```text
-Week 1-2    ████████░░░░░░░░░░░░░░░░  Phase 1: Foundation
-Week 3-5    ████████████████░░░░░░░░  Phase 2: Core Functionality
-Week 6-7    ████████████████████░░░░  Phase 3: API Integration
-Week 8-9    ██████████████████████░░  Phase 4: Advanced Features
-Week 10-11  ██████████████████████░░  Phase 5: Testing & Hardening
-Week 12     ████████████████████████  Phase 6: Deployment
+Week 1-2    ████████░░░░░░░░░░░░░░░░░░░░  Phase 1: Foundation
+Week 3-5    ████████████████░░░░░░░░░░░░  Phase 2: Core Functionality
+Week 6-7    ████████████████████░░░░░░░░  Phase 3: API Integration
+Week 8-9    ██████████████████████░░░░░░  Phase 4: Advanced Features
+Week 10-11  ██████████████████████░░░░░░  Phase 5: Testing & Hardening
+Week 12     ████████████████████████░░░░  Phase 6: Deployment
+Week 13-14  ████████████████████████████  Phase 7: UI/UX Modernization (Maine Professional)
 ```
 
 ---
@@ -30,6 +31,7 @@ Week 12     ██████████████████████�
 - 📚 **Documentation** - Specs, guides
 
 > **Dependency Notation:**
+>
 > - Comma-separated IDs: `1.2.1, 1.2.2, 1.2.3` (explicit list)
 > - Range notation: `1.2.1-1.2.5` (tasks 1.2.1 through 1.2.5 inclusive)
 > - "All [Category]" = all P0 and P1 tasks in that category for the current phase
@@ -238,24 +240,24 @@ Week 12     ██████████████████████�
 
 | ID | Task | Category | Priority | Est. Hours | Dependencies | Status |
 |----|------|----------|----------|------------|--------------|--------|
-| 3.3.1 | Build Check Status modal (Page 5) | 🖥️ APEX | P0 | 4 | 3.2.4 | ⬜ Not Started |
-| 3.3.2 | Add receipt number input with validation | 🖥️ APEX | P0 | 2 | 2.1.1 | ⬜ Not Started |
-| 3.3.3 | Add save to database toggle | 🖥️ APEX | P0 | 1 | 3.3.1 | ⬜ Not Started |
-| 3.3.4 | Display API result in modal | 🖥️ APEX | P0 | 3 | 3.3.1 | ⬜ Not Started |
-| 3.3.5 | Handle API errors gracefully | 🖥️ APEX | P0 | 3 | 3.3.1 | ⬜ Not Started |
-| 3.3.6 | Add loading spinner during API call | 🖥️ APEX | P1 | 1 | 3.3.1 | ⬜ Not Started |
+| 3.3.1 | Build Check Status modal (Page 5) | 🖥️ APEX | P0 | 4 | 3.2.4 | ✅ Complete |
+| 3.3.2 | Add receipt number input with validation | 🖥️ APEX | P0 | 2 | 2.1.1 | ✅ Complete |
+| 3.3.3 | Add save to database toggle | 🖥️ APEX | P0 | 1 | 3.3.1 | ✅ Complete |
+| 3.3.4 | Display API result in modal | 🖥️ APEX | P0 | 3 | 3.3.1 | ✅ Complete |
+| 3.3.5 | Handle API errors gracefully | 🖥️ APEX | P0 | 3 | 3.3.1 | ✅ Complete |
+| 3.3.6 | Add loading spinner during API call | 🖥️ APEX | P1 | 1 | 3.3.1 | ✅ Complete |
 
 ---
 
 | ID | Task | Category | Priority | Est. Hours | Dependencies | Status |
 |----|------|----------|----------|------------|--------------|--------|
 | 3.4.1 | Wire Refresh Status button on Page 3 | 🖥️ APEX | P0 | 2 | 2.4.4, 3.2.4 | ✅ Complete |
-| 3.4.2 | Add fetch from USCIS on Page 4 | 🖥️ APEX | P0 | 3 | 2.5.3, 3.2.4 | ⬜ Not Started |
-| 3.4.3 | Add bulk refresh action on Page 2 | 🖥️ APEX | P1 | 4 | 3.2.6 | ⬜ Not Started |
-| 3.4.4 | Create global error handler | 📦 PL/SQL | P0 | 3 | None | ⬜ Not Started |
-| 3.4.5 | Add APEX error page template | 🖥️ APEX | P1 | 2 | 3.4.4 | ⬜ Not Started |
+| 3.4.2 | Add fetch from USCIS on Page 4 | 🖥️ APEX | P0 | 3 | 2.5.3, 3.2.4 | ✅ Complete |
+| 3.4.3 | Add bulk refresh action on Page 22 | 🖥️ APEX | P1 | 4 | 3.2.6 | ✅ Complete |
+| 3.4.4 | Create global error handler | 📦 PL/SQL | P0 | 3 | None | ✅ Complete |
+| 3.4.5 | Add APEX error page template | 🖥️ APEX | P1 | 2 | 3.4.4 | ✅ Complete |
 | 3.4.6 | Integration testing with USCIS sandbox | 🔌 Integration | P0 | 6 | 3.3.1-3.4.3 | ⬜ Not Started |
-| 3.4.7 | Document API integration | 📚 Documentation | P2 | 3 | 3.1.1-3.2.7 | ⬜ Not Started |
+| 3.4.7 | Document API integration | 📚 Documentation | P2 | 3 | 3.1.1-3.2.7 | 🔄 In Progress (draft; finalize after 3.4.6 completes) |
 
 **Week 7 Subtotal:** 37 hours  
 **Phase 3 Total:** ~80 hours
@@ -272,7 +274,7 @@ Week 12     ██████████████████████�
 | 4.1.2 | Implement export_cases_csv function | 📦 PL/SQL | P1 | 3 | 1.3.7 | ✅ Complete |
 | 4.1.3 | Implement import_cases_json function | 📦 PL/SQL | P0 | 5 | 1.3.7, 2.2.2 | ✅ Complete |
 | 4.1.4 | Implement download_export procedure | 📦 PL/SQL | P0 | 2 | 4.1.1, 4.1.2 | ✅ Complete |
-| 4.1.5 | Write unit tests for USCIS_EXPORT_PKG | 🧪 Testing | P0 | 3 | 4.1.1-4.1.4 | 🔄 In Progress |
+| 4.1.5 | Write unit tests for USCIS_EXPORT_PKG | 🧪 Testing | P0 | 3 | 4.1.1-4.1.4 | ✅ Complete |
 
 ---
 
@@ -281,9 +283,9 @@ Week 12     ██████████████████████�
 | 4.2.1 | Build Import/Export page (Page 6) | 🖥️ APEX | P0 | 4 | 4.1.4 | ✅ Complete |
 | 4.2.2 | Add export section with format selection | 🖥️ APEX | P0 | 2 | 4.2.1 | ✅ Complete |
 | 4.2.3 | Add file upload component for import | 🖥️ APEX | P0 | 3 | 4.2.1 | ✅ Complete |
-| 4.2.4 | Add import progress indicator | 🖥️ APEX | P1 | 2 | 4.2.3 | ⬜ Not Started |
+| 4.2.4 | Add import progress indicator | 🖥️ APEX | P1 | 2 | 4.2.3 | ✅ Complete |
 | 4.2.5 | Add replace existing toggle | 🖥️ APEX | P1 | 1 | 4.2.3 | ✅ Complete |
-| 4.2.6 | Handle large file imports | 📦 PL/SQL | P1 | 3 | 4.1.3 | ⬜ Not Started |
+| 4.2.6 | Handle large file imports | 📦 PL/SQL | P1 | 3 | 4.1.3 | ✅ Complete |
 
 ---
 
@@ -317,13 +319,13 @@ Week 12     ██████████████████████�
 
 | ID | Task | Category | Priority | Est. Hours | Dependencies | Status |
 |----|------|----------|----------|------------|--------------|--------|
-| 4.5.1 | Build Settings page (Page 7) | 🖥️ APEX | P0 | 4 | 2.1.4 | ⬜ Not Started |
-| 4.5.2 | Add API configuration section | 🖥️ APEX | P0 | 2 | 4.5.1 | ⬜ Not Started |
-| 4.5.3 | Add scheduler settings section | 🖥️ APEX | P0 | 3 | 4.5.1, 4.4.5 | ⬜ Not Started |
-| 4.5.4 | Build Administration page (Page 8) | 🖥️ APEX | P1 | 4 | None | ⬜ Not Started |
-| 4.5.5 | Add audit logs viewer | 🖥️ APEX | P1 | 3 | 4.5.4, 2.6.3 | ⬜ Not Started |
-| 4.5.6 | Add job scheduler status panel | 🖥️ APEX | P1 | 3 | 4.5.4, 4.4.6 | ⬜ Not Started |
-| 4.5.7 | Add system health indicators | 🖥️ APEX | P2 | 2 | 4.5.4 | ⬜ Not Started |
+| 4.5.1 | Build Settings page (Page 7) | 🖥️ APEX | P0 | 4 | 2.1.4 | ✅ Complete |
+| 4.5.2 | Add API configuration section | 🖥️ APEX | P0 | 2 | 4.5.1 | ✅ Complete |
+| 4.5.3 | Add scheduler settings section | 🖥️ APEX | P0 | 3 | 4.5.1, 4.4.5 | ✅ Complete |
+| 4.5.4 | Build Administration page (Page 8) | 🖥️ APEX | P1 | 4 | None | ✅ Complete |
+| 4.5.5 | Add audit logs viewer | 🖥️ APEX | P1 | 3 | 4.5.4, 2.6.3 | ✅ Complete |
+| 4.5.6 | Add job scheduler status panel | 🖥️ APEX | P1 | 3 | 4.5.4, 4.4.6 | ✅ Complete |
+| 4.5.7 | Add system health indicators | 🖥️ APEX | P2 | 2 | 4.5.4 | ✅ Complete |
 
 **Week 9 Subtotal:** 40 hours  
 **Phase 4 Total:** ~89 hours
@@ -450,6 +452,48 @@ Week 12     ██████████████████████�
 
 ---
 
+## Phase 7: UI/UX Modernization — Maine Professional (Weeks 13-14)
+
+> **"Maine Professional" Visual Identity** — Replaces the "New England Coastal" palette with a formal Maine.gov-inspired design system: Coastal Navy, Pine Green, Resurgam Yellow, Fog/Granite neutrals, and Inter typography.
+
+### Week 13: Foundation (Theming & Branding)
+
+| ID | Task | Category | Priority | Est. Hours | Dependencies | Status |
+|----|------|----------|----------|------------|--------------|--------|
+| 7.1.1 | Update CSS variables to Maine Professional palette in app-styles.css | 🖥️ APEX | P0 | 4 | Phase 6 | ✅ Complete |
+| 7.1.2 | Update template_components.css status design tokens | 🖥️ APEX | P0 | 2 | 7.1.1 | ✅ Complete |
+| 7.1.3 | Update USCIS_TEMPLATE_COMPONENTS_PKG get_status_color | 📦 PL/SQL | P0 | 1 | 7.1.1 | ✅ Complete |
+| 7.1.4 | Create "Maine Pine" Theme Roller style (Vita-Slate base) | 🖥️ APEX | P0 | 2 | 7.1.1 | ⬜ Not Started |
+| 7.1.5 | Integrate Inter font via @import and Theme Roller Custom CSS | 🖥️ APEX | P0 | 1 | 7.1.1 | ✅ Complete |
+| 7.1.6 | Upload Maine.gov logo (SVG) to Shared Components | 🖥️ APEX | P1 | 1 | 7.1.4 | ⬜ Not Started |
+| 7.1.7 | Verify Universal Theme 42 is current version | 🖥️ APEX | P0 | 1 | Phase 6 | ⬜ Not Started |
+| 7.1.8 | WCAG 2.1 AA contrast audit for all Maine palette combos | 🧪 Testing | P0 | 3 | 7.1.1 | ✅ Complete |
+| 7.1.8a | Fix WCAG audit findings (contrast fixes, keyboard navigation, ARIA/labeling) | ♿ Accessibility Remediation | P1 | 16 | 7.1.8 | ⬜ Not Started |
+| 7.1.9 | Update Font APEX 2.4 icons in navigation menus | 🖥️ APEX | P2 | 1 | 7.1.4 | ⬜ Not Started |
+| 7.1.10 | Move all remaining page-level CSS to Shared Components | 🖥️ APEX | P1 | 3 | 7.1.1 | ⬜ Not Started |
+| 7.1.11 | Update APEX_FRONTEND_DESIGN.md with Maine palette spec | 📚 Documentation | P0 | 1 | 7.1.1 | ✅ Complete |
+| 7.1.12 | Upload updated CSS via `make upload` | 🚀 DevOps | P0 | 1 | 7.1.1, 7.1.2 | ⬜ Not Started |
+
+---
+
+### Week 13-14: AI-Powered Experience & Advanced Components
+
+| ID | Task | Category | Priority | Est. Hours | Dependencies | Status |
+|----|------|----------|----------|------------|--------------|--------|
+| 7.2.1 | Evaluate APEX AI Assistant for natural-language case queries | 🔌 Integration | P2 | 4 | 7.1.4 | ⬜ Not Started |
+| 7.2.2 | Prototype Semantic Search bar to replace filter forms | 🔌 Integration | P2 | 6 | 7.2.1 | ⬜ Not Started |
+| 7.2.3 | Prototype "Generate Text" Dynamic Action for report summaries | 🔌 Integration | P3 | 4 | 7.2.1 | ⬜ Not Started |
+| 7.2.4 | Convert dashboard cards to Template Components ("Maine Postcard") | 🖥️ APEX | P1 | 4 | 7.1.4 | ⬜ Not Started |
+| 7.2.5 | Evaluate Human Task components for unified approval lists | 🖥️ APEX | P3 | 3 | 7.1.4 | ⬜ Not Started |
+| 7.2.6 | Evaluate Document Generator for PDF reports (state forms) | 🖥️ APEX | P3 | 3 | 7.1.4 | ⬜ Not Started |
+| 7.2.7 | Prototype OpenTelemetry client-side monitoring | 🚀 DevOps | P3 | 4 | Phase 6 | ⬜ Not Started |
+| 7.2.8 | Cross-browser / mobile testing of Maine Professional theme | 🧪 Testing | P0 | 4 | 7.1.12 | ⬜ Not Started |
+| 7.2.9 | Evaluate APEXlang (file-based UI definitions) for Git tracking | 🚀 DevOps | P2 | 3 | 7.1.4 | ⬜ Not Started |
+
+**Phase 7 Total:** ~56 hours
+
+---
+
 ## Summary
 
 ### Total Estimated Hours by Phase
@@ -462,7 +506,8 @@ Week 12     ██████████████████████�
 | 4 | Advanced Features | 89 | 8-9 |
 | 5 | Testing & Hardening | 86 | 10-11 |
 | 6 | Deployment | 46 | 12 |
-| **Total** | | **480** | **12** |
+| 7 | UI/UX Modernization (Maine Professional) | 56 | 13-14 |
+| **Total** | | **536** | **14** |
 
 ### Hours by Category
 
@@ -483,6 +528,7 @@ Week 12     ██████████████████████�
 ```
 
 > **Note:** Critical path updated to:
+>
 > - Fix 2.1.1 dependency from 1.3.3 to 1.3.2 (USCIS_UTIL_PKG)
 > - Include Phase 4 tasks (4.3.1, 4.3.6, 4.5.7) before 5.1.4
 > - Add staging deployment (6.0.1, 6.0.3) before production
@@ -520,6 +566,7 @@ Week 12     ██████████████████████�
 | 2026-02-04 | 1.2 | Migration Team | Completed tasks 2.1.1-2.1.7: USCIS_UTIL_PKG body implementation (validate_receipt_number, normalize_receipt_number, mask_receipt_number, get_config/set_config, parse_iso_timestamp, get_current_user, get_client_ip) |
 | 2026-02-05 | 1.3 | Migration Team | Completed tasks 2.2.1-2.2.11: USCIS_CASE_PKG body implementation (add_case, add_or_update_case, get_case, list_cases, count_cases, delete_case, case_exists, get_cases_by_receipts, update_case_notes, set_case_active) and unit tests |
 | 2026-02-05 | 1.4 | Migration Team | Enforced per-package unit-test policy: moved tasks 2.6.7, 3.1.6, 3.2.7, 4.1.5, 4.4.8 to 🔄 In Progress; updated Phase 5 task 5.1.1 to verification-only; added unit-test policy note requiring tests before Phase 5 |
+| 2026-02-08 | 2.0 | Migration Team | Added Phase 7: UI/UX Modernization — "Maine Professional" palette. Completed tasks 7.1.1-7.1.3, 7.1.5, 7.1.8, 7.1.11: CSS palette transformation (app-styles.css v4.0, template_components.css v2.0), Inter font, USCIS_TEMPLATE_COMPONENTS_PKG v2.0, WCAG audit, design doc update. Created theme_roller_maine_pine.sql patch. |
 
 ---
 

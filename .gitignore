@@ -5,6 +5,11 @@ apex_24doc/
 *.env.local
 apex.env.local
 
+# Credential scripts with real secrets
+scripts/setup_sandbox_credentials.sql
+scripts/*credentials*
+scripts/*secrets*
+
 # IDE
 .idea/
 .vscode/

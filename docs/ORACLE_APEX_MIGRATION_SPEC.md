@@ -125,7 +125,7 @@ case class CaseHistory(
 - **Token URL**: `https://api-int.uscis.gov/oauth/accesstoken`
 - **Case Status URL**: `https://api-int.uscis.gov/case-status/{receiptNumber}`
 - **Authentication**: OAuth2 Client Credentials Grant
-- **Rate Limits**: 10 TPS, 400,000 requests/day
+- **Rate Limits**: 5 TPS, 1,000 requests/day
 - **Token Caching**: Required (tokens valid ~3600 seconds)
 
 ---
@@ -448,8 +448,9 @@ FETCH FIRST 100 ROWS ONLY;
 INSERT INTO scheduler_config (config_key, config_value, description) VALUES
     ('USCIS_API_BASE_URL', 'https://api-int.uscis.gov/case-status', 'USCIS Case Status API base URL'),
     ('USCIS_OAUTH_TOKEN_URL', 'https://api-int.uscis.gov/oauth/accesstoken', 'USCIS OAuth2 token URL'),
-    ('RATE_LIMIT_REQUESTS_PER_SECOND', '10', 'Max API requests per second'),
-    ('RATE_LIMIT_MIN_INTERVAL_MS', '100', 'Minimum milliseconds between requests'),
+    ('RATE_LIMIT_REQUESTS_PER_SECOND', '5', 'Max API requests per second (5 TPS per USCIS API docs)'),
+    ('RATE_LIMIT_MIN_INTERVAL_MS', '200', 'Minimum milliseconds between requests (1000/5 = 200ms)'),
+    ('RATE_LIMIT_DAILY_MAX', '1000', 'Maximum API requests per day (USCIS daily cap)'),
     ('AUTO_CHECK_ENABLED', 'Y', 'Enable automatic status checks'),
     ('AUTO_CHECK_INTERVAL_HOURS', '24', 'Hours between automatic checks'),
     ('AUTO_CHECK_BATCH_SIZE', '50', 'Cases to check per batch'),
@@ -488,7 +489,7 @@ CREATE OR REPLACE PACKAGE uscis_types_pkg AS
     gc_source_manual      CONSTANT VARCHAR2(20) := 'MANUAL';
     gc_source_api         CONSTANT VARCHAR2(20) := 'API';
     gc_source_import      CONSTANT VARCHAR2(20) := 'IMPORT';
-    gc_service_uscis      CONSTANT VARCHAR2(50) := 'USCIS_CASE_STATUS';
+    gc_service_uscis      CONSTANT VARCHAR2(50) := 'USCIS_API';
     
     -- Record Types
     TYPE t_case_status IS RECORD (
@@ -664,7 +665,7 @@ CREATE OR REPLACE PACKAGE uscis_oauth_pkg AS
     
     -- Get valid access token (fetches new one if expired)
     FUNCTION get_access_token(
-        p_service_name IN VARCHAR2 DEFAULT 'USCIS_CASE_STATUS'
+        p_service_name IN VARCHAR2 DEFAULT 'USCIS_API'
     ) RETURN VARCHAR2;
     
     -- Fetch new access token from OAuth server
@@ -676,12 +677,12 @@ CREATE OR REPLACE PACKAGE uscis_oauth_pkg AS
     
     -- Check if current token is valid
     FUNCTION is_token_valid(
-        p_service_name IN VARCHAR2 DEFAULT 'USCIS_CASE_STATUS'
+        p_service_name IN VARCHAR2 DEFAULT 'USCIS_API'
     ) RETURN BOOLEAN;
     
     -- Clear cached token (force refresh)
     PROCEDURE clear_token(
-        p_service_name IN VARCHAR2 DEFAULT 'USCIS_CASE_STATUS'
+        p_service_name IN VARCHAR2 DEFAULT 'USCIS_API'
     );
     
     -- Check if credentials are configured
@@ -1389,17 +1390,24 @@ CREATE OR REPLACE PACKAGE BODY uscis_api_pkg AS
         l_elapsed_ms     NUMBER;
         l_wait_ms        NUMBER;
         l_interval       INTERVAL DAY TO SECOND;
+        l_daily_count    NUMBER;
+        l_daily_max      NUMBER;
+        l_window_start   TIMESTAMP;
         e_resource_busy  EXCEPTION;
         PRAGMA EXCEPTION_INIT(e_resource_busy, -54); -- ORA-00054: resource busy
         PRAGMA AUTONOMOUS_TRANSACTION;
     BEGIN
         l_min_interval := TO_NUMBER(
-            uscis_util_pkg.get_config('RATE_LIMIT_MIN_INTERVAL_MS', '100')
+            uscis_util_pkg.get_config('RATE_LIMIT_MIN_INTERVAL_MS', '200')
+        );
+        l_daily_max := TO_NUMBER(
+            uscis_util_pkg.get_config('RATE_LIMIT_DAILY_MAX', '1000')
         );
         
         -- Get last request time with non-blocking lock (NOWAIT to avoid indefinite blocking)
         BEGIN
-            SELECT last_request_at INTO l_last_request
+            SELECT last_request_at, request_count, window_start
+            INTO l_last_request, l_daily_count, l_window_start
             FROM api_rate_limiter
             WHERE service_name = uscis_types_pkg.gc_service_uscis
             FOR UPDATE NOWAIT;
@@ -1407,11 +1415,27 @@ CREATE OR REPLACE PACKAGE BODY uscis_api_pkg AS
             WHEN e_resource_busy THEN
                 -- Another session is updating; wait briefly and retry
                 DBMS_LOCK.SLEEP(0.1);
-                SELECT last_request_at INTO l_last_request
+                SELECT last_request_at, request_count, window_start
+                INTO l_last_request, l_daily_count, l_window_start
                 FROM api_rate_limiter
                 WHERE service_name = uscis_types_pkg.gc_service_uscis
                 FOR UPDATE WAIT 5; -- Wait up to 5 seconds on retry
         END;
+        
+        -- Reset daily counter if window_start is from a previous day
+        IF l_window_start IS NULL OR TRUNC(CAST(l_window_start AS DATE)) < TRUNC(SYSDATE) THEN
+            l_daily_count := 0;
+            l_window_start := SYSTIMESTAMP;
+        END IF;
+        
+        -- Enforce daily cap
+        IF l_daily_count >= l_daily_max THEN
+            COMMIT; -- release lock
+            RAISE_APPLICATION_ERROR(
+                -20021,
+                'Daily API request limit reached (' || l_daily_max || ' requests/day). Try again tomorrow.'
+            );
+        END IF;
         
         -- Calculate elapsed time correctly using interval arithmetic
         -- EXTRACT(SECOND) only returns 0-59, so we need full interval computation
@@ -1430,10 +1454,19 @@ CREATE OR REPLACE PACKAGE BODY uscis_api_pkg AS
             DBMS_LOCK.SLEEP(l_wait_ms / 1000);
         END IF;
         
-        -- Update last request time
+        -- Update last request time and daily counter
         UPDATE api_rate_limiter
         SET last_request_at = SYSTIMESTAMP,
-            request_count = request_count + 1
+            request_count = CASE
+                WHEN TRUNC(CAST(window_start AS DATE)) < TRUNC(SYSDATE)
+                THEN 1  -- new day, reset counter
+                ELSE request_count + 1
+            END,
+            window_start = CASE
+                WHEN TRUNC(CAST(window_start AS DATE)) < TRUNC(SYSDATE)
+                THEN SYSTIMESTAMP  -- new day, reset window
+                ELSE window_start
+            END
         WHERE service_name = uscis_types_pkg.gc_service_uscis;
         
         COMMIT;
@@ -2448,6 +2481,69 @@ Phase 6: Deployment (Week 11)
 ```
 
 ### 9.2 Data Migration
+
+#### 9.2.0 Service Name Migration (gc_service_uscis rename)
+
+The constant `gc_service_uscis` was changed from `'USCIS_CASE_STATUS'` to `'USCIS_API'`. Existing rows in `oauth_tokens` and `api_rate_limiter` must be updated so functions that reference `gc_service_uscis` can find existing tokens and rate-limiter records.
+
+**Run this migration script before deploying updated PL/SQL packages:**
+
+```sql
+-- ============================================================
+-- Migration: Rename service_name USCIS_CASE_STATUS -> USCIS_API
+-- ============================================================
+DECLARE
+    l_oauth_count    NUMBER := 0;
+    l_rate_count     NUMBER := 0;
+    l_dup_oauth      NUMBER := 0;
+    l_dup_rate       NUMBER := 0;
+BEGIN
+    -- Check for duplicate rows that already have 'USCIS_API'
+    -- and remove old 'USCIS_CASE_STATUS' rows to avoid UNIQUE conflicts
+    SELECT COUNT(*) INTO l_dup_oauth
+    FROM oauth_tokens WHERE service_name = 'USCIS_API';
+
+    SELECT COUNT(*) INTO l_dup_rate
+    FROM api_rate_limiter WHERE service_name = 'USCIS_API';
+
+    -- oauth_tokens: deduplicate or rename
+    IF l_dup_oauth > 0 THEN
+        DELETE FROM oauth_tokens WHERE service_name = 'USCIS_CASE_STATUS';
+        l_oauth_count := SQL%ROWCOUNT;
+        DBMS_OUTPUT.PUT_LINE('oauth_tokens: removed ' || l_oauth_count || ' old USCIS_CASE_STATUS rows (USCIS_API already exists)');
+    ELSE
+        UPDATE oauth_tokens
+        SET service_name = 'USCIS_API'
+        WHERE service_name = 'USCIS_CASE_STATUS';
+        l_oauth_count := SQL%ROWCOUNT;
+        DBMS_OUTPUT.PUT_LINE('oauth_tokens: renamed ' || l_oauth_count || ' rows from USCIS_CASE_STATUS to USCIS_API');
+    END IF;
+
+    -- api_rate_limiter: deduplicate or rename
+    IF l_dup_rate > 0 THEN
+        DELETE FROM api_rate_limiter WHERE service_name = 'USCIS_CASE_STATUS';
+        l_rate_count := SQL%ROWCOUNT;
+        DBMS_OUTPUT.PUT_LINE('api_rate_limiter: removed ' || l_rate_count || ' old USCIS_CASE_STATUS rows (USCIS_API already exists)');
+    ELSE
+        UPDATE api_rate_limiter
+        SET service_name = 'USCIS_API'
+        WHERE service_name = 'USCIS_CASE_STATUS';
+        l_rate_count := SQL%ROWCOUNT;
+        DBMS_OUTPUT.PUT_LINE('api_rate_limiter: renamed ' || l_rate_count || ' rows from USCIS_CASE_STATUS to USCIS_API');
+    END IF;
+
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Migration complete. Total rows affected: ' || (l_oauth_count + l_rate_count));
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Migration FAILED: ' || SQLERRM);
+        RAISE;
+END;
+/
+```
+
+> **Deployment note:** Include this script in the deployment runbook and execute it **before** installing updated packages (Step 9.1, Phase 3). If you run `make install` on a fresh database, no migration is needed — the new constant value is used from the start.
 
 ```sql
 -- ============================================================

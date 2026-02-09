@@ -432,7 +432,7 @@ BEGIN
                 l_receipt,
                 'CHECK',
                 '{"receipt_number":"' || l_receipt ||
-                    '"source":"API","status":"' ||
+                    '","source":"API","status":"' ||
                         REPLACE(
                             REPLACE(
                                 REPLACE(

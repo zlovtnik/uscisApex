@@ -1,454 +1,68 @@
-# USCIS Case Tracker - Oracle APEX 24.2 Development Instructions
+# USCIS Case Tracker — AI Agent Instructions
 
-This project uses **Oracle APEX 24.2** (Application Express) with **Oracle Database 19c+**. Follow these guidelines when working with the codebase.
+Oracle APEX 24.2 app (ID 102) on Oracle DB 19c+. Schema: `USCIS_APP`. Tracks USCIS immigration case statuses via the USCIS API with OAuth2.
 
----
+## Architecture
 
-## Project Documentation Index
+- **Database layer:** 6 tables (`CASE_HISTORY` PK=receipt_number, `STATUS_UPDATES`, `OAUTH_TOKENS`, `API_RATE_LIMITER`, `CASE_AUDIT_LOG`, `SCHEDULER_CONFIG`), 3 key views (`V_CASE_CURRENT_STATUS`, `V_CASE_DASHBOARD`, `V_RECENT_ACTIVITY`)
+- **PL/SQL packages** (`packages/01-10`): Installed in numbered order — each depends on predecessors. Core flow: `USCIS_UTIL_PKG` (validation) → `USCIS_CASE_PKG` (CRUD) → `USCIS_OAUTH_PKG` + `USCIS_API_PKG` (external API). `USCIS_TEMPLATE_COMPONENTS_PKG` (09) is the **single source of truth** for status→CSS class mapping. `USCIS_ERROR_PKG` (10) is the APEX application-level error handler.
+- **APEX app export:** `apex/f102/` — machine-generated SQL. **Never hand-edit** files there (they contain `wwv_flow_imp` calls which are fine in exports only).
+- **Page patches** (`page_patches/`): Human-readable change descriptions meant to be applied manually via Page Designer, not run as scripts.
+- **Static files:** `shared_components/files/` contains `app-styles.css`, `template_components.css`, `template_components.js`.
 
-### Core Project Documentation
+## Developer Workflows
 
-| Document | Purpose | When to Reference |
-|----------|---------|-------------------|
-| [README.md](../README.md) | Database tables, installation, schema user setup | Initial setup, understanding data model |
-| [APEX_INSTRUCTIONS.md](../APEX_INSTRUCTIONS.md) | Complete APEX instructions (1146 lines) | New developers, step-by-step setup guide |
-| [ORACLE_APEX_MIGRATION_SPEC.md](../ORACLE_APEX_MIGRATION_SPEC.md) | Full migration specification (2884 lines) | Architecture decisions, API integration |
-| [APEX_FRONTEND_DESIGN.md](../APEX_FRONTEND_DESIGN.md) | UI/UX design specification (2914 lines) | Page design, CSS, status colors, wireframes |
-| [APEX_SETUP_GUIDE.md](../APEX_SETUP_GUIDE.md) | APEX shell setup tasks 1.4.1-1.4.7 (953 lines) | Global Page, navigation, authentication |
-| [APEX_SHELL_SETUP.md](../APEX_SHELL_SETUP.md) | Detailed shell setup guide (1307 lines) | Application creation, authorization schemes |
-| [MIGRATION_ROADMAP.md](../MIGRATION_ROADMAP.md) | Task tracking, roadmap, priorities (524 lines) | Project planning, task status |
-| [tests/README.md](../tests/README.md) | utPLSQL testing guide | Writing and running tests |
-| [APEX_24_REVIEW.md](../APEX_24_REVIEW.md) | APEX 24.2 code review standards & enhancement guide | Code review, best practices, security, AI integration |
-| [APEX_CONTEXTUAL_ANCHOR.md](../APEX_CONTEXTUAL_ANCHOR.md) | AI Contextual Anchor — principles AI tools must follow | AI code review, modern APEX patterns, legacy detection |
+All commands use **SQLcl** (not SQL*Plus). Connection config: `apex.env` (template) → copy to `apex.env.local` (gitignored, real credentials).
 
-### Reference by Task Type
-
-| Task | Primary Doc | Supporting Docs |
-|------|-------------|-----------------|
-| **Database Schema** | README.md | ORACLE_APEX_MIGRATION_SPEC.md §4 |
-| **PL/SQL Packages** | ORACLE_APEX_MIGRATION_SPEC.md §5 | packages/*.sql |
-| **APEX Pages** | APEX_FRONTEND_DESIGN.md §4 | APEX_SETUP_GUIDE.md, pages/*.sql |
-| **Shared Components** | APEX_SHELL_SETUP.md | shared_components/**/*.sql |
-| **Security/Auth** | APEX_SETUP_GUIDE.md §1.4.4-1.4.5 | ORACLE_APEX_MIGRATION_SPEC.md §8 |
-| **USCIS API** | ORACLE_APEX_MIGRATION_SPEC.md §7 | packages/05_uscis_oauth_pkg.sql, packages/06_uscis_api_pkg.sql |
-| **Testing** | tests/README.md | MIGRATION_ROADMAP.md Phase 5 |
-| **Deployment** | APEX_INSTRUCTIONS.md §8 | deployment/*.sql |
-| **Code Review / Standards** | APEX_24_REVIEW.md | APEX_CONTEXTUAL_ANCHOR.md, APEX_FRONTEND_DESIGN.md, packages/*.sql |
-| **AI Code Review** | APEX_CONTEXTUAL_ANCHOR.md | APEX_24_REVIEW.md, APEX_FRONTEND_DESIGN.md |
-| **AI Integration** | APEX_24_REVIEW.md §R-14, R-15 | ORACLE_APEX_MIGRATION_SPEC.md §7 |
-
----
-
-## Oracle APEX 24.2 Local Documentation Reference
-
-The `apex_24doc/` folder contains the complete Oracle APEX 24.2 documentation for offline reference. **This folder is gitignored and must exist locally only.**
-
-### Documentation Structure
-
-```
-apex_24doc/content/
-├── aeapi/    → PL/SQL API Reference (APEX_* packages)
-├── aexjs/    → JavaScript API Reference (apex.* namespaces)
-├── htmdb/    → App Builder User's Guide (building applications)
-├── htmig/    → Installation & Upgrade Guide
-├── htmrn/    → Release Notes (what's new in 24.2)
-├── aeadm/    → Administration Guide
-├── aeeug/    → End User's Guide
-├── aeacc/    → Accessibility Guide
-├── aelim/    → Oracle APEX Limits
-├── aeutl/    → SQL Workshop & Utilities Guide
-└── sp_common/→ Shared resources
+```sh
+make install          # Full DB install (tables + packages 01-10) — runs install_all_v2.sql
+make packages-install # Reinstall all PL/SQL packages (01-10), including USCIS_TEMPLATE_COMPONENTS_PKG (09) and USCIS_ERROR_PKG (10)
+make import           # Import APEX app from apex/f102/
+make upload           # Upload static CSS/JS files
+make deploy           # import + upload
+make test             # Run utPLSQL tests: exec ut.run()
+make connect          # Interactive SQLcl session
+make info             # Show app/connection/APEX version info
+make export           # Export APEX app back to SQL files
 ```
 
-### Quick Doc Lookup by Topic
+Override defaults: `make import CONNECTION=ADMIN APP_ID=200`
 
-| Topic | Local Path | Key Files |
-|-------|-----------|-----------|
-| **APEX_AI** (Generative AI) | `aeapi/APEX_AI.html` | GENERATE, CHAT, GET_VECTOR_EMBEDDINGS |
-| **APEX_EXEC** (SQL/DML) | `aeapi/APEX_EXEC.html` | OPEN_QUERY_CONTEXT, EXECUTE_DML |
-| **APEX_JSON** | `aeapi/APEX_JSON.html` | GET_CLOB, GET_VARCHAR2, WRITE |
-| **APEX_COLLECTION** | `aeapi/APEX_COLLECTION.html` | CREATE_COLLECTION, ADD_MEMBER |
-| **APEX_WEB_SERVICE** | `aeapi/APEX_WEB_SERVICE.html` | MAKE_REST_REQUEST, OAuth |
-| **APEX_MAIL** | `aeapi/APEX_MAIL.html` | SEND (Email) |
-| **APEX_WORKFLOW** | `aeapi/APEX_WORKFLOW.html` | START_WORKFLOW, GET_WORKFLOWS |
-| **APEX_HUMAN_TASK** | `aeapi/APEX_HUMAN_TASK.html` | CREATE_TASK, APPROVE_TASK |
-| **APEX_AUTOMATION** | `aeapi/APEX_AUTOMATION.html` | EXECUTE, ABORT, RESCHEDULE |
-| **APEX_DEBUG** | `aeapi/APEX_DEBUG.html` | ENABLE, MESSAGE, INFO, ERROR |
-| **APEX_DATA_PARSER** | `aeapi/APEX_DATA_PARSER.html` | PARSE (CSV/JSON/XML) |
-| **JavaScript API** | `aexjs/` | apex.page, apex.region, apex.item |
-| **Interactive Grids** | `htmdb/managing-interactive-grids.html` | IG configuration |
-| **REST Data Sources** | `htmdb/managing-REST-data-sources.html` | External APIs |
-| **Authentication** | `htmdb/establishing-user-identity-through-authentication.html` | Auth schemes |
-| **Authorization** | `htmdb/providing-security-through-authorization.html` | Auth schemes |
-| **Workflows** | `htmdb/managing-workflows-and-tasks.html` | APEX 24.2 workflows |
-| **Page Designer** | `htmdb/using-page-designer.html` | UI development |
-| **PWA** | `htmdb/creating-a-progressive-web-app.html` | Mobile apps |
+## Mandatory Coding Rules
 
-### PL/SQL API Documentation Lookup
+Read `docs/APEX_24_REVIEW.md` for full before/after examples. Read `docs/APEX_CONTEXTUAL_ANCHOR.md` for AI-specific principles.
 
-For any APEX PL/SQL API, find documentation at:
-```
-apex_24doc/content/aeapi/APEX_{PACKAGE_NAME}.html
-```
+| Rule | What to do |
+|------|-----------|
+| **No internal APIs** (R-01) | Never call `wwv_flow_imp.*` in hand-written code; use `wwv_flow_api.*` or `APEX_*` packages |
+| **Session context** (R-02) | Use `apex_session.create_session(...)` — not `apex_util.set_security_group_id` |
+| **Bind variables** (R-12) | Always `:P1_ITEM` or `:bind` — never concatenate user input into SQL |
+| **Escape output** (R-13) | PL/SQL: `apex_escape.html()` — JS: `apex.util.escapeHTML()` |
+| **CSS variables** (R-05) | Override `--ut-*` / `--a-*` custom properties — never `!important` on `.t-*` classes |
+| **JS IIFE wrapping** (R-10) | `(function(apex, $){ ... })(apex, apex.jQuery)` |
+| **Native messaging** (R-08) | `apex.message.showPageSuccess()` / `.showErrors()` — no custom toast DOM |
+| **LOB cleanup** (R-04) | Every `DBMS_LOB.CREATETEMPORARY` needs `FREETEMPORARY` in both success and exception paths |
+| **CSP compliance** (R-11) | No inline `<style>`, no `eval()`, no `javascript:` URIs — all CSS in static files |
 
-**Examples:**
-- `APEX_EXEC.OPEN_QUERY_CONTEXT` → `aeapi/APEX_EXEC.OPEN_QUERY_CONTEXT-Function-1.html`
-- `APEX_JSON.GET_CLOB` → `aeapi/APEX_JSON.GET_CLOB-Function.html`
-- `APEX_WEB_SERVICE.MAKE_REST_REQUEST` → `aeapi/MAKE_REST_REQUEST-Function.html`
+## Key Domain Patterns
 
-### JavaScript API Documentation Lookup
+- **Receipt numbers:** 3 letters + 10 digits (e.g., `IOE1234567890`). Always validate/normalize via `USCIS_UTIL_PKG.validate_receipt_number()` / `normalize_receipt_number()`.
+- **Status classification:** Call `USCIS_TEMPLATE_COMPONENTS_PKG.get_status_category(p_status)` — returns `approved|denied|rfe|received|pending|transferred|unknown`. Never duplicate CASE logic.
+- **Status CSS:** `get_status_css_class()` returns `status-approved`, `status-denied`, etc. Colors: green=#2e8540, red=#cd2026, yellow=#fdb81e, blue=#0071bc, purple=#4c2c92, gray=#5b616b.
+- **All packages** use `AUTHID CURRENT_USER`, define `gc_version`/`gc_package_name` constants, and use custom exceptions with `PRAGMA EXCEPTION_INIT`.
 
-For JavaScript APIs, see:
-```
-apex_24doc/content/aexjs/
-```
+## Testing
 
-Key JavaScript namespaces: `apex.page`, `apex.region`, `apex.item`, `apex.server`, `apex.message`
+utPLSQL framework. Test files in `tests/`. Convention: test receipt numbers use `TST` prefix.
 
----
-
-## APEX Application Structure
-
-### Page Files (`pages/`)
-| File | Purpose |
-|------|---------|
-| `page_00000.sql` | Global Page - CSS/JS on all pages |
-| `page_00001.sql` | Home/Dashboard page |
-| `page_00006.sql` | Import/Export page |
-| `page_00022.sql` | Application page |
-| `page_09999.sql` | Login page |
-| `page_groups.sql` | Page group configurations |
-
-### Shared Components (`shared_components/`)
-```
-shared_components/
-├── files/                  # Static application files (JS, CSS)
-│   ├── app_scripts_js.sql
-│   └── app_scripts_min_js.sql
-├── globalization/          # Translation and language settings
-├── logic/                  # Application settings, build options
-├── navigation/             # Menus, breadcrumbs, lists, tabs
-├── security/               # Authentication and authorization schemes
-└── user_interface/         # Themes, templates, template options
-```
-
-### Project PL/SQL Packages (`packages/`)
-| Package | File | Purpose |
-|---------|------|---------|
-| `USCIS_TYPES_PKG` | `01_uscis_types_pkg.sql` | Custom types and collections |
-| `USCIS_UTIL_PKG` | `02_uscis_util_pkg.sql` | Utility functions (validation, masking) |
-| `USCIS_AUDIT_PKG` | `03_uscis_audit_pkg.sql` | Audit logging |
-| `USCIS_CASE_PKG` | `04_uscis_case_pkg.sql` | Core case CRUD operations |
-| `USCIS_OAUTH_PKG` | `05_uscis_oauth_pkg.sql` | OAuth2 token management |
-| `USCIS_API_PKG` | `06_uscis_api_pkg.sql` | USCIS API integration |
-| `USCIS_SCHEDULER_PKG` | `07_uscis_scheduler_pkg.sql` | DBMS_SCHEDULER jobs |
-| `USCIS_EXPORT_PKG` | `08_uscis_export_pkg.sql` | Import/export functionality |
-
-### Deployment (`deployment/`)
-| File | Purpose |
-|------|---------|
-| `buildoptions.sql` | Build option definitions |
-| `checks.sql` | Pre-deployment validation |
-| `definition.sql` | Application definition export |
-
----
-
-## APEX PL/SQL API Packages
-
-Common packages (see `apex_24doc/content/aeapi/` for full documentation):
-
-| Package | Purpose | Key Doc |
-|---------|---------|---------|
-| `APEX_APPLICATION` | Application-level operations and global variables | `APEX_APPLICATION.html` |
-| `APEX_UTIL` | Utility functions (users, sessions, caching) | `APEX_UTIL.html` |
-| `APEX_COLLECTION` | Session-state collections | `APEX_COLLECTION.html` |
-| `APEX_DEBUG` | Debug logging | `APEX_DEBUG.html` |
-| `APEX_ERROR` | Error handling | `APEX_ERROR.html` |
-| `APEX_JSON` | JSON generation and parsing | `APEX_JSON.html` |
-| `APEX_MAIL` | Email functionality | `APEX_MAIL.html` |
-| `APEX_PAGE` | Page-level operations | `APEX_PAGE.html` |
-| `APEX_REGION` | Region operations | `APEX_REGION.html` |
-| `APEX_SESSION` | Session management | `APEX_SESSION.html` |
-| `APEX_STRING` | String utilities | `APEX_STRING.html` |
-| `APEX_EXEC` | Execute queries and DML | `APEX_EXEC.html` |
-| `APEX_DATA_PARSER` | Parse CSV, JSON, XML data | `APEX_DATA_PARSER.html` |
-| `APEX_WEB_SERVICE` | REST and SOAP web service calls | `APEX_WEB_SERVICE.html` |
-| `APEX_WORKFLOW` | Workflow engine (24.2) | `APEX_WORKFLOW.html` |
-| `APEX_HUMAN_TASK` | Task/approval management (24.2) | `APEX_HUMAN_TASK.html` |
-| `APEX_AI` | Generative AI integration (24.2) | `APEX_AI.html` |
-| `APEX_PWA` | Progressive Web App features | `APEX_PWA.html` |
-| `APEX_AUTOMATION` | Automation engine | `APEX_AUTOMATION.html` |
-| `APEX_IG` | Interactive Grid programmatic control | `APEX_IG.html` |
-| `APEX_IR` | Interactive Report programmatic control | `APEX_IR.html` |
-
----
-
-## APEX JavaScript APIs
-
-Client-side APIs (see `apex_24doc/content/aexjs/` for details):
-
-```javascript
-// Common namespaces
-apex.page        // Page operations, submit, validate
-apex.region      // Region interactions (refresh, focus)
-apex.item        // Item get/set values, enable/disable
-apex.server      // AJAX calls to server (process, plugin)
-apex.message     // Display messages, alerts, confirmations
-apex.navigation  // Page navigation, redirects
-apex.actions     // Action framework for buttons/menus
-apex.debug       // Client-side debugging
-apex.util        // Utility functions (escaping, formatting)
-apex.widget      // Widget APIs (IG, IR, etc.)
-apex.jQuery      // jQuery reference
-```
-
-### JavaScript API Doc Files
-| Namespace | Local Doc | Common Methods |
-|-----------|-----------|----------------|
-| `apex.page` | `aexjs/apex.page.html` | submit, validate, confirm |
-| `apex.region` | `aexjs/apex.region.html` | refresh, focus, widget |
-| `apex.item` | `aexjs/apex.item.html` | getValue, setValue, enable, disable |
-| `apex.server` | `aexjs/apex.server.html` | process, plugin, chunk |
-| `apex.message` | `aexjs/apex.message.html` | alert, confirm, showPageSuccess |
-
----
-
-## Project-Specific Patterns
-
-### USCIS Receipt Number Validation
 ```sql
--- Use USCIS_UTIL_PKG for receipt number operations
-USCIS_UTIL_PKG.validate_receipt_number(p_receipt => 'IOE1234567890')
-USCIS_UTIL_PKG.normalize_receipt_number(p_receipt => 'ioe-1234567890')
-USCIS_UTIL_PKG.mask_receipt_number(p_receipt => 'IOE1234567890') -- Returns IOE****567890
+exec ut.run('ut_uscis_case_pkg');       -- One package
+exec ut.run('ut_uscis%');               -- All USCIS tests
 ```
 
-### Case Management Operations
-```sql
--- Core case operations via USCIS_CASE_PKG
-USCIS_CASE_PKG.add_case(p_receipt_number, p_notes, p_fetch_from_api)
-USCIS_CASE_PKG.get_case(p_receipt_number)
-USCIS_CASE_PKG.list_cases(p_user, p_status_filter, p_page, p_page_size)
-USCIS_CASE_PKG.delete_case(p_receipt_number)
-```
+## Documentation Lookup
 
-### USCIS API Integration
-```sql
--- OAuth token management
-USCIS_OAUTH_PKG.get_valid_token  -- Returns cached or fresh token
-
--- API calls
-USCIS_API_PKG.check_case_status(p_receipt_number) -- Live USCIS lookup
-```
-
-### Status Color CSS Classes
-From [APEX_FRONTEND_DESIGN.md](../APEX_FRONTEND_DESIGN.md):
-```css
-.status-approved  { background: #2e8540; }  /* Green */
-.status-denied    { background: #cd2026; }  /* Red */
-.status-pending   { background: #fdb81e; }  /* Yellow */
-.status-rfe       { background: #0071bc; }  /* Blue - Request for Evidence */
-.status-received  { background: #4c2c92; }  /* Purple */
-.status-unknown   { background: #5b616b; }  /* Gray */
-```
-
----
-
-## APEX 24.2 Coding Standards (Enforced)
-
-See [APEX_24_REVIEW.md](../APEX_24_REVIEW.md) for the full guide with before/after examples.
-
-### Priority Hierarchy
-
-When writing or reviewing any code, follow this priority order:
-1. **Native over Custom** — Use native Dynamic Actions / Template Components before writing JavaScript or PL/SQL
-2. **AI Integration** — Look for opportunities to use `APEX_AI` and native AI Assistant regions
-3. **Modern UI** — Use `--ut-*` CSS variables and Template Components; never override `.t-*` classes with `!important`
-4. **Security** — Bind variables in all SQL; `apex_escape` for all output; CSP-compliant static assets
-
-### Critical Rules
-
-| Rule | Ref | Summary |
-|------|-----|---------|
-| No internal APIs | R-01 | Never call `wwv_flow_imp.*` in hand-written scripts; use `wwv_flow_api.*` |
-| Full session context | R-02 | Use `apex_session.create_session` instead of `apex_util.set_security_group_id` |
-| No `!important` on UT classes | R-05 | Override `--ut-*` CSS custom properties instead |
-| Native messaging | R-08 | Use `apex.message.showPageSuccess` / `showErrors`, not custom toast DOM |
-| IIFE wrapping | R-10 | Wrap all JS in `(function(apex, $){ ... })(apex, apex.jQuery)` |
-| CSP compliance | R-11 | No runtime `<style>` injection; all CSS in static files |
-| Bind variables always | R-12 | Never concatenate user input into SQL strings |
-| Escape all output | R-13 | Use `apex_escape.html()` (PL/SQL) or `apex.util.escapeHTML()` (JS) |
-| LOB cleanup | R-04 | Every `DBMS_LOB.CREATETEMPORARY` needs `FREETEMPORARY` on both success and error paths |
-
----
-
-## Page Designer Best Practices
-
-1. **Regions**: Use appropriate region types (Static Content, Cards, Interactive Grid, etc.)
-2. **Items**: Select correct item types (Text Field, Select List, Popup LOV, etc.)
-3. **Dynamic Actions**: Prefer declarative over JavaScript when possible
-4. **Processes**: Use PL/SQL processes for server-side logic
-5. **Validations**: Add both client-side and server-side validations
-6. **Computations**: Use for calculating values before/after submit
-7. **Template Components**: Use for reusable UI fragments (status badges, cards) — see R-07
-8. **AI Assistant**: Add native AI Assistant regions for natural-language search — see R-14
-
-See local docs: `htmdb/using-page-designer.html`, `htmdb/about-page-designer.html`
-
-## Template Directives
-
-APEX uses template directives for dynamic content:
-- `#COLUMN_NAME#` - Substitution strings
-- `{if CONDITION/}...{endif/}` - Conditional rendering
-- `{loop/}...{endloop/}` - Loop constructs
-
-See local docs: `htmdb/using-template-directives.html`
-
-## Security Guidelines
-
-1. **Authentication**: Configure in Shared Components > Security > Authentication
-2. **Authorization**: Use authorization schemes to control access
-3. **Session State Protection**: Enable checksum protection for items
-4. **Escaping**: Use `apex_escape` package for output escaping (R-13)
-5. **SQL Injection Prevention**: Use bind variables in all SQL — never concatenate (R-12)
-6. **CSP Headers**: Enable Content-Security-Policy in Shared Components > Security; no runtime `<style>` injection (R-11)
-7. **LOB Memory Safety**: Always `FREETEMPORARY` in both success and error paths (R-04)
-8. **Public APIs Only**: Never call `wwv_flow_imp.*` directly in scripts (R-01)
-
-See [APEX_24_REVIEW.md](../APEX_24_REVIEW.md) for full details on each rule.
-
-See local docs:
-- `htmdb/establishing-user-identity-through-authentication.html`
-- `htmdb/providing-security-through-authorization.html`
-- `htmdb/cross-site-scripting-protection.html`
-
-## REST Data Sources
-
-For external API integration:
-1. Define Remote Server in Shared Components
-2. Create Web Credentials for authentication
-3. Configure REST Data Source with operations
-4. Use in reports, forms, or PL/SQL via `APEX_EXEC`
-
-See local docs:
-- `htmdb/managing-REST-data-sources.html`
-- `htmdb/creating-web-credentials.html`
-- `aeapi/APEX_WEB_SERVICE.html`
-
-## Generative AI (APEX 24.2)
-
-New in APEX 24.2 - AI integration capabilities:
-- Configure AI Services in Shared Components
-- Use `APEX_AI` package for programmatic access
-- Create AI-powered assistants and chat interfaces
-- Generate content using `APEX_AI.GENERATE` function
-- **AI Assistant for Case Search** — see R-14 in [APEX_24_REVIEW.md](../APEX_24_REVIEW.md)
-- **RAG-Powered Status Insights** — see R-15 in [APEX_24_REVIEW.md](../APEX_24_REVIEW.md)
-
-See local docs:
-- `htmdb/including-generative-ai-in-applications.html`
-- `htmdb/managing-generative-ai-in-apex.html`
-- `aeapi/APEX_AI.html`
-
-## Workflows and Tasks (APEX 24.2)
-
-Human-centric workflow capabilities:
-- Design workflows in Workflow Designer
-- Create task definitions for approvals
-- Use `APEX_WORKFLOW` and `APEX_HUMAN_TASK` packages
-- Monitor via Workflow Console
-
-See local docs:
-- `htmdb/managing-workflows-and-tasks.html`
-- `htmdb/about-workflows.html`
-- `htmdb/about-task-definitions.html`
-- `aeapi/APEX_WORKFLOW.html`
-- `aeapi/APEX_HUMAN_TASK.html`
-
-## Debugging
-
-1. Enable Debug Mode: `apex_debug.enable`
-2. Log messages: `apex_debug.message`, `apex_debug.info`, `apex_debug.error`
-3. View Debug output in Developer Toolbar
-4. Use Session > Debug in App Builder
-
-See local docs:
-- `htmdb/debugging-an-application.html`
-- `htmdb/utilizing-debug-mode.html`
-- `aeapi/APEX_DEBUG.html`
-
----
-
-## Database Schema (Summary)
-
-From [README.md](../README.md) - full details in [ORACLE_APEX_MIGRATION_SPEC.md](../ORACLE_APEX_MIGRATION_SPEC.md) §4:
-
-### Core Tables
-| Table | Purpose |
-|-------|---------|
-| `CASE_HISTORY` | Master table for tracked cases (receipt_number PK) |
-| `STATUS_UPDATES` | Historical status changes per case |
-| `OAUTH_TOKENS` | Cached OAuth2 tokens for USCIS API |
-| `API_RATE_LIMITER` | Rate limiting tracking |
-| `CASE_AUDIT_LOG` | Audit trail for all operations |
-| `SCHEDULER_CONFIG` | Configuration for DBMS_SCHEDULER jobs |
-
-### Key Views
-| View | Purpose |
-|------|---------|
-| `V_CASE_CURRENT_STATUS` | Cases with latest status (for reports) |
-| `V_CASE_DASHBOARD` | Aggregated dashboard data |
-| `V_RECENT_ACTIVITY` | Recent audit activity |
-
----
-
-## File Naming Conventions
-
-- Page files: `page_NNNNN.sql` (5-digit zero-padded)
-- Package files: `NN_package_name.sql` (numbered for installation order)
-- Static files: descriptive names with extensions
-- SQL scripts: lowercase with underscores
-
-## Common Substitution Strings
-
-| String | Description |
-|--------|-------------|
-| `&APP_ID.` | Application ID |
-| `&APP_PAGE_ID.` | Current page ID |
-| `&APP_SESSION.` | Session ID |
-| `&APP_USER.` | Current username |
-| `&REQUEST.` | Request value |
-| `&ITEM_NAME.` | Item value |
-| `#WORKSPACE_FILES#` | Workspace files path |
-| `#APP_FILES#` | Application files path |
-
----
-
-## Quick Reference Links
-
-When working with this codebase, consult:
-
-### Local Documentation (Preferred)
-```
-apex_24doc/content/
-├── aeapi/     # PL/SQL API Reference
-├── aexjs/     # JavaScript API Reference  
-├── htmdb/     # App Builder User's Guide
-└── htmrn/     # Release Notes (24.2 features)
-```
-
-### Online Documentation
-- APEX Docs Home: https://docs.oracle.com/en/database/oracle/apex/24.2/
-- PL/SQL API: https://docs.oracle.com/en/database/oracle/apex/24.2/aeapi/
-- JavaScript API: https://docs.oracle.com/en/database/oracle/apex/24.2/aexjs/
-- App Builder Guide: https://docs.oracle.com/en/database/oracle/apex/24.2/htmdb/
-
-### Project-Specific Scripts
-| Script | Purpose |
-|--------|---------|
-| `scripts/connect.sh` | Connect to database |
-| `scripts/apex-import.sh` | Import APEX application |
-| `scripts/apex-export.sh` | Export APEX application |
-| `scripts/deploy.sh` | Run deployment |
-| `install_all_v2.sql` | Master installation script |
-| `Makefile` | Build automation |
+- **APEX PL/SQL API:** `apex_24doc/content/aeapi/APEX_{PKG}.html` (e.g., `APEX_AI.html`, `APEX_EXEC.html`)
+- **APEX JS API:** `apex_24doc/content/aexjs/` (`apex.page`, `apex.region`, `apex.item`, `apex.server`)
+- **App Builder guide:** `apex_24doc/content/htmdb/`
+- **Project design docs:** `docs/APEX_FRONTEND_DESIGN.md` (UI/CSS), `docs/ORACLE_APEX_MIGRATION_SPEC.md` (architecture), `docs/MIGRATION_ROADMAP.md` (task status)

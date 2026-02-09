@@ -4,6 +4,7 @@ apex_24doc/
 # Environment files
 *.env.local
 apex.env.local
+docker/.env
 
 # Credential scripts with real secrets
 scripts/setup_sandbox_credentials.sql

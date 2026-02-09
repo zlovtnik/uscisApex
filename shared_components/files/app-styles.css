@@ -3343,9 +3343,77 @@ body .t-Badge--primary {
    Administration Page (Page 8)
    ============================================================ */
 
-/* Health cards — equal height */
-.admin-health-cards .t-Cards-item {
-  min-height: 120px;
+/* Health cards grid */
+.admin-health-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.admin-health-card {
+  background: var(--ut-component-background-color, #fff);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.admin-health-card .card-label {
+  color: var(--ut-component-text-muted-color, #666);
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.admin-health-card .card-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Shared admin data table */
+.admin-audit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-audit-table th {
+  background: var(--ut-component-header-background-color, #f5f5f5);
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--ut-component-border-color, #ddd);
+}
+
+.admin-audit-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--ut-component-border-color, #eee);
+  font-size: 13px;
+  vertical-align: top;
+}
+
+.admin-audit-table tr:hover td {
+  background: var(--ut-component-highlight-background-color, #f9f9f9);
+}
+
+/* Numeric cells right-aligned */
+.admin-num-cell {
+  text-align: right;
+}
+
+/* Empty state rows */
+.admin-empty-state {
+  text-align: center;
+  padding: 24px;
+  color: var(--ut-component-text-muted-color, #666);
+}
+
+/* Monospace text in admin tables */
+.admin-monospace {
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
 }
 
 /* Audit action badges */
@@ -3360,6 +3428,230 @@ body .t-Badge--primary {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 4px;
+}
+
+/* ------------------------------------------------------------
+   OAuth Token History (Tab 4)
+   ------------------------------------------------------------ */
+
+/* Token summary banner */
+.admin-token-summary {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: var(--a-region-bg, #fff);
+  border: 1px solid var(--a-region-border-color, #e0e0e0);
+  border-radius: var(--a-region-border-radius, 4px);
+}
+
+.admin-token-summary-row {
+  padding: 4px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-token-summary-row + .admin-token-summary-row {
+  border-top: 1px solid var(--ut-component-border-color, #eee);
+}
+
+/* Monospace token preview in IR */
+.admin-token-history .u-textMonospace {
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+/* ------------------------------------------------------------
+   API Test Console (Tab 5)
+   ------------------------------------------------------------ */
+
+/* API mode indicator bar */
+.admin-api-test-mode {
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  background: var(--ut-component-background-color, #f9f9f9);
+  border: 1px solid var(--ut-component-border-color, #e0e0e0);
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Form layout */
+.admin-api-test-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--ut-component-border-color, #eee);
+  margin-bottom: 20px;
+}
+
+.admin-api-test-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  color: var(--ut-body-title-color, #333);
+}
+
+.admin-api-test-field input[type="text"] {
+  width: 220px;
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid var(--ut-component-border-color, #ccc);
+  border-radius: 4px;
+}
+
+.admin-api-test-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  padding-bottom: 4px;
+}
+
+.admin-api-test-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* Input row layout (legacy) */
+.admin-api-test-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  padding-bottom: 16px;
+}
+
+/* Results container */
+.admin-api-test-results {
+  min-height: 200px;
+}
+
+/* Empty state / instructions */
+.admin-api-test-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--ut-body-text-color, #5a5a5a);
+}
+
+.admin-api-test-empty .fa {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.admin-api-test-empty p {
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Loading state */
+.admin-api-test-loading {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--ut-body-text-color, #5a5a5a);
+}
+
+.admin-api-test-loading .fa {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--a-button-hot-background-color, #0071bc);
+}
+
+/* Result card */
+.admin-api-test-result-card {
+  padding: 16px;
+  border: 1px solid var(--a-region-border-color, #e0e0e0);
+  border-radius: var(--a-region-border-radius, 4px);
+  background: var(--a-region-bg, #fff);
+}
+
+.admin-api-test-result-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.admin-api-test-result-title .fa {
+  margin-right: 6px;
+}
+
+/* Result table styling */
+.admin-api-test-result-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-api-test-result-table th {
+  text-align: left;
+  padding: 8px 12px;
+  width: 160px;
+  font-weight: 600;
+  color: var(--ut-body-title-color, #333);
+  border-bottom: 1px solid var(--ut-component-border-color, #eee);
+  vertical-align: top;
+}
+
+.admin-api-test-result-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--ut-component-border-color, #eee);
+  vertical-align: top;
+  word-break: break-word;
+}
+
+/* Collapsible raw JSON / rate limit sections */
+.admin-api-test-raw {
+  margin-top: 12px;
+  border: 1px solid var(--ut-component-border-color, #e0e0e0);
+  border-radius: 4px;
+}
+
+.admin-api-test-raw summary {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ut-body-title-color, #555);
+  background: var(--ut-component-background-color, #f9f9f9);
+}
+
+.admin-api-test-raw summary:hover {
+  background: var(--ut-component-border-color, #eee);
+}
+
+.admin-api-test-json {
+  margin: 0;
+  padding: 12px;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: var(--ut-component-background-color, #f5f5f5);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Error state */
+.admin-api-test-error {
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.admin-api-test-error .fa {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.admin-api-test-error p {
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 /* ============================================================

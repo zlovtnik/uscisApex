@@ -6,7 +6,8 @@ SHELL := /bin/bash
 
 .PHONY: help import export upload deploy install test connect connections \
         packages-install packages-compile watch clean backup restore \
-        static-list static-delete logs check-prereqs info
+        static-list static-delete logs check-prereqs info \
+        css-build css-minify
 
 # ============================================================
 # Configuration (override with: make import CONNECTION=ADMIN)
@@ -54,6 +55,8 @@ help:
 	@echo "$(YELLOW)Static Files:$(NC)"
 	@echo "  make static-list     List static files in app"
 	@echo "  make static-delete   Delete a static file"
+	@echo "  make css-build       Concatenate CSS modules → maine-pine-v5.css"
+	@echo "  make css-minify      Minify concatenated CSS (requires cssnano-cli)"
 	@echo ""
 	@echo "$(YELLOW)Utilities:$(NC)"
 	@echo "  make watch           Watch for export changes"
@@ -292,3 +295,43 @@ clean:
 	@echo "$(BLUE)Cleaning temporary files...$(NC)"
 	rm -rf backups/*.sql.bak
 	@echo "$(GREEN)✓ Clean complete$(NC)"
+
+# ============================================================
+# CSS Theme Build (Maine Pine v5)
+# ============================================================
+
+CSS_SRC_DIR := shared_components/files/css/maine-pine-v5
+CSS_BUILD   := $(CSS_SRC_DIR)/maine-pine-v5.css
+CSS_MIN     := $(CSS_SRC_DIR)/maine-pine-v5.min.css
+
+CSS_MODULES := \
+	$(CSS_SRC_DIR)/00-tokens.css \
+	$(CSS_SRC_DIR)/01-foundations.css \
+	$(CSS_SRC_DIR)/02-layout.css \
+	$(CSS_SRC_DIR)/03-navigation.css \
+	$(CSS_SRC_DIR)/04-forms.css \
+	$(CSS_SRC_DIR)/05-components.css \
+	$(CSS_SRC_DIR)/06-pages.css \
+	$(CSS_SRC_DIR)/07-utilities.css
+
+MODULE_COUNT := $(words $(CSS_MODULES))
+
+# Concatenate CSS modules into a single build file
+css-build: $(CSS_MODULES)
+	@echo "$(BLUE)Building Maine Pine v5 CSS...$(NC)"
+	@printf '/**\n * Maine Pine v5 — USCIS Case Tracker Theme\n * Build: %s | Modules: %s\n * DO NOT EDIT — edit individual modules then run: make css-build\n */\n\n' "$$(date +%Y-%m-%d)" "$(MODULE_COUNT)" > $(CSS_BUILD)
+	@cat $(CSS_MODULES) >> $(CSS_BUILD)
+	@echo "$(GREEN)✓ Built $(CSS_BUILD) ($$(wc -l < $(CSS_BUILD)) lines)$(NC)"
+
+# Minify concatenated CSS (requires: npm i -g cssnano-cli)
+css-minify: css-build
+	@echo "$(BLUE)Minifying CSS...$(NC)"
+	@if command -v cssnano >/dev/null 2>&1; then \
+		cssnano $(CSS_BUILD) $(CSS_MIN); \
+		echo "$(GREEN)✓ Minified → $(CSS_MIN) ($$(wc -c < $(CSS_MIN)) bytes)$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠ cssnano not found — install with: npm i -g cssnano-cli$(NC)"; \
+		echo "  Falling back to simple whitespace compression..."; \
+		perl -0777 -pe 's{/\*.*?\*/}{}gs; s/^\s+//mg; s/\n{2,}/\n/g' $(CSS_BUILD) > $(CSS_MIN); \
+		echo "$(GREEN)✓ Compressed → $(CSS_MIN) ($$(wc -c < $(CSS_MIN)) bytes)$(NC)"; \
+	fi

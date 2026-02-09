@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
-,p_css_file_urls=>'#APP_FILES#app-styles.css'
+,p_css_file_urls=>'#APP_FILES#css/maine-pine-v5.css'
 ,p_step_template=>2101157952850466385
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
@@ -44,7 +44,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(13057650710297900)
 ,p_button_name=>'LOGIN'
 ,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>4072362960822175091
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Sign In'
@@ -52,6 +52,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_alignment=>'LEFT'
 ,p_grid_new_row=>'Y'
 ,p_grid_new_column=>'Y'
+,p_icon_css_classes=>'fa-sign-in'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(13058168228297916)

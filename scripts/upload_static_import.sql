@@ -86,6 +86,9 @@ prompt Importing js/app-scripts.js...
 prompt Importing js/page-0006-import-export.js...
 @@../apex/f102/application/shared_components/files/js_page_0006_import_export_js.sql
 
+prompt Importing css/maine-pine-v5.css...
+@@../apex/f102/application/shared_components/files/css_maine_pine_v5_css.sql
+
 -- Step 4: Finalize import context and commit
 begin
 wwv_flow_imp.import_end(p_auto_install_sup_obj => false);

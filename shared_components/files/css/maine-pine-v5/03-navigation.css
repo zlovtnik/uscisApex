@@ -1,0 +1,227 @@
+/**
+ * Maine Pine v5 — Navigation
+ * Header, sidebar (TreeNav), user icon, menu
+ *
+ * Fixes Issue #2: Menu/User Icon with Simple Styling
+ */
+
+/* =============================================
+   TOP HEADER BAR
+   ============================================= */
+
+body .t-Header {
+  background: var(--mp-gradient-dark);
+  border-bottom: 1px solid rgba(0, 72, 50, 0.2);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* ---- Logo ---- */
+body .t-Header-logo {
+  background: transparent;
+}
+
+body .t-Header-logo-link {
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+  transition: color var(--mp-transition-fast);
+}
+
+body .t-Header-logo-link:hover {
+  color: var(--mp-color-accent);
+}
+
+/* ---- Header buttons (hamburger, search, user) ---- */
+body .t-Header .t-Button,
+body .t-Header .t-Button--header,
+body .t-Header .t-Button--navBar,
+body .t-NavigationBar .t-Button,
+body .t-NavigationBar-item .t-Button {
+  color: var(--mp-color-neutral-300);
+  background: transparent;
+  border: none;
+  transition: color var(--mp-transition-fast), background var(--mp-transition-fast);
+}
+
+body .t-Header .t-Button:hover,
+body .t-Header .t-Button--header:hover,
+body .t-Header .t-Button--navBar:hover,
+body .t-NavigationBar .t-Button:hover,
+body .t-NavigationBar-item .t-Button:hover,
+body .t-Header .t-Button:focus-visible,
+body .t-Header .t-Button--header:focus-visible,
+body .t-Header .t-Button--navBar:focus-visible,
+body .t-NavigationBar .t-Button:focus-visible,
+body .t-NavigationBar-item .t-Button:focus-visible {
+  color: #FFFFFF;
+  background: rgba(0, 72, 50, 0.2);
+}
+
+/* ---- Navigation bar items ---- */
+body .t-NavigationBar-item,
+body .t-NavigationBar-item a {
+  color: var(--mp-color-neutral-300);
+  padding: var(--mp-space-sm) var(--mp-space-md);
+  transition: background var(--mp-transition-fast);
+}
+
+body .t-NavigationBar-item:hover,
+body .t-NavigationBar-item a:hover {
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: var(--mp-radius-sm);
+}
+
+/* ---- User menu — pill-style ---- */
+body .t-NavigationBar-item.has-username .t-Button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--mp-radius-full);
+  padding: 6px 16px 6px 12px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background var(--mp-transition-fast), border-color var(--mp-transition-fast);
+}
+
+body .t-NavigationBar-item.has-username .t-Button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: var(--mp-shadow-md);
+}
+
+body .t-NavigationBar-item.has-username .t-Button .t-Icon {
+  background: rgba(0, 72, 50, 0.35);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #FFFFFF;
+}
+
+body .t-NavigationBar-item.has-username .t-Button .t-Button-label {
+  font-weight: 600;
+  font-size: var(--mp-font-size-sm);
+  color: #FFFFFF;
+  letter-spacing: 0.3px;
+}
+
+/* ---- Navigation bar badge ---- */
+body .t-NavigationBar .t-Button-badge {
+  background: var(--mp-color-danger);
+  color: #FFFFFF;
+}
+
+/* =============================================
+   SIDEBAR NAVIGATION (TreeNav)
+   ============================================= */
+
+body .t-TreeNav,
+body .t-Body-nav,
+body .t-PageBody .t-Body-nav {
+  background: linear-gradient(180deg, var(--mp-color-primary-light) 0%, var(--mp-color-primary) 100%);
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Nav item labels */
+body .t-TreeNav .a-TreeView-content,
+body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content {
+  color: var(--mp-color-neutral-300);
+  border-radius: 8px;
+  margin: 3px 8px;
+  padding: 10px 12px;
+  transition: background var(--mp-transition-fast), color var(--mp-transition-fast);
+}
+
+/* Row highlight bar */
+body .t-TreeNav .a-TreeView-row {
+  background: transparent;
+  border-radius: 8px;
+  margin: 0 4px;
+  transition: background var(--mp-transition-fast);
+}
+
+body .t-TreeNav .a-TreeView-row:hover {
+  background: transparent;
+}
+
+body .t-TreeNav .a-TreeView-row.is-selected,
+body .t-TreeNav .a-TreeView-row.is-selected.is-current--top,
+body .t-TreeNav .a-TreeView-row.is-current--top {
+  background: rgba(0, 72, 50, 0.35);
+}
+
+/* Hover state */
+body .t-TreeNav .a-TreeView-content:hover {
+  background: rgba(0, 72, 50, 0.2);
+  color: #FFFFFF;
+}
+
+/* Selected / Active state */
+body .t-TreeNav .a-TreeView-node.is-selected > .a-TreeView-content,
+body .t-TreeNav .a-TreeView-content.is-selected,
+body .t-TreeNav .a-TreeView-content.is-current--top {
+  background: rgba(0, 72, 50, 0.30);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* Nav link text colors — use doubled selector for specificity over UT defaults */
+body .t-TreeNav .a-TreeView-label,
+body .t-TreeNav .a-TreeView-content a {
+  color: var(--mp-color-neutral-300);
+  text-decoration: none;
+}
+
+body.t-PageBody .t-TreeNav .is-selected .a-TreeView-label,
+body.t-PageBody .t-TreeNav .a-TreeView-content.is-selected a,
+body.t-PageBody .t-TreeNav .a-TreeView-content.is-current--top a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+body.t-PageBody .t-TreeNav .a-TreeView-content:hover a,
+body.t-PageBody .t-TreeNav .a-TreeView-content:hover .a-TreeView-label {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+/* Selected accent bar */
+body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content::before {
+  background: var(--mp-color-secondary);
+}
+
+body .t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content::before {
+  transform: scaleY(1);
+}
+
+/* Nav icons */
+body .t-TreeNav .fa,
+body .t-TreeNav [class*="fa-"],
+body .t-TreeNav .a-TreeView-content .fa {
+  color: var(--mp-color-neutral-400);
+  transition: color var(--mp-transition-fast);
+}
+
+body .t-TreeNav .a-TreeView-content:hover .fa,
+body .t-TreeNav .a-TreeView-content:hover [class*="fa-"] {
+  color: #FFFFFF;
+}
+
+body .t-TreeNav .is-selected .fa,
+body .t-TreeNav .a-TreeView-content.is-selected .fa {
+  color: #FFFFFF;
+}
+
+/* Nav collapsed state */
+body .t-TreeNav .t-TreeNav-toggle,
+body.js-navCollapsed .t-Body-nav {
+  background: var(--mp-color-primary-light);
+}
+
+/* Dividers */
+body .t-TreeNav .a-TreeView-node--topLevel + .a-TreeView-node--topLevel {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}

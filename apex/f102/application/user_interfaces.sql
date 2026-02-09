@@ -22,7 +22,7 @@ wwv_flow_imp_shared.create_user_interface(
 ,p_navigation_list_position=>'SIDE'
 ,p_navigation_list_template_id=>2467739217141810545
 ,p_nav_list_template_options=>'#DEFAULT#:js-defaultCollapsed:js-navCollapsed--hidden:t-TreeNav--styleA'
-,p_css_file_urls=>'#APP_FILES#app-styles.css'
+,p_css_file_urls=>'#APP_FILES#css/maine-pine-v5.css'
 ,p_javascript_file_urls=>'#APP_FILES#app-scripts.js'
 ,p_nav_bar_type=>'LIST'
 ,p_nav_bar_list_id=>wwv_flow_imp.id(13053183405297823)

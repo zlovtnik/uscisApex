@@ -1,0 +1,433 @@
+/**
+ * Maine Pine v5 — Forms
+ * Inputs, labels, selects, textareas, search, IG controls
+ *
+ * Fixes Issue #1: Form layout rhythm
+ * Fixes Issue #4: Form title overlaps text
+ */
+
+/* =============================================
+   LABELS — Consistent weight & spacing
+   ============================================= */
+
+body .t-Form-labelContainer label,
+body .t-Form-label {
+  font-size: var(--mp-font-size-sm);
+  font-weight: 600;
+  color: var(--mp-color-neutral-700);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+body .t-Form-labelContainer {
+  font-weight: 600;
+  color: var(--mp-color-neutral-700);
+  margin-bottom: 6px;
+}
+
+/* Label alignment for side-label forms */
+.t-Form--labelsAbove .t-Form-labelContainer {
+  display: flex;
+  align-items: center;
+  padding-right: var(--mp-space-md);
+}
+
+/* =============================================
+   FLOATING-LABEL OVERRIDE
+   Forces floating labels to behave as stacked.
+   Uses doubled selectors for specificity instead of !important.
+   ============================================= */
+
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel .t-Form-labelContainer {
+  position: relative;
+  transform: none;
+  top: auto;
+  left: auto;
+  pointer-events: auto;
+  padding: 0;
+  margin-bottom: 6px;
+  display: block;
+  width: 100%;
+  z-index: 1;
+}
+
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel .t-Form-label {
+  position: relative;
+  transform: none;
+  top: auto;
+  left: auto;
+  font-size: var(--mp-font-size-sm);
+  font-weight: 600;
+  color: var(--mp-color-neutral-700);
+  opacity: 1;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  background: transparent;
+  padding: 0;
+}
+
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel .t-Form-inputContainer {
+  padding-top: 0;
+}
+
+body .t-Form-fieldContainer--floatingLabel.js-show-label.t-Form-fieldContainer--floatingLabel .t-Form-labelContainer,
+body .t-Form-fieldContainer--floatingLabel.apex-item-wrapper--has-initial-value.t-Form-fieldContainer--floatingLabel .t-Form-labelContainer {
+  position: relative;
+  transform: none;
+  top: auto;
+}
+
+/* Floating-label selects */
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel .apex-item-select,
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel select.selectlist {
+  padding-top: 10px;
+  min-height: 42px;
+}
+
+/* =============================================
+   TEXT INPUTS, SELECTS, TEXTAREAS
+   ============================================= */
+
+body .t-Form-inputContainer input[type="text"],
+body .t-Form-inputContainer input[type="search"],
+body .t-Form-inputContainer input[type="password"],
+body .t-Form-inputContainer input[type="email"],
+body .t-Form-inputContainer input[type="number"],
+body .t-Form-inputContainer input[type="url"],
+body .t-Form-inputContainer input[type="tel"],
+body .t-Form-inputContainer select,
+body .t-Form-inputContainer textarea,
+.apex-item-select,
+.apex-item-text,
+.apex-item-textarea {
+  min-height: 42px;
+  padding: 10px 14px;
+  font-size: var(--mp-font-size-base);
+  line-height: var(--mp-line-height);
+  border-radius: var(--mp-radius-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+  background: var(--mp-color-neutral-100);
+  color: var(--mp-color-neutral-800);
+  transition: border-color var(--mp-transition-fast), box-shadow var(--mp-transition-fast);
+}
+
+body .t-Form-inputContainer textarea,
+.apex-item-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Focus ring */
+body .t-Form-inputContainer input:focus,
+body .t-Form-inputContainer select:focus,
+body .t-Form-inputContainer textarea:focus,
+.apex-item-select:focus,
+.apex-item-text:focus,
+.apex-item-textarea:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+/* Readonly / Display-only */
+body .t-Form-inputContainer .display_only,
+body .t-Form-inputContainer input[readonly] {
+  background: var(--mp-color-neutral-150);
+  border-color: var(--mp-color-neutral-200);
+  color: var(--mp-color-neutral-600);
+  cursor: default;
+}
+
+/* Disabled inputs */
+body .t-Form-inputContainer input:disabled,
+body .t-Form-inputContainer textarea:disabled,
+body .t-Form-inputContainer select:disabled {
+  background: var(--mp-color-neutral-200);
+  border-color: var(--mp-color-neutral-300);
+  color: var(--mp-color-neutral-400);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Select dropdowns */
+select.apex-item-select,
+body .t-Form-inputContainer select {
+  min-height: 42px;
+  padding: 10px 36px 10px 14px;
+  background-position: right 12px center;
+  appearance: none;
+}
+
+/* Checkbox and radio groups */
+.apex-item-checkbox label,
+.apex-item-radio label {
+  padding: 6px 10px;
+  font-size: var(--mp-font-size-base);
+}
+
+/* Required field indicator */
+.is-required label::after {
+  content: ' *';
+  color: var(--mp-color-danger);
+  font-weight: 700;
+}
+
+/* Field container spacing */
+body .t-Form-fieldContainer {
+  margin-bottom: var(--mp-space-sm);
+}
+
+/* =============================================
+   RECEIPT NUMBER INPUT
+   ============================================= */
+
+input.receipt-input,
+.apex-item-text.receipt-input {
+  font-family: var(--mp-font-family-mono);
+  font-size: var(--mp-font-size-md);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-sm);
+  background: var(--mp-color-neutral-100);
+  transition: border-color var(--mp-transition-fast), box-shadow var(--mp-transition-fast);
+}
+
+input.receipt-input:focus,
+.apex-item-text.receipt-input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+/* =============================================
+   RECEIPT NUMBER DISPLAY
+   ============================================= */
+
+.receipt-number {
+  font-family: var(--mp-font-family-mono);
+  font-size: var(--mp-font-size-base);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--mp-color-primary);
+  background: rgba(0, 72, 50, 0.08);
+  padding: 6px 12px;
+  border-radius: var(--mp-radius-md);
+  border: 1px solid rgba(0, 72, 50, 0.2);
+  display: inline-block;
+  transition: all var(--mp-transition-normal);
+}
+
+.receipt-number:hover {
+  background: rgba(0, 72, 50, 0.15);
+  border-color: rgba(0, 72, 50, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 72, 50, 0.15);
+}
+
+.receipt-number-link {
+  color: var(--mp-color-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: color var(--mp-transition-fast);
+}
+
+.receipt-number-link:hover {
+  color: var(--mp-color-primary);
+}
+
+/* =============================================
+   INTERACTIVE GRID
+   ============================================= */
+
+.a-IG {
+  --a-ig-grid-border-color: var(--mp-color-neutral-300);
+  --a-ig-cell-padding: 1rem;
+  --a-ig-header-background-color: var(--mp-color-neutral-150);
+  border-radius: var(--mp-radius-md);
+  overflow: hidden;
+}
+
+/* IG Filter toolbar */
+body .a-IG-controls {
+  padding: var(--mp-space-sm) var(--mp-space-lg);
+  background: var(--mp-color-neutral-150);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* IG search field */
+body .a-IG-searchField input {
+  min-height: 42px;
+  padding: 10px 14px;
+  font-size: var(--mp-font-size-base);
+  border-radius: var(--mp-radius-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+}
+
+body .a-IG-searchField input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+/* IG row hover */
+.a-IG-row:hover {
+  --a-ig-row-hover-background-color: rgba(0, 51, 102, 0.05);
+}
+
+/* IG status cell backgrounds */
+.a-IG .status-approved { background-color: rgba(0, 72, 50, 0.08); }
+.a-IG .status-denied   { background-color: rgba(139, 26, 26, 0.08); }
+.a-IG .status-rfe      { background-color: rgba(8, 46, 88, 0.08); }
+
+/* =============================================
+   INTERACTIVE REPORT
+   ============================================= */
+
+body .t-Report-report,
+body .t-IRR-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--mp-color-bg-card);
+  width: 100%;
+}
+
+body .t-Report-colHead,
+body .t-IRR-colHead {
+  background: var(--mp-color-neutral-150);
+  color: var(--mp-color-neutral-800);
+  font-weight: 700;
+  font-size: var(--mp-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--mp-color-neutral-300);
+  text-align: left;
+}
+
+body .t-Report-report tr:nth-child(even),
+body .t-IRR-table tr:nth-child(even) {
+  background: var(--mp-color-neutral-150);
+}
+
+body .t-Report-report tr:hover,
+body .t-IRR-table tr:hover {
+  background: rgba(0, 72, 50, 0.06);
+}
+
+body .t-Report-cell,
+body .t-IRR-cell {
+  padding: 16px 18px;
+  font-size: var(--mp-font-size-base);
+  color: var(--mp-color-neutral-800);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+  vertical-align: middle;
+}
+
+/* IR Search bar */
+body .t-IRR-controlsContainer,
+body .a-IRR-controlsContainer {
+  background: var(--mp-color-neutral-150);
+  border-bottom: 2px solid var(--mp-color-neutral-300);
+  padding: var(--mp-space-md) var(--mp-space-lg);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+body .a-IRR-search-field input {
+  min-height: 42px;
+  padding: 10px 14px;
+  font-size: var(--mp-font-size-base);
+  border-radius: var(--mp-radius-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+}
+
+body .a-IRR-search-field input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+/* =============================================
+   TOGGLE SWITCH
+   ============================================= */
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.toggle-switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: linear-gradient(135deg, var(--mp-color-neutral-400), var(--mp-color-neutral-500));
+  transition: var(--mp-transition-normal);
+  border-radius: var(--mp-radius-full);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background: #FFFFFF;
+  transition: var(--mp-transition-normal);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .toggle-slider {
+  background-color: var(--mp-color-secondary);
+}
+
+input:checked + .toggle-slider::before {
+  transform: translateX(24px);
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+  outline: 2px solid var(--mp-color-secondary);
+  outline-offset: 2px;
+}
+
+/* =============================================
+   SEARCH BOX (Faceted)
+   ============================================= */
+
+.a-SearchBox {
+  min-height: 42px;
+}
+
+.a-SearchBox-input {
+  padding: 10px 14px;
+  font-size: var(--mp-font-size-base);
+}
+
+.a-SearchBox-input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}

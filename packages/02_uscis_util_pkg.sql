@@ -718,7 +718,7 @@ CREATE OR REPLACE PACKAGE BODY uscis_util_pkg AS
     BEGIN
         IF p_value IS NULL THEN RETURN; END IF;
         IF p_has_value THEN json_append_raw(p_clob, ','); END IF;
-        json_append_raw(p_clob, '"' || p_key || '":' || TO_CHAR(p_value, 'FM999999999990D999999999', 'NLS_NUMERIC_CHARACTERS = ''.'''));
+        json_append_raw(p_clob, '"' || p_key || '":' || TO_CHAR(p_value, 'FM999999999990D999999999', 'NLS_NUMERIC_CHARACTERS = ''.,'''));
         p_has_value := TRUE;
     END json_add_number;
 
@@ -745,7 +745,9 @@ CREATE OR REPLACE PACKAGE BODY uscis_util_pkg AS
         json_add_string(l_json, l_has_value, 'receipt_number', p_receipt_number);
         json_add_string(l_json, l_has_value, 'created_at', format_iso_timestamp(p_created_at));
         json_add_string(l_json, l_has_value, 'created_by', p_created_by);
-        l_notes := DBMS_LOB.SUBSTR(p_notes, 500, 1);
+        IF p_notes IS NOT NULL THEN
+            l_notes := DBMS_LOB.SUBSTR(p_notes, 500, 1);
+        END IF;
         json_add_string(l_json, l_has_value, 'notes', l_notes);
         json_add_number(l_json, l_has_value, 'is_active', p_is_active);
         json_add_string(l_json, l_has_value, 'last_checked_at', format_iso_timestamp(p_last_checked_at));
@@ -781,7 +783,9 @@ CREATE OR REPLACE PACKAGE BODY uscis_util_pkg AS
         json_add_string(l_json, l_has_value, 'case_type', p_case_type);
         json_add_string(l_json, l_has_value, 'current_status', p_current_status);
         json_add_string(l_json, l_has_value, 'last_updated', format_iso_timestamp(p_last_updated));
-        l_details := DBMS_LOB.SUBSTR(p_details, 500, 1);
+        IF p_details IS NOT NULL THEN
+            l_details := DBMS_LOB.SUBSTR(p_details, 500, 1);
+        END IF;
         json_add_string(l_json, l_has_value, 'details', l_details);
         json_add_string(l_json, l_has_value, 'source', p_source);
         json_add_string(l_json, l_has_value, 'created_at', format_iso_timestamp(p_created_at));

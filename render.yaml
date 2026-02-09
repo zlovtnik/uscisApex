@@ -1,0 +1,65 @@
+# =============================================================================
+# USCIS Case Tracker — Render Blueprint
+# =============================================================================
+# Deploys the Nginx reverse proxy that masks Oracle APEX/ORDS URLs behind
+# a clean public path.
+#
+# Render provides automatic TLS termination, so the HTTP-only default.conf
+# is used (port 80).  The ssl variant is not needed here.
+#
+# Setup:
+#   1. Push this file to your repo
+#   2. In the Render Dashboard → New → Blueprint → connect this repo
+#   3. Fill in the environment variable values when prompted (sync: false)
+#   4. Click Apply
+#
+# Docs: https://render.com/docs/blueprint-spec
+# =============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # Nginx Reverse Proxy  (public-facing web service)
+  # --------------------------------------------------------------------------
+  - type: web
+    name: uscis-nginx-proxy
+    runtime: docker
+    plan: starter
+    region: oregon
+
+    # Docker build configuration — paths relative to repo root
+    dockerfilePath: ./docker/nginx/Dockerfile
+    dockerContext: ./docker/nginx
+
+    # Render terminates TLS and forwards to port 80 inside the container
+    # (no explicit port config needed — Render auto-detects the EXPOSE)
+
+    # Health check for zero-downtime deploys
+    healthCheckPath: /health
+
+    # Auto-deploy on push to default branch
+    autoDeployTrigger: commit
+
+    # Graceful shutdown — allow in-flight proxy requests to complete
+    maxShutdownDelaySeconds: 30
+
+    # Environment variables
+    envVars:
+      # ORDS connection — Oracle Autonomous Database Cloud
+      - key: ORDS_HOST
+        value: "g6f35956cc6036f-mainerc.adb.us-chicago-1.oraclecloudapps.com"
+      - key: ORDS_PORT
+        value: "443"
+      - key: ORDS_SCHEME
+        value: "https"
+      # Public domain — Render assigns a .onrender.com subdomain automatically;
+      # override with your custom domain if you add one in Render settings
+      - key: PUBLIC_DOMAIN
+        value: "localhost"
+      # The clean URL path visitors see instead of /ords/r/...
+      - key: PUBLIC_PATH
+        value: "/uscis"
+      # APEX workspace and application alias (must match your APEX config)
+      - key: ORDS_WORKSPACE
+        value: "uscis_app"
+      - key: APEX_APP_ALIAS
+        value: "uscis"

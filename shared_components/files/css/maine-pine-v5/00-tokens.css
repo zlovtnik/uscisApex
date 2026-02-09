@@ -1,0 +1,206 @@
+/**
+ * Maine Pine v5 — Design Tokens
+ * USCIS Case Tracker Theme
+ * 
+ * Single source of truth for all design values.
+ * Never hard-code colors, spacing, or shadows — reference these tokens.
+ *
+ * Naming: --mp-{category}-{variant}
+ *   --mp-color-*       Colors
+ *   --mp-space-*       Spacing
+ *   --mp-font-*        Typography
+ *   --mp-shadow-*      Shadows
+ *   --mp-radius-*      Border radius
+ *   --mp-transition-*  Transitions
+ *   --mp-gradient-*    Gradients
+ *   --mp-status-*      Case status colors
+ */
+
+:root {
+  /* =========================================
+     COLOR — Primary (Maine Coastal Navy)
+     ========================================= */
+  --mp-color-primary:        #082E58;
+  --mp-color-primary-light:  #0A3D73;
+  --mp-color-primary-dark:   #051D3A;
+
+  /* COLOR — Secondary (Pine Green) */
+  --mp-color-secondary:      #004832;
+  --mp-color-secondary-dark: #002E20;
+  --mp-color-secondary-light:#006B4C;
+
+  /* COLOR — Accent (Resurgam Yellow — CTAs only) */
+  --mp-color-accent:         #FFE84F;
+  --mp-color-accent-glow:    rgba(255, 232, 79, 0.4);
+
+  /* COLOR — Danger (Deep Cranberry) */
+  --mp-color-danger:         #8B1A1A;
+  --mp-color-danger-light:   #B22222;
+
+  /* COLOR — Warning (Warm Amber) */
+  --mp-color-warning:        #B5751F;
+  --mp-color-warning-light:  #D49728;
+
+  /* =========================================
+     COLOR — Neutrals (Fog & Granite)
+     ========================================= */
+  --mp-color-neutral-100:    #FFFFFF;
+  --mp-color-neutral-150:    #F4F7F6;   /* Fog — page bg */
+  --mp-color-neutral-200:    #E8ECEB;
+  --mp-color-neutral-300:    #CCD3D1;   /* Borders */
+  --mp-color-neutral-400:    #8A9490;
+  --mp-color-neutral-500:    #6F513E;   /* Teakwood — muted text */
+  --mp-color-neutral-600:    #5A4A3C;
+  --mp-color-neutral-700:    #3D3028;   /* Body text */
+  --mp-color-neutral-800:    #1A2B3D;
+  --mp-color-neutral-900:    #0F1B2A;   /* Near-black */
+
+  /* COLOR — Backgrounds */
+  --mp-color-bg-page:        #F4F7F6;
+  --mp-color-bg-card:        #FFFFFF;
+  --mp-color-bg-card-hover:  #F8FAF9;
+
+  /* =========================================
+     COLOR — Case Status Semantic
+     ========================================= */
+  --mp-status-approved:          #004832;
+  --mp-status-approved-glow:     rgba(0, 72, 50, 0.5);
+  --mp-status-denied:            #8B1A1A;
+  --mp-status-denied-glow:       rgba(139, 26, 26, 0.5);
+  --mp-status-pending:           #6F513E;
+  --mp-status-pending-glow:      rgba(111, 81, 62, 0.5);
+  --mp-status-rfe:               #082E58;
+  --mp-status-rfe-glow:          rgba(8, 46, 88, 0.5);
+  --mp-status-received:          #4A2D73;
+  --mp-status-received-glow:     rgba(74, 45, 115, 0.5);
+  --mp-status-transferred:       #006064;
+  --mp-status-transferred-glow:  rgba(0, 96, 100, 0.5);
+  --mp-status-unknown:           #5A5A5A;
+  --mp-status-unknown-glow:      rgba(90, 90, 90, 0.5);
+
+  /* =========================================
+     SPACING — Based on 1.25rem unit
+     ========================================= */
+  --mp-space-unit:           1.25rem;  /* 20px base */
+  --mp-space-2xs:            0.25rem;  /* 4px */
+  --mp-space-xs:             0.5rem;   /* 8px */
+  --mp-space-sm:             0.75rem;  /* 12px */
+  --mp-space-md:             1rem;     /* 16px */
+  --mp-space-lg:             1.5rem;   /* 24px */
+  --mp-space-xl:             2rem;     /* 32px */
+  --mp-space-2xl:            3rem;     /* 48px */
+
+  /* =========================================
+     TYPOGRAPHY
+     ========================================= */
+  --mp-font-family-sans:     'Inter', -apple-system, BlinkMacSystemFont,
+                             'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mp-font-family-mono:     'SF Mono', 'Fira Code', Consolas, Monaco,
+                             'Courier New', monospace;
+  --mp-font-size-xs:         0.6875rem;  /* 11px */
+  --mp-font-size-sm:         0.8125rem;  /* 13px */
+  --mp-font-size-base:       0.875rem;   /* 14px */
+  --mp-font-size-md:         1rem;       /* 16px */
+  --mp-font-size-lg:         1.125rem;   /* 18px */
+  --mp-font-size-xl:         1.5rem;     /* 24px */
+  --mp-font-size-2xl:        2rem;       /* 32px */
+  --mp-font-size-3xl:        3rem;       /* 48px */
+  --mp-line-height:          1.5;
+  --mp-line-height-tight:    1.25;
+  --mp-line-height-loose:    1.75;
+
+  /* =========================================
+     SHADOWS
+     ========================================= */
+  --mp-shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --mp-shadow-md:   0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.08);
+  --mp-shadow-lg:   0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+  --mp-shadow-xl:   0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.12);
+  --mp-shadow-float:0 20px 50px rgba(0, 0, 0, 0.25);
+
+  /* =========================================
+     BORDER RADIUS
+     ========================================= */
+  --mp-radius-sm:   6px;
+  --mp-radius-md:   10px;
+  --mp-radius-lg:   16px;
+  --mp-radius-xl:   24px;
+  --mp-radius-full: 9999px;
+
+  /* =========================================
+     TRANSITIONS
+     ========================================= */
+  --mp-transition-fast:    0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --mp-transition-normal:  0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --mp-transition-slow:    0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* =========================================
+     GRADIENTS
+     ========================================= */
+  --mp-gradient-primary:   linear-gradient(135deg, #082E58 0%, #051D3A 100%);
+  --mp-gradient-secondary: linear-gradient(135deg, #004832 0%, #082E58 100%);
+  --mp-gradient-success:   linear-gradient(135deg, #004832 0%, #006B4C 100%);
+  --mp-gradient-danger:    linear-gradient(135deg, #8B1A1A 0%, #B22222 100%);
+  --mp-gradient-warning:   linear-gradient(135deg, #6F513E 0%, #8B6914 100%);
+  --mp-gradient-hero:      linear-gradient(135deg, #051D3A 0%, #082E58 50%, #082E58 100%);
+  --mp-gradient-dark:      linear-gradient(135deg, #082E58 0%, #0A3D73 100%);
+
+  /* =========================================
+     RESPONSIVE BREAKPOINTS (reference only)
+     ========================================= */
+  --mp-bp-mobile:   640px;
+  --mp-bp-tablet:   1024px;
+  --mp-bp-desktop:  1400px;
+
+  /* =========================================
+     APEX Universal Theme Integration
+     Map UT variables to Maine Pine tokens
+     ========================================= */
+  --ut-palette-primary:               var(--mp-color-primary);
+  --ut-palette-primary-contrast:      var(--mp-color-neutral-100);
+  --ut-palette-primary-shade:         var(--mp-color-primary-light);
+  --ut-palette-primary-text:          var(--mp-color-primary);
+  --ut-palette-success:               var(--mp-color-secondary);
+  --ut-palette-success-contrast:      #FFFFFF;
+  --ut-palette-success-shade:         var(--mp-color-secondary-light);
+  --ut-palette-danger:                var(--mp-color-danger);
+  --ut-palette-danger-contrast:       #FFFFFF;
+  --ut-palette-danger-shade:          var(--mp-color-danger-light);
+  --ut-palette-warning:               var(--mp-color-warning);
+  --ut-palette-warning-contrast:      var(--mp-color-neutral-900);
+  --ut-palette-warning-shade:         var(--mp-color-warning-light);
+  --ut-palette-info:                  var(--mp-color-secondary);
+  --ut-palette-info-contrast:         #FFFFFF;
+  --ut-palette-info-shade:            var(--mp-color-secondary-dark);
+
+  --ut-header-background-color:       var(--mp-color-primary);
+  --ut-header-text-color:             #FFFFFF;
+  --ut-header-nav-color:              var(--mp-color-neutral-300);
+  --ut-header-nav-hover-color:        #FFFFFF;
+  --ut-nav-background-color:          var(--mp-color-primary);
+  --ut-nav-text-color:                var(--mp-color-neutral-300);
+  --ut-nav-hover-background-color:    rgba(0, 72, 50, 0.20);
+  --ut-nav-hover-text-color:          #FFFFFF;
+  --ut-nav-selected-background-color: rgba(0, 72, 50, 0.35);
+  --ut-nav-selected-text-color:       #FFFFFF;
+  --ut-nav-badge-background-color:    var(--mp-color-danger);
+  --ut-nav-badge-text-color:          #FFFFFF;
+  --ut-body-background-color:         var(--mp-color-bg-page);
+  --ut-body-content-background-color: transparent;
+  --ut-body-actions-background-color: var(--mp-color-primary-light);
+  --ut-body-title-background-color:   transparent;
+  --ut-login-background-color:        var(--mp-color-primary-light);
+  --ut-component-background-color:    var(--mp-color-bg-card);
+  --ut-component-border-color:        var(--mp-color-neutral-300);
+  --ut-component-border-radius:       var(--mp-radius-md);
+  --ut-component-shadow:              var(--mp-shadow-md);
+  --ut-component-text-default-color:  var(--mp-color-neutral-700);
+  --ut-component-text-title-color:    var(--mp-color-neutral-900);
+  --ut-component-text-muted-color:    var(--mp-color-neutral-500);
+  --ut-component-highlight-background-color: rgba(0, 72, 50, 0.12);
+  --ut-link-text-color:               var(--mp-color-secondary);
+  --ut-focus-outline-color:           rgba(8, 46, 88, 0.6);
+  --ut-button-background-color:       var(--mp-color-neutral-700);
+  --ut-button-text-color:             #FFFFFF;
+  --ut-body-font-family:              var(--mp-font-family-sans);
+}

@@ -1,0 +1,94 @@
+# =============================================================================
+# USCIS Case Tracker — Docker Compose
+# =============================================================================
+# Deploys the Nginx reverse proxy alongside Oracle ORDS.
+#
+# Quick start:
+#   cp docker/.env.example docker/.env   # edit with real values
+#   docker compose -f docker/docker-compose.yml up -d
+#
+# The Nginx proxy masks /ords/r/uscis_app/uscis-case-tracker/ behind /uscis/.
+# =============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # Nginx Reverse Proxy  (public-facing)
+  # --------------------------------------------------------------------------
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: uscis-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      # Uncomment for TLS termination at Nginx:
+      # - "${NGINX_HTTPS_PORT:-443}:443"
+    environment:
+      - ORDS_HOST=${ORDS_HOST:-ords}
+      - ORDS_PORT=${ORDS_PORT:-8080}
+      - ORDS_SCHEME=${ORDS_SCHEME:-http}
+      - PUBLIC_DOMAIN=${PUBLIC_DOMAIN:-localhost}
+      - PUBLIC_PATH=${PUBLIC_PATH:-/uscis}
+      - ORDS_WORKSPACE=${ORDS_WORKSPACE:-uscis_app}
+      - APEX_APP_ALIAS=${APEX_APP_ALIAS:-uscis}
+    depends_on:
+      ords:
+        condition: service_healthy
+    networks:
+      - apex-net
+    # Uncomment to mount TLS certs (e.g., from Certbot):
+    # volumes:
+    #   - ./certs/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
+    #   - ./certs/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
+
+  # --------------------------------------------------------------------------
+  # Oracle REST Data Services (ORDS)  — internal only
+  # --------------------------------------------------------------------------
+  ords:
+    image: container-registry.oracle.com/database/ords:24.3.0
+    container_name: uscis-ords
+    restart: unless-stopped
+    # ORDS should NOT be exposed to the public network.  Nginx is the
+    # only entry point.  Uncomment the ports block only for debugging.
+    # ports:
+    #   - "8080:8080"
+    environment:
+      - ORACLE_HOST=${ORACLE_HOST:-host.docker.internal}
+      - ORACLE_PORT=${ORACLE_PORT:-1521}
+      - ORACLE_SERVICE=${ORACLE_SERVICE:-XEPDB1}
+      - ORACLE_PWD=${ORACLE_PWD:?Set ORACLE_PWD in .env}
+    volumes:
+      - ords-config:/etc/ords/config
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ords/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 120s
+      retries: 5
+    networks:
+      - apex-net
+
+  # --------------------------------------------------------------------------
+  # Oracle Database (optional — omit if you use an external DB)
+  # --------------------------------------------------------------------------
+  # oracle-db:
+  #   image: container-registry.oracle.com/database/express:21.3.0-xe
+  #   container_name: uscis-oracle-db
+  #   restart: unless-stopped
+  #   ports:
+  #     - "1521:1521"
+  #   environment:
+  #     - ORACLE_PWD=${ORACLE_PWD}
+  #   volumes:
+  #     - oracle-data:/opt/oracle/oradata
+  #   networks:
+  #     - apex-net
+
+volumes:
+  ords-config:
+  # oracle-data:
+
+networks:
+  apex-net:
+    driver: bridge

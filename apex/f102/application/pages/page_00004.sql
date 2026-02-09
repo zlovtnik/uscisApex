@@ -48,11 +48,12 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(13200001000000001)
 ,p_button_name=>'CANCEL'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>4072362960822175091
 ,p_button_image_alt=>'Cancel'
-,p_button_position=>'NEXT'
+,p_button_position=>'PREVIOUS'
 ,p_warn_on_unsaved_changes=>null
+,p_icon_css_classes=>'fa-times'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(13200110000000110)

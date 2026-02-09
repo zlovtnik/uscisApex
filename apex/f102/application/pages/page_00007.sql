@@ -17,7 +17,7 @@ wwv_flow_imp_page.create_page(
 ,p_alias=>'SETTINGS'
 ,p_step_title=>'Settings - USCIS Case Tracker'
 ,p_autocomplete_on_off=>'OFF'
-,p_css_file_urls=>'#APP_FILES#app-styles.css'
+,p_css_file_urls=>'#APP_FILES#css/maine-pine-v5.css'
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_role=>wwv_flow_imp.id(13056708774297879)
 ,p_protection_level=>'C'
@@ -115,7 +115,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'BTN_SAVE'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_imp.id(13349797865298420)
+,p_button_template_id=>4072362960822175091
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save Settings'
 ,p_button_position=>'NEXT'
@@ -127,11 +127,12 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(90007004)
 ,p_button_name=>'BTN_CANCEL'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>wwv_flow_imp.id(13349797865298420)
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>4072362960822175091
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'PREVIOUS'
 ,p_button_redirect_url=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:::'
+,p_icon_css_classes=>'fa-chevron-left'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(90007403)
@@ -140,7 +141,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'BTN_TEST_API'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_imp.id(13349797865298420)
+,p_button_template_id=>4072362960822175091
 ,p_button_image_alt=>'Test API Connection'
 ,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null

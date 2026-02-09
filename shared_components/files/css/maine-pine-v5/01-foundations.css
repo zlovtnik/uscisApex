@@ -1,0 +1,117 @@
+/**
+ * Maine Pine v5 — Foundations
+ * Body, typography, links, focus, selection, responsive base
+ */
+
+/* =============================================
+   BODY & PAGE BACKGROUND
+   ============================================= */
+
+body {
+  background: var(--mp-color-bg-page);
+  min-height: 100vh;
+  font-family: var(--mp-font-family-sans);
+  font-size: var(--mp-font-size-base);
+  line-height: var(--mp-line-height);
+  color: var(--mp-color-neutral-700);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle background for main content */
+body .t-Body-content,
+body .t-Body-contentInner {
+  background: transparent;
+}
+
+body .t-Body-main {
+  background: var(--mp-color-bg-page);
+}
+
+/* =============================================
+   TYPOGRAPHY SCALE
+   ============================================= */
+
+h1, .h1 { font-size: var(--mp-font-size-2xl); font-weight: 800; line-height: var(--mp-line-height-tight); }
+h2, .h2 { font-size: var(--mp-font-size-xl);  font-weight: 700; line-height: var(--mp-line-height-tight); }
+h3, .h3 { font-size: var(--mp-font-size-lg);  font-weight: 700; line-height: var(--mp-line-height-tight); }
+h4, .h4 { font-size: var(--mp-font-size-md);  font-weight: 600; line-height: var(--mp-line-height); }
+
+/* =============================================
+   LINKS
+   ============================================= */
+
+a,
+body .t-Body a {
+  color: var(--mp-color-secondary);
+  text-decoration: underline;
+  transition: color var(--mp-transition-fast);
+}
+
+a:hover,
+body .t-Body a:hover {
+  color: var(--mp-color-primary);
+}
+
+/* =============================================
+   FOCUS & ACCESSIBILITY
+   ============================================= */
+
+*:focus-visible {
+  outline: 3px solid var(--mp-color-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(0, 72, 50, 0.2);
+}
+
+/* =============================================
+   SELECTION
+   ============================================= */
+
+::selection {
+  background: rgba(0, 72, 50, 0.3);
+  color: var(--mp-color-primary);
+}
+
+/* =============================================
+   BREADCRUMBS
+   ============================================= */
+
+body .t-Breadcrumb-item {
+  color: var(--mp-color-neutral-600);
+}
+
+body .t-Breadcrumb-item.is-active {
+  color: var(--mp-color-secondary);
+  font-weight: 600;
+}
+
+/* =============================================
+   RESPONSIVE: REDUCED MOTION
+   ============================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =============================================
+   HIGH CONTRAST MODE
+   ============================================= */
+
+@media (prefers-contrast: high) {
+  body .t-Card,
+  body .t-Region,
+  .widget {
+    border-width: 2px;
+    border-color: var(--mp-color-neutral-900);
+  }
+
+  body .t-Button {
+    border: 2px solid currentColor;
+  }
+}

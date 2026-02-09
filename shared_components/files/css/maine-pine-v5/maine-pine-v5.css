@@ -1,0 +1,3125 @@
+/**
+ * Maine Pine v5 — USCIS Case Tracker Theme
+ * Build: 2026-02-08 | Modules: 8
+ * DO NOT EDIT — edit individual modules then run: make css-build
+ */
+
+/**
+ * Maine Pine v5 — Design Tokens
+ * USCIS Case Tracker Theme
+ * 
+ * Single source of truth for all design values.
+ * Never hard-code colors, spacing, or shadows — reference these tokens.
+ *
+ * Naming: --mp-{category}-{variant}
+ *   --mp-color-*       Colors
+ *   --mp-space-*       Spacing
+ *   --mp-font-*        Typography
+ *   --mp-shadow-*      Shadows
+ *   --mp-radius-*      Border radius
+ *   --mp-transition-*  Transitions
+ *   --mp-gradient-*    Gradients
+ *   --mp-status-*      Case status colors
+ */
+
+:root {
+  /* =========================================
+     COLOR — Primary (Maine Coastal Navy)
+     ========================================= */
+  --mp-color-primary:        #082E58;
+  --mp-color-primary-light:  #0A3D73;
+  --mp-color-primary-dark:   #051D3A;
+
+  /* COLOR — Secondary (Pine Green) */
+  --mp-color-secondary:      #004832;
+  --mp-color-secondary-dark: #002E20;
+  --mp-color-secondary-light:#006B4C;
+
+  /* COLOR — Accent (Resurgam Yellow — CTAs only) */
+  --mp-color-accent:         #FFE84F;
+  --mp-color-accent-glow:    rgba(255, 232, 79, 0.4);
+
+  /* COLOR — Danger (Deep Cranberry) */
+  --mp-color-danger:         #8B1A1A;
+  --mp-color-danger-light:   #B22222;
+
+  /* COLOR — Warning (Warm Amber) */
+  --mp-color-warning:        #B5751F;
+  --mp-color-warning-light:  #D49728;
+
+  /* =========================================
+     COLOR — Neutrals (Fog & Granite)
+     ========================================= */
+  --mp-color-neutral-100:    #FFFFFF;
+  --mp-color-neutral-150:    #F4F7F6;   /* Fog — page bg */
+  --mp-color-neutral-200:    #E8ECEB;
+  --mp-color-neutral-300:    #CCD3D1;   /* Borders */
+  --mp-color-neutral-400:    #8A9490;
+  --mp-color-neutral-500:    #6F513E;   /* Teakwood — muted text */
+  --mp-color-neutral-600:    #5A4A3C;
+  --mp-color-neutral-700:    #3D3028;   /* Body text */
+  --mp-color-neutral-800:    #1A2B3D;
+  --mp-color-neutral-900:    #0F1B2A;   /* Near-black */
+
+  /* COLOR — Backgrounds */
+  --mp-color-bg-page:        #F4F7F6;
+  --mp-color-bg-card:        #FFFFFF;
+  --mp-color-bg-card-hover:  #F8FAF9;
+
+  /* =========================================
+     COLOR — Case Status Semantic
+     ========================================= */
+  --mp-status-approved:          #004832;
+  --mp-status-approved-glow:     rgba(0, 72, 50, 0.5);
+  --mp-status-denied:            #8B1A1A;
+  --mp-status-denied-glow:       rgba(139, 26, 26, 0.5);
+  --mp-status-pending:           #6F513E;
+  --mp-status-pending-glow:      rgba(111, 81, 62, 0.5);
+  --mp-status-rfe:               #082E58;
+  --mp-status-rfe-glow:          rgba(8, 46, 88, 0.5);
+  --mp-status-received:          #4A2D73;
+  --mp-status-received-glow:     rgba(74, 45, 115, 0.5);
+  --mp-status-transferred:       #006064;
+  --mp-status-transferred-glow:  rgba(0, 96, 100, 0.5);
+  --mp-status-unknown:           #5A5A5A;
+  --mp-status-unknown-glow:      rgba(90, 90, 90, 0.5);
+
+  /* =========================================
+     SPACING — Based on 1.25rem unit
+     ========================================= */
+  --mp-space-unit:           1.25rem;  /* 20px base */
+  --mp-space-2xs:            0.25rem;  /* 4px */
+  --mp-space-xs:             0.5rem;   /* 8px */
+  --mp-space-sm:             0.75rem;  /* 12px */
+  --mp-space-md:             1rem;     /* 16px */
+  --mp-space-lg:             1.5rem;   /* 24px */
+  --mp-space-xl:             2rem;     /* 32px */
+  --mp-space-2xl:            3rem;     /* 48px */
+
+  /* =========================================
+     TYPOGRAPHY
+     ========================================= */
+  --mp-font-family-sans:     'Inter', -apple-system, BlinkMacSystemFont,
+                             'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mp-font-family-mono:     'SF Mono', 'Fira Code', Consolas, Monaco,
+                             'Courier New', monospace;
+  --mp-font-size-xs:         0.6875rem;  /* 11px */
+  --mp-font-size-sm:         0.8125rem;  /* 13px */
+  --mp-font-size-base:       0.875rem;   /* 14px */
+  --mp-font-size-md:         1rem;       /* 16px */
+  --mp-font-size-lg:         1.125rem;   /* 18px */
+  --mp-font-size-xl:         1.5rem;     /* 24px */
+  --mp-font-size-2xl:        2rem;       /* 32px */
+  --mp-font-size-3xl:        3rem;       /* 48px */
+  --mp-line-height:          1.5;
+  --mp-line-height-tight:    1.25;
+  --mp-line-height-loose:    1.75;
+
+  /* =========================================
+     SHADOWS
+     ========================================= */
+  --mp-shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --mp-shadow-md:   0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.08);
+  --mp-shadow-lg:   0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+  --mp-shadow-xl:   0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.12);
+  --mp-shadow-float:0 20px 50px rgba(0, 0, 0, 0.25);
+
+  /* =========================================
+     BORDER RADIUS
+     ========================================= */
+  --mp-radius-sm:   6px;
+  --mp-radius-md:   10px;
+  --mp-radius-lg:   16px;
+  --mp-radius-xl:   24px;
+  --mp-radius-full: 9999px;
+
+  /* =========================================
+     TRANSITIONS
+     ========================================= */
+  --mp-transition-fast:    0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --mp-transition-normal:  0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --mp-transition-slow:    0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* =========================================
+     GRADIENTS
+     ========================================= */
+  --mp-gradient-primary:   linear-gradient(135deg, #082E58 0%, #051D3A 100%);
+  --mp-gradient-secondary: linear-gradient(135deg, #004832 0%, #082E58 100%);
+  --mp-gradient-success:   linear-gradient(135deg, #004832 0%, #006B4C 100%);
+  --mp-gradient-danger:    linear-gradient(135deg, #8B1A1A 0%, #B22222 100%);
+  --mp-gradient-warning:   linear-gradient(135deg, #6F513E 0%, #8B6914 100%);
+  --mp-gradient-hero:      linear-gradient(135deg, #051D3A 0%, #082E58 50%, #082E58 100%);
+  --mp-gradient-dark:      linear-gradient(135deg, #082E58 0%, #0A3D73 100%);
+
+  /* =========================================
+     RESPONSIVE BREAKPOINTS (reference only)
+     ========================================= */
+  --mp-bp-mobile:   640px;
+  --mp-bp-tablet:   1024px;
+  --mp-bp-desktop:  1400px;
+
+  /* =========================================
+     APEX Universal Theme Integration
+     Map UT variables to Maine Pine tokens
+     ========================================= */
+  --ut-palette-primary:               var(--mp-color-primary);
+  --ut-palette-primary-contrast:      var(--mp-color-neutral-100);
+  --ut-palette-primary-shade:         var(--mp-color-primary-light);
+  --ut-palette-primary-text:          var(--mp-color-primary);
+  --ut-palette-success:               var(--mp-color-secondary);
+  --ut-palette-success-contrast:      #FFFFFF;
+  --ut-palette-success-shade:         var(--mp-color-secondary-light);
+  --ut-palette-danger:                var(--mp-color-danger);
+  --ut-palette-danger-contrast:       #FFFFFF;
+  --ut-palette-danger-shade:          var(--mp-color-danger-light);
+  --ut-palette-warning:               var(--mp-color-warning);
+  --ut-palette-warning-contrast:      var(--mp-color-neutral-900);
+  --ut-palette-warning-shade:         var(--mp-color-warning-light);
+  --ut-palette-info:                  var(--mp-color-secondary);
+  --ut-palette-info-contrast:         #FFFFFF;
+  --ut-palette-info-shade:            var(--mp-color-secondary-dark);
+
+  --ut-header-background-color:       var(--mp-color-primary);
+  --ut-header-text-color:             #FFFFFF;
+  --ut-header-nav-color:              var(--mp-color-neutral-300);
+  --ut-header-nav-hover-color:        #FFFFFF;
+  --ut-nav-background-color:          var(--mp-color-primary);
+  --ut-nav-text-color:                var(--mp-color-neutral-300);
+  --ut-nav-hover-background-color:    rgba(0, 72, 50, 0.20);
+  --ut-nav-hover-text-color:          #FFFFFF;
+  --ut-nav-selected-background-color: rgba(0, 72, 50, 0.35);
+  --ut-nav-selected-text-color:       #FFFFFF;
+  --ut-nav-badge-background-color:    var(--mp-color-danger);
+  --ut-nav-badge-text-color:          #FFFFFF;
+  --ut-body-background-color:         var(--mp-color-bg-page);
+  --ut-body-content-background-color: transparent;
+  --ut-body-actions-background-color: var(--mp-color-primary-light);
+  --ut-body-title-background-color:   transparent;
+  --ut-login-background-color:        var(--mp-color-primary-light);
+  --ut-component-background-color:    var(--mp-color-bg-card);
+  --ut-component-border-color:        var(--mp-color-neutral-300);
+  --ut-component-border-radius:       var(--mp-radius-md);
+  --ut-component-shadow:              var(--mp-shadow-md);
+  --ut-component-text-default-color:  var(--mp-color-neutral-700);
+  --ut-component-text-title-color:    var(--mp-color-neutral-900);
+  --ut-component-text-muted-color:    var(--mp-color-neutral-500);
+  --ut-component-highlight-background-color: rgba(0, 72, 50, 0.12);
+  --ut-link-text-color:               var(--mp-color-secondary);
+  --ut-focus-outline-color:           rgba(8, 46, 88, 0.6);
+  --ut-button-background-color:       var(--mp-color-neutral-700);
+  --ut-button-text-color:             #FFFFFF;
+  --ut-body-font-family:              var(--mp-font-family-sans);
+}
+/**
+ * Maine Pine v5 — Foundations
+ * Body, typography, links, focus, selection, responsive base
+ */
+
+/* =============================================
+   BODY & PAGE BACKGROUND
+   ============================================= */
+
+body {
+  background: var(--mp-color-bg-page);
+  min-height: 100vh;
+  font-family: var(--mp-font-family-sans);
+  font-size: var(--mp-font-size-base);
+  line-height: var(--mp-line-height);
+  color: var(--mp-color-neutral-700);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle background for main content */
+body .t-Body-content,
+body .t-Body-contentInner {
+  background: transparent;
+}
+
+body .t-Body-main {
+  background: var(--mp-color-bg-page);
+}
+
+/* =============================================
+   TYPOGRAPHY SCALE
+   ============================================= */
+
+h1, .h1 { font-size: var(--mp-font-size-2xl); font-weight: 800; line-height: var(--mp-line-height-tight); }
+h2, .h2 { font-size: var(--mp-font-size-xl);  font-weight: 700; line-height: var(--mp-line-height-tight); }
+h3, .h3 { font-size: var(--mp-font-size-lg);  font-weight: 700; line-height: var(--mp-line-height-tight); }
+h4, .h4 { font-size: var(--mp-font-size-md);  font-weight: 600; line-height: var(--mp-line-height); }
+
+/* =============================================
+   LINKS
+   ============================================= */
+
+a,
+body .t-Body a {
+  color: var(--mp-color-secondary);
+  text-decoration: underline;
+  transition: color var(--mp-transition-fast);
+}
+
+a:hover,
+body .t-Body a:hover {
+  color: var(--mp-color-primary);
+}
+
+/* =============================================
+   FOCUS & ACCESSIBILITY
+   ============================================= */
+
+*:focus-visible {
+  outline: 3px solid var(--mp-color-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(0, 72, 50, 0.2);
+}
+
+/* =============================================
+   SELECTION
+   ============================================= */
+
+::selection {
+  background: rgba(0, 72, 50, 0.3);
+  color: var(--mp-color-primary);
+}
+
+/* =============================================
+   BREADCRUMBS
+   ============================================= */
+
+body .t-Breadcrumb-item {
+  color: var(--mp-color-neutral-600);
+}
+
+body .t-Breadcrumb-item.is-active {
+  color: var(--mp-color-secondary);
+  font-weight: 600;
+}
+
+/* =============================================
+   RESPONSIVE: REDUCED MOTION
+   ============================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =============================================
+   HIGH CONTRAST MODE
+   ============================================= */
+
+@media (prefers-contrast: high) {
+  body .t-Card,
+  body .t-Region,
+  .widget {
+    border-width: 2px;
+    border-color: var(--mp-color-neutral-900);
+  }
+
+  body .t-Button {
+    border: 2px solid currentColor;
+  }
+}
+/**
+ * Maine Pine v5 — Layout
+ * Page containers, regions, content width, responsive grid
+ *
+ * Fixes Issue #1: Full-width sprawl — caps container widths
+ */
+
+/* =============================================
+   MAIN CONTENT CONTAINER
+   ============================================= */
+
+body .t-Body-contentInner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--mp-space-lg);
+}
+
+body .t-Body-title {
+  padding: var(--mp-space-lg) var(--mp-space-xl);
+  background: transparent;
+}
+
+/* =============================================
+   REGIONS — Card-style with borders + shadows
+   ============================================= */
+
+body .t-Region {
+  --ut-region-background-color: var(--mp-color-bg-card);
+  border-radius: var(--mp-radius-lg);
+  box-shadow: var(--mp-shadow-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+  overflow: hidden;
+  background: var(--mp-color-bg-card);
+}
+
+body .t-Region-header {
+  background: var(--mp-color-neutral-150);
+  padding: var(--mp-space-sm) var(--mp-space-lg);
+  padding-bottom: var(--mp-space-lg);
+  margin-bottom: var(--mp-space-md);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+}
+
+body .t-Region-title {
+  color: var(--mp-color-neutral-800);
+  font-weight: 700;
+  font-size: var(--mp-font-size-md);
+  letter-spacing: 0.2px;
+}
+
+body .t-Region-titleText {
+  margin: 0;
+}
+
+body .t-Region-body {
+  padding: var(--mp-space-lg);
+}
+
+/* Form regions — constrained for readability */
+.t-Region--scrollBody,
+.a-Form {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Collapsible regions */
+body .t-Region--hideShow .t-Region-header {
+  cursor: pointer;
+  transition: background var(--mp-transition-fast);
+}
+
+body .t-Region--hideShow .t-Region-header:hover {
+  background: var(--mp-color-neutral-200);
+}
+
+/* =============================================
+   MODAL DIALOGS
+   ============================================= */
+
+body .t-Dialog {
+  border-radius: var(--mp-radius-xl);
+  box-shadow: var(--mp-shadow-float);
+  border: 1px solid var(--mp-color-neutral-300);
+  overflow: hidden;
+  animation: mp-modalPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body .t-Dialog-header {
+  background: var(--mp-color-neutral-150);
+  padding: var(--mp-space-md) var(--mp-space-lg);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+}
+
+body .t-Dialog-title {
+  color: var(--mp-color-neutral-800);
+  font-weight: 700;
+  font-size: 17px;
+}
+
+body .t-Dialog-body {
+  padding: var(--mp-space-lg);
+  background: var(--mp-color-bg-card);
+}
+
+body .t-Dialog-footer {
+  padding: var(--mp-space-md) var(--mp-space-lg);
+  background: var(--mp-color-neutral-150);
+  border-top: 1px solid var(--mp-color-neutral-300);
+}
+
+/* Dialog backdrop */
+.ui-widget-overlay {
+  background: rgba(8, 46, 88, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* =============================================
+   RESPONSIVE LAYOUT
+   ============================================= */
+
+@media (max-width: 640px) {
+  body .t-Body-contentInner {
+    padding: var(--mp-space-md);
+  }
+
+  body .t-Region-body {
+    padding: var(--mp-space-md);
+  }
+}
+/**
+ * Maine Pine v5 — Navigation
+ * Header, sidebar (TreeNav), user icon, menu
+ *
+ * Fixes Issue #2: Menu/User Icon with Simple Styling
+ */
+
+/* =============================================
+   TOP HEADER BAR
+   ============================================= */
+
+body .t-Header {
+  background: var(--mp-gradient-dark);
+  border-bottom: 1px solid rgba(0, 72, 50, 0.2);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* ---- Logo ---- */
+body .t-Header-logo {
+  background: transparent;
+}
+
+body .t-Header-logo-link {
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+  transition: color var(--mp-transition-fast);
+}
+
+body .t-Header-logo-link:hover {
+  color: var(--mp-color-accent);
+}
+
+/* ---- Header buttons (hamburger, search, user) ---- */
+body .t-Header .t-Button,
+body .t-Header .t-Button--header,
+body .t-Header .t-Button--navBar,
+body .t-NavigationBar .t-Button,
+body .t-NavigationBar-item .t-Button {
+  color: var(--mp-color-neutral-300);
+  background: transparent;
+  border: none;
+  transition: color var(--mp-transition-fast), background var(--mp-transition-fast);
+}
+
+body .t-Header .t-Button:hover,
+body .t-Header .t-Button--header:hover,
+body .t-Header .t-Button--navBar:hover,
+body .t-NavigationBar .t-Button:hover,
+body .t-NavigationBar-item .t-Button:hover,
+body .t-Header .t-Button:focus-visible,
+body .t-Header .t-Button--header:focus-visible,
+body .t-Header .t-Button--navBar:focus-visible,
+body .t-NavigationBar .t-Button:focus-visible,
+body .t-NavigationBar-item .t-Button:focus-visible {
+  color: #FFFFFF;
+  background: rgba(0, 72, 50, 0.2);
+}
+
+/* ---- Navigation bar items ---- */
+body .t-NavigationBar-item,
+body .t-NavigationBar-item a {
+  color: var(--mp-color-neutral-300);
+  padding: var(--mp-space-sm) var(--mp-space-md);
+  transition: background var(--mp-transition-fast);
+}
+
+body .t-NavigationBar-item:hover,
+body .t-NavigationBar-item a:hover {
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: var(--mp-radius-sm);
+}
+
+/* ---- User menu — pill-style ---- */
+body .t-NavigationBar-item.has-username .t-Button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--mp-radius-full);
+  padding: 6px 16px 6px 12px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background var(--mp-transition-fast), border-color var(--mp-transition-fast);
+}
+
+body .t-NavigationBar-item.has-username .t-Button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: var(--mp-shadow-md);
+}
+
+body .t-NavigationBar-item.has-username .t-Button .t-Icon {
+  background: rgba(0, 72, 50, 0.35);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #FFFFFF;
+}
+
+body .t-NavigationBar-item.has-username .t-Button .t-Button-label {
+  font-weight: 600;
+  font-size: var(--mp-font-size-sm);
+  color: #FFFFFF;
+  letter-spacing: 0.3px;
+}
+
+/* ---- Navigation bar badge ---- */
+body .t-NavigationBar .t-Button-badge {
+  background: var(--mp-color-danger);
+  color: #FFFFFF;
+}
+
+/* =============================================
+   SIDEBAR NAVIGATION (TreeNav)
+   ============================================= */
+
+body .t-TreeNav,
+body .t-Body-nav,
+body .t-PageBody .t-Body-nav {
+  background: linear-gradient(180deg, var(--mp-color-primary-light) 0%, var(--mp-color-primary) 100%);
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Nav item labels */
+body .t-TreeNav .a-TreeView-content,
+body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content {
+  color: var(--mp-color-neutral-300);
+  border-radius: 8px;
+  margin: 3px 8px;
+  padding: 10px 12px;
+  transition: background var(--mp-transition-fast), color var(--mp-transition-fast);
+}
+
+/* Row highlight bar */
+body .t-TreeNav .a-TreeView-row {
+  background: transparent;
+  border-radius: 8px;
+  margin: 0 4px;
+  transition: background var(--mp-transition-fast);
+}
+
+body .t-TreeNav .a-TreeView-row:hover {
+  background: transparent;
+}
+
+body .t-TreeNav .a-TreeView-row.is-selected,
+body .t-TreeNav .a-TreeView-row.is-selected.is-current--top,
+body .t-TreeNav .a-TreeView-row.is-current--top {
+  background: rgba(0, 72, 50, 0.35);
+}
+
+/* Hover state */
+body .t-TreeNav .a-TreeView-content:hover {
+  background: rgba(0, 72, 50, 0.2);
+  color: #FFFFFF;
+}
+
+/* Selected / Active state */
+body .t-TreeNav .a-TreeView-node.is-selected > .a-TreeView-content,
+body .t-TreeNav .a-TreeView-content.is-selected,
+body .t-TreeNav .a-TreeView-content.is-current--top {
+  background: rgba(0, 72, 50, 0.30);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* Nav link text colors — use doubled selector for specificity over UT defaults */
+body .t-TreeNav .a-TreeView-label,
+body .t-TreeNav .a-TreeView-content a {
+  color: var(--mp-color-neutral-300);
+  text-decoration: none;
+}
+
+body.t-PageBody .t-TreeNav .is-selected .a-TreeView-label,
+body.t-PageBody .t-TreeNav .a-TreeView-content.is-selected a,
+body.t-PageBody .t-TreeNav .a-TreeView-content.is-current--top a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+body.t-PageBody .t-TreeNav .a-TreeView-content:hover a,
+body.t-PageBody .t-TreeNav .a-TreeView-content:hover .a-TreeView-label {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+/* Selected accent bar */
+body .t-TreeNav .a-TreeView-node--topLevel > .a-TreeView-content::before {
+  background: var(--mp-color-secondary);
+}
+
+body .t-TreeNav .a-TreeView-node--topLevel.is-selected > .a-TreeView-content::before {
+  transform: scaleY(1);
+}
+
+/* Nav icons */
+body .t-TreeNav .fa,
+body .t-TreeNav [class*="fa-"],
+body .t-TreeNav .a-TreeView-content .fa {
+  color: var(--mp-color-neutral-400);
+  transition: color var(--mp-transition-fast);
+}
+
+body .t-TreeNav .a-TreeView-content:hover .fa,
+body .t-TreeNav .a-TreeView-content:hover [class*="fa-"] {
+  color: #FFFFFF;
+}
+
+body .t-TreeNav .is-selected .fa,
+body .t-TreeNav .a-TreeView-content.is-selected .fa {
+  color: #FFFFFF;
+}
+
+/* Nav collapsed state */
+body .t-TreeNav .t-TreeNav-toggle,
+body.js-navCollapsed .t-Body-nav {
+  background: var(--mp-color-primary-light);
+}
+
+/* Dividers */
+body .t-TreeNav .a-TreeView-node--topLevel + .a-TreeView-node--topLevel {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+/**
+ * Maine Pine v5 — Forms
+ * Inputs, labels, selects, textareas, search, IG controls
+ *
+ * Fixes Issue #1: Form layout rhythm
+ * Fixes Issue #4: Form title overlaps text
+ */
+
+/* =============================================
+   LABELS — Consistent weight & spacing
+   ============================================= */
+
+body .t-Form-labelContainer label,
+body .t-Form-label {
+  font-size: var(--mp-font-size-sm);
+  font-weight: 600;
+  color: var(--mp-color-neutral-700);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+body .t-Form-labelContainer {
+  font-weight: 600;
+  color: var(--mp-color-neutral-700);
+  margin-bottom: 6px;
+}
+
+/* Label alignment for side-label forms */
+.t-Form--labelsAbove .t-Form-labelContainer {
+  display: flex;
+  align-items: center;
+  padding-right: var(--mp-space-md);
+}
+
+/* =============================================
+   FLOATING-LABEL OVERRIDE
+   Forces floating labels to behave as stacked.
+   Uses doubled selectors for specificity instead of !important.
+   ============================================= */
+
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel .t-Form-labelContainer {
+  position: relative;
+  transform: none;
+  top: auto;
+  left: auto;
+  pointer-events: auto;
+  padding: 0;
+  margin-bottom: 6px;
+  display: block;
+  width: 100%;
+  z-index: 1;
+}
+
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel .t-Form-label {
+  position: relative;
+  transform: none;
+  top: auto;
+  left: auto;
+  font-size: var(--mp-font-size-sm);
+  font-weight: 600;
+  color: var(--mp-color-neutral-700);
+  opacity: 1;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  background: transparent;
+  padding: 0;
+}
+
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel .t-Form-inputContainer {
+  padding-top: 0;
+}
+
+body .t-Form-fieldContainer--floatingLabel.js-show-label.t-Form-fieldContainer--floatingLabel .t-Form-labelContainer,
+body .t-Form-fieldContainer--floatingLabel.apex-item-wrapper--has-initial-value.t-Form-fieldContainer--floatingLabel .t-Form-labelContainer {
+  position: relative;
+  transform: none;
+  top: auto;
+}
+
+/* Floating-label selects */
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel .apex-item-select,
+body .t-Form-fieldContainer--floatingLabel.t-Form-fieldContainer--floatingLabel select.selectlist {
+  padding-top: 10px;
+  min-height: 42px;
+}
+
+/* =============================================
+   TEXT INPUTS, SELECTS, TEXTAREAS
+   ============================================= */
+
+body .t-Form-inputContainer input[type="text"],
+body .t-Form-inputContainer input[type="search"],
+body .t-Form-inputContainer input[type="password"],
+body .t-Form-inputContainer input[type="email"],
+body .t-Form-inputContainer input[type="number"],
+body .t-Form-inputContainer input[type="url"],
+body .t-Form-inputContainer input[type="tel"],
+body .t-Form-inputContainer select,
+body .t-Form-inputContainer textarea,
+.apex-item-select,
+.apex-item-text,
+.apex-item-textarea {
+  min-height: 42px;
+  padding: 10px 14px;
+  font-size: var(--mp-font-size-base);
+  line-height: var(--mp-line-height);
+  border-radius: var(--mp-radius-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+  background: var(--mp-color-neutral-100);
+  color: var(--mp-color-neutral-800);
+  transition: border-color var(--mp-transition-fast), box-shadow var(--mp-transition-fast);
+}
+
+body .t-Form-inputContainer textarea,
+.apex-item-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Focus ring */
+body .t-Form-inputContainer input:focus,
+body .t-Form-inputContainer select:focus,
+body .t-Form-inputContainer textarea:focus,
+.apex-item-select:focus,
+.apex-item-text:focus,
+.apex-item-textarea:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+/* Readonly / Display-only */
+body .t-Form-inputContainer .display_only,
+body .t-Form-inputContainer input[readonly] {
+  background: var(--mp-color-neutral-150);
+  border-color: var(--mp-color-neutral-200);
+  color: var(--mp-color-neutral-600);
+  cursor: default;
+}
+
+/* Disabled inputs */
+body .t-Form-inputContainer input:disabled,
+body .t-Form-inputContainer textarea:disabled,
+body .t-Form-inputContainer select:disabled {
+  background: var(--mp-color-neutral-200);
+  border-color: var(--mp-color-neutral-300);
+  color: var(--mp-color-neutral-400);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Select dropdowns */
+select.apex-item-select,
+body .t-Form-inputContainer select {
+  min-height: 42px;
+  padding: 10px 36px 10px 14px;
+  background-position: right 12px center;
+  appearance: none;
+}
+
+/* Checkbox and radio groups */
+.apex-item-checkbox label,
+.apex-item-radio label {
+  padding: 6px 10px;
+  font-size: var(--mp-font-size-base);
+}
+
+/* Required field indicator */
+.is-required label::after {
+  content: ' *';
+  color: var(--mp-color-danger);
+  font-weight: 700;
+}
+
+/* Field container spacing */
+body .t-Form-fieldContainer {
+  margin-bottom: var(--mp-space-sm);
+}
+
+/* =============================================
+   RECEIPT NUMBER INPUT
+   ============================================= */
+
+input.receipt-input,
+.apex-item-text.receipt-input {
+  font-family: var(--mp-font-family-mono);
+  font-size: var(--mp-font-size-md);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-sm);
+  background: var(--mp-color-neutral-100);
+  transition: border-color var(--mp-transition-fast), box-shadow var(--mp-transition-fast);
+}
+
+input.receipt-input:focus,
+.apex-item-text.receipt-input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+/* =============================================
+   RECEIPT NUMBER DISPLAY
+   ============================================= */
+
+.receipt-number {
+  font-family: var(--mp-font-family-mono);
+  font-size: var(--mp-font-size-base);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--mp-color-primary);
+  background: rgba(0, 72, 50, 0.08);
+  padding: 6px 12px;
+  border-radius: var(--mp-radius-md);
+  border: 1px solid rgba(0, 72, 50, 0.2);
+  display: inline-block;
+  transition: all var(--mp-transition-normal);
+}
+
+.receipt-number:hover {
+  background: rgba(0, 72, 50, 0.15);
+  border-color: rgba(0, 72, 50, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 72, 50, 0.15);
+}
+
+.receipt-number-link {
+  color: var(--mp-color-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: color var(--mp-transition-fast);
+}
+
+.receipt-number-link:hover {
+  color: var(--mp-color-primary);
+}
+
+/* =============================================
+   INTERACTIVE GRID
+   ============================================= */
+
+.a-IG {
+  --a-ig-grid-border-color: var(--mp-color-neutral-300);
+  --a-ig-cell-padding: 1rem;
+  --a-ig-header-background-color: var(--mp-color-neutral-150);
+  border-radius: var(--mp-radius-md);
+  overflow: hidden;
+}
+
+/* IG Filter toolbar */
+body .a-IG-controls {
+  padding: var(--mp-space-sm) var(--mp-space-lg);
+  background: var(--mp-color-neutral-150);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* IG search field */
+body .a-IG-searchField input {
+  min-height: 42px;
+  padding: 10px 14px;
+  font-size: var(--mp-font-size-base);
+  border-radius: var(--mp-radius-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+}
+
+body .a-IG-searchField input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+/* IG row hover */
+.a-IG-row:hover {
+  --a-ig-row-hover-background-color: rgba(0, 51, 102, 0.05);
+}
+
+/* IG status cell backgrounds */
+.a-IG .status-approved { background-color: rgba(0, 72, 50, 0.08); }
+.a-IG .status-denied   { background-color: rgba(139, 26, 26, 0.08); }
+.a-IG .status-rfe      { background-color: rgba(8, 46, 88, 0.08); }
+
+/* =============================================
+   INTERACTIVE REPORT
+   ============================================= */
+
+body .t-Report-report,
+body .t-IRR-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--mp-color-bg-card);
+  width: 100%;
+}
+
+body .t-Report-colHead,
+body .t-IRR-colHead {
+  background: var(--mp-color-neutral-150);
+  color: var(--mp-color-neutral-800);
+  font-weight: 700;
+  font-size: var(--mp-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--mp-color-neutral-300);
+  text-align: left;
+}
+
+body .t-Report-report tr:nth-child(even),
+body .t-IRR-table tr:nth-child(even) {
+  background: var(--mp-color-neutral-150);
+}
+
+body .t-Report-report tr:hover,
+body .t-IRR-table tr:hover {
+  background: rgba(0, 72, 50, 0.06);
+}
+
+body .t-Report-cell,
+body .t-IRR-cell {
+  padding: 16px 18px;
+  font-size: var(--mp-font-size-base);
+  color: var(--mp-color-neutral-800);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+  vertical-align: middle;
+}
+
+/* IR Search bar */
+body .t-IRR-controlsContainer,
+body .a-IRR-controlsContainer {
+  background: var(--mp-color-neutral-150);
+  border-bottom: 2px solid var(--mp-color-neutral-300);
+  padding: var(--mp-space-md) var(--mp-space-lg);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+body .a-IRR-search-field input {
+  min-height: 42px;
+  padding: 10px 14px;
+  font-size: var(--mp-font-size-base);
+  border-radius: var(--mp-radius-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+}
+
+body .a-IRR-search-field input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+/* =============================================
+   TOGGLE SWITCH
+   ============================================= */
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.toggle-switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: linear-gradient(135deg, var(--mp-color-neutral-400), var(--mp-color-neutral-500));
+  transition: var(--mp-transition-normal);
+  border-radius: var(--mp-radius-full);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background: #FFFFFF;
+  transition: var(--mp-transition-normal);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .toggle-slider {
+  background-color: var(--mp-color-secondary);
+}
+
+input:checked + .toggle-slider::before {
+  transform: translateX(24px);
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+  outline: 2px solid var(--mp-color-secondary);
+  outline-offset: 2px;
+}
+
+/* =============================================
+   SEARCH BOX (Faceted)
+   ============================================= */
+
+.a-SearchBox {
+  min-height: 42px;
+}
+
+.a-SearchBox-input {
+  padding: 10px 14px;
+  font-size: var(--mp-font-size-base);
+}
+
+.a-SearchBox-input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+/**
+ * Maine Pine v5 — Components
+ * Cards, buttons, badges, timeline, alerts, footer, status dots
+ *
+ * Fixes Issue #4: Title overlap (region header spacing)
+ * Fixes Issue #5: Footer styling
+ * Fixes Issue #6: Notification visibility
+ */
+
+/* =============================================
+   CARDS
+   ============================================= */
+
+body .t-Card {
+  background: var(--mp-color-bg-card);
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-lg);
+  transition: transform var(--mp-transition-normal), box-shadow var(--mp-transition-normal);
+  overflow: hidden;
+}
+
+body .t-Card:hover {
+  box-shadow: var(--mp-shadow-lg);
+  transform: translateY(-2px);
+  border-color: rgba(0, 72, 50, 0.2);
+}
+
+/* Summary Cards (Dashboard) */
+.summary-card {
+  text-align: center;
+  padding: 28px 20px;
+  background: var(--mp-color-bg-card);
+  border-radius: var(--mp-radius-xl);
+  border: 1px solid var(--mp-color-neutral-300);
+  box-shadow: var(--mp-shadow-lg);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--mp-transition-normal), box-shadow var(--mp-transition-normal);
+}
+
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--mp-gradient-secondary);
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--mp-shadow-xl);
+}
+
+.summary-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--mp-radius-md);
+  background: var(--mp-gradient-secondary);
+  color: var(--mp-color-neutral-100);
+  font-size: 24px;
+  margin-bottom: 14px;
+  -webkit-text-fill-color: currentColor;
+}
+
+.summary-card-value {
+  font-size: var(--mp-font-size-3xl);
+  font-weight: 800;
+  color: var(--mp-color-primary);
+  line-height: var(--mp-line-height-tight);
+  margin-bottom: 8px;
+}
+
+.summary-card-label {
+  font-size: var(--mp-font-size-xs);
+  color: var(--mp-color-neutral-600);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+.summary-card-change {
+  font-size: var(--mp-font-size-sm);
+  margin-top: 12px;
+  padding: 4px 10px;
+  border-radius: var(--mp-radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.summary-card-change.positive {
+  color: var(--mp-status-approved);
+  background: rgba(0, 72, 50, 0.1);
+  border: 1px solid rgba(0, 72, 50, 0.2);
+}
+
+.summary-card-change.negative {
+  color: var(--mp-status-denied);
+  background: rgba(139, 46, 46, 0.1);
+  border: 1px solid rgba(139, 46, 46, 0.2);
+}
+
+/* Stat cards */
+.stat-card {
+  background: var(--mp-color-bg-card);
+  border-radius: var(--mp-radius-xl);
+  padding: var(--mp-space-lg);
+  border: 1px solid var(--mp-color-neutral-300);
+  box-shadow: var(--mp-shadow-md);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--mp-transition-normal), box-shadow var(--mp-transition-normal);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.stat-card.blue::before   { background: var(--mp-gradient-secondary); }
+.stat-card.purple::before { background: linear-gradient(135deg, #4A2D73 0%, #082E58 100%); }
+.stat-card.green::before  { background: var(--mp-gradient-success); }
+.stat-card.orange::before { background: var(--mp-gradient-warning); }
+.stat-card.red::before    { background: var(--mp-gradient-danger); }
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--mp-shadow-xl);
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--mp-color-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: var(--mp-font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--mp-color-neutral-600);
+}
+
+/* =============================================
+   BUTTONS
+   ============================================= */
+
+/* Hot / Primary */
+.t-Button--hot {
+  --a-button-background-color: var(--mp-color-primary);
+  --a-button-text-color: #FFFFFF;
+  background: var(--mp-gradient-dark);
+  border: none;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--mp-radius-md);
+  box-shadow: 0 4px 15px rgba(8, 46, 88, 0.35);
+  transition: all var(--mp-transition-normal);
+}
+
+.t-Button--hot:hover {
+  background: linear-gradient(135deg, var(--mp-color-primary-light) 0%, var(--mp-color-secondary-dark) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(8, 46, 88, 0.45);
+  color: #FFFFFF;
+}
+
+.t-Button--hot:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(8, 46, 88, 0.3);
+}
+
+/* Danger */
+body .t-Button--danger {
+  background: var(--mp-gradient-danger);
+  border: none;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--mp-radius-md);
+  box-shadow: 0 4px 15px rgba(139, 46, 46, 0.35);
+}
+
+body .t-Button--danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 46, 46, 0.45);
+}
+
+/* Success */
+body .t-Button--success {
+  background: var(--mp-gradient-success);
+  border: none;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--mp-radius-md);
+  box-shadow: 0 4px 15px rgba(8, 46, 88, 0.35);
+}
+
+body .t-Button--success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(8, 46, 88, 0.45);
+}
+
+/* Warning */
+body .t-Button--warning {
+  background: var(--mp-gradient-warning);
+  border: none;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--mp-radius-md);
+  box-shadow: 0 4px 15px rgba(111, 81, 62, 0.35);
+}
+
+body .t-Button--warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(111, 81, 62, 0.45);
+}
+
+/* Simple / link-style */
+body .t-Button--simple,
+body .t-Button--link {
+  background: transparent;
+  border: 2px solid var(--mp-color-secondary);
+  color: var(--mp-color-secondary);
+  box-shadow: none;
+}
+
+body .t-Button--simple:hover,
+body .t-Button--link:hover {
+  background: rgba(0, 72, 50, 0.1);
+  border-color: var(--mp-color-primary);
+  color: var(--mp-color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 72, 50, 0.15);
+}
+
+/* Icon buttons */
+body .t-Button--icon {
+  border-radius: var(--mp-radius-md);
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* IG / Toolbar buttons */
+body .a-IG .t-Button,
+body .a-Toolbar .t-Button,
+body .a-IRR-toolbar .t-Button {
+  background: var(--mp-color-neutral-700);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--mp-radius-sm);
+  font-weight: 500;
+}
+
+body .a-IG .t-Button:hover,
+body .a-Toolbar .t-Button:hover {
+  background: var(--mp-color-secondary);
+  color: #FFFFFF;
+}
+
+/* Dialog close button */
+body .t-Dialog-closeButton {
+  color: var(--mp-color-neutral-500);
+  background: transparent;
+}
+
+body .t-Dialog-closeButton:hover {
+  color: var(--mp-color-danger);
+  background: rgba(139, 46, 46, 0.1);
+}
+
+/* Region header buttons */
+body .t-Region-headerItems .t-Button {
+  background: transparent;
+  color: var(--mp-color-secondary);
+  border: 1px solid rgba(0, 72, 50, 0.3);
+}
+
+body .t-Region-headerItems .t-Button:hover {
+  background: rgba(0, 72, 50, 0.1);
+  color: var(--mp-color-primary);
+}
+
+/* Pagination */
+body .t-Report-paginationLink,
+body .a-IRR-pagination .t-Button {
+  background: var(--mp-color-neutral-700);
+  color: #FFFFFF;
+  border-radius: var(--mp-radius-sm);
+}
+
+body .t-Report-paginationLink:hover,
+body .a-IRR-pagination .t-Button:hover {
+  background: var(--mp-color-secondary);
+}
+
+/* Focus states */
+body .t-Button:focus-visible {
+  outline: 2px solid var(--mp-color-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 72, 50, 0.25);
+}
+
+/* Quick action buttons */
+.quick-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: var(--mp-radius-lg);
+  font-weight: 600;
+  background: var(--mp-color-bg-card);
+  border: 1px solid var(--mp-color-neutral-300);
+  box-shadow: var(--mp-shadow-md);
+  transition: all var(--mp-transition-normal);
+  cursor: pointer;
+}
+
+.quick-action-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--mp-shadow-xl);
+  border-color: var(--mp-color-secondary);
+  color: var(--mp-color-secondary);
+}
+
+.quick-action-btn:focus-visible {
+  outline: 2px solid var(--mp-color-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 72, 50, 0.25);
+}
+
+/* =============================================
+   ALERTS & NOTIFICATIONS (Issue #6)
+   ============================================= */
+
+/* APEX theme alerts — high contrast */
+body .t-Alert--success {
+  --ut-alert-background-color: #dcfce7;
+  --ut-alert-text-color: #166534;
+  background: #dcfce7;
+  border: 1px solid rgba(0, 72, 50, 0.25);
+  border-left: 4px solid #22c55e;
+  border-radius: var(--mp-radius-lg);
+  color: #166534;
+}
+
+body .t-Alert--info {
+  --ut-alert-background-color: #dbeafe;
+  --ut-alert-text-color: #1e40af;
+  background: #dbeafe;
+  border: 1px solid rgba(8, 46, 88, 0.25);
+  border-left: 4px solid #3b82f6;
+  border-radius: var(--mp-radius-lg);
+  color: #1e40af;
+}
+
+body .t-Alert--warning {
+  --ut-alert-background-color: #fef3c7;
+  --ut-alert-text-color: #92400e;
+  background: #fef3c7;
+  border: 1px solid rgba(111, 81, 62, 0.3);
+  border-left: 4px solid #f59e0b;
+  border-radius: var(--mp-radius-lg);
+  color: #92400e;
+}
+
+body .t-Alert--danger {
+  --ut-alert-background-color: #fce8e8;
+  --ut-alert-text-color: #6e1111;
+  background: #fce8e8;
+  border: 1px solid rgba(139, 46, 46, 0.25);
+  border-left: 4px solid #ef4444;
+  border-radius: var(--mp-radius-lg);
+  color: #6e1111;
+}
+
+/* Badge urgency */
+body .t-BadgeList-value {
+  --a-badge-background-color: var(--mp-color-danger);
+  --a-badge-text-color: #fff;
+  font-weight: 700;
+}
+
+body .t-Badge--hot,
+body .t-Badge--primary {
+  background: var(--mp-color-primary);
+  color: #FFFFFF;
+}
+
+/* Custom alert classes */
+.alert-info,
+.alert-success,
+.alert-warning,
+.alert-error {
+  padding: var(--mp-space-md) var(--mp-space-lg);
+  border-radius: var(--mp-radius-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  position: relative;
+  border-left: 4px solid;
+}
+
+.alert-info    { background: rgba(0, 72, 50, 0.08); border-left-color: var(--mp-color-secondary); }
+.alert-success { background: rgba(0, 72, 50, 0.08); border-left-color: var(--mp-status-approved); }
+.alert-warning { background: rgba(181, 117, 31, 0.1); border-left-color: var(--mp-color-warning); }
+.alert-error   { background: rgba(139, 46, 46, 0.08); border-left-color: var(--mp-color-danger); }
+
+/* =============================================
+   TIMELINE (Status History)
+   ============================================= */
+
+.timeline-container {
+  position: relative;
+  padding-left: 40px;
+  margin: var(--mp-space-lg) 0;
+}
+
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--mp-color-secondary), var(--mp-color-accent), var(--mp-color-neutral-300));
+  border-radius: var(--mp-radius-full);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--mp-space-lg);
+  padding: 18px 22px;
+  background: var(--mp-color-bg-card);
+  border-radius: var(--mp-radius-lg);
+  border: 1px solid var(--mp-color-neutral-300);
+  box-shadow: var(--mp-shadow-md);
+  transition: all var(--mp-transition-normal);
+}
+
+.timeline-item:hover {
+  background: var(--mp-color-neutral-100);
+  box-shadow: var(--mp-shadow-lg);
+  transform: translateX(8px);
+  border-color: rgba(0, 72, 50, 0.3);
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -30px;
+  top: 22px;
+  width: 16px;
+  height: 16px;
+  background: var(--mp-gradient-secondary);
+  border-radius: 50%;
+  border: 3px solid var(--mp-color-neutral-100);
+  box-shadow: var(--mp-shadow-md), 0 0 0 4px rgba(0, 72, 50, 0.2);
+  z-index: 1;
+  transition: all var(--mp-transition-fast);
+}
+
+.timeline-item:first-child::before {
+  background: var(--mp-gradient-primary);
+  width: 20px;
+  height: 20px;
+  left: -32px;
+  top: 20px;
+}
+
+.timeline-date {
+  font-size: var(--mp-font-size-xs);
+  color: var(--mp-color-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.timeline-status {
+  font-weight: 700;
+  color: var(--mp-color-neutral-900);
+  font-size: var(--mp-font-size-md);
+  margin-bottom: 6px;
+}
+
+.timeline-details {
+  font-size: var(--mp-font-size-base);
+  color: var(--mp-color-neutral-600);
+  margin-top: 8px;
+  line-height: var(--mp-line-height-loose);
+  padding-left: 12px;
+  border-left: 3px solid rgba(0, 72, 50, 0.2);
+}
+
+/* =============================================
+   API STATUS INDICATOR
+   ============================================= */
+
+.api-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--mp-font-size-sm);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--mp-radius-full);
+  background: var(--mp-color-bg-card);
+  border: 1px solid var(--mp-color-neutral-300);
+  box-shadow: var(--mp-shadow-md);
+  transition: all var(--mp-transition-normal);
+}
+
+.api-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.api-status-dot.online    { background: var(--mp-status-approved); }
+.api-status-dot.offline   { background: var(--mp-status-denied); }
+.api-status-dot.sandbox   { background: var(--mp-status-pending); }
+
+/* =============================================
+   FOOTER (Issue #5)
+   ============================================= */
+
+body .t-Footer {
+  background-color: var(--mp-color-bg-page);
+  border-top: 1px solid var(--mp-color-neutral-300);
+  padding: var(--mp-space-md);
+  font-size: var(--mp-font-size-sm);
+  color: var(--mp-color-neutral-500);
+  text-align: center;
+}
+
+body .t-Footer a {
+  color: var(--mp-color-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+body .t-Footer a:hover {
+  color: var(--mp-color-primary);
+}
+
+/* =============================================
+   TABS & PILLS
+   ============================================= */
+
+body .t-Tabs-item.is-active .t-Tabs-link {
+  color: var(--mp-color-primary);
+  border-bottom-color: var(--mp-color-primary);
+}
+
+body .t-Tabs-item .t-Tabs-link:hover {
+  color: var(--mp-color-secondary);
+}
+
+/* =============================================
+   LOADING STATES
+   ============================================= */
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 46, 88, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--mp-color-accent);
+  border-right-color: var(--mp-color-secondary);
+  border-radius: 50%;
+  animation: mp-spin 1s linear infinite;
+}
+
+.loading-text {
+  margin-top: var(--mp-space-lg);
+  color: var(--mp-color-neutral-100);
+  font-size: var(--mp-font-size-md);
+  font-weight: 500;
+}
+
+/* APEX built-in spinner override */
+.uscis-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--mp-color-neutral-300);
+  border-top-color: var(--mp-color-secondary);
+  border-radius: 50%;
+  animation: mp-spin 1s linear infinite;
+}
+
+/* =============================================
+   EMPTY STATE
+   ============================================= */
+
+.empty-state {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--mp-color-neutral-500);
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  color: var(--mp-color-neutral-300);
+  margin-bottom: 20px;
+}
+
+.empty-state-title {
+  font-size: var(--mp-font-size-xl);
+  font-weight: 700;
+  color: var(--mp-color-neutral-700);
+  margin-bottom: 8px;
+}
+
+.empty-state-description {
+  font-size: var(--mp-font-size-md);
+  color: var(--mp-color-neutral-500);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* =============================================
+   DIVIDERS & MISC
+   ============================================= */
+
+.divider-gradient {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mp-color-secondary), transparent);
+  margin: var(--mp-space-lg) 0;
+}
+
+.separator-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--mp-color-neutral-400);
+  border-radius: 50%;
+  margin: 0 12px;
+  vertical-align: middle;
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--mp-color-neutral-200);
+  border-radius: var(--mp-radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--mp-gradient-secondary);
+  border-radius: var(--mp-radius-full);
+  transition: width var(--mp-transition-slow);
+}
+
+/* Avatar */
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--mp-gradient-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mp-color-neutral-100);
+  font-weight: 700;
+  font-size: 18px;
+  box-shadow: var(--mp-shadow-md);
+}
+
+.avatar.sm { width: 32px; height: 32px; font-size: 14px; }
+.avatar.lg { width: 64px; height: 64px; font-size: 24px; }
+/**
+ * Maine Pine v5 — Page-Specific Overrides
+ * Login, Dashboard, Import/Export, Settings, Admin, Check Status
+ *
+ * Fixes Issue #3: Login page weird (Oracle default styling)
+ */
+
+/* =============================================
+   LOGIN PAGE (Issue #3)
+   ============================================= */
+
+body.t-PageBody--login {
+  background: linear-gradient(160deg, #020E1F 0%, #020A14 35%, #030D1A 70%, #020E1F 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.t-PageBody--login::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse at 15% 25%, rgba(8, 32, 64, 0.3) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 75%, rgba(8, 32, 64, 0.25) 0%, transparent 45%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Login container — glassmorphism card */
+body .t-Login-container {
+  max-width: 420px;
+  background: rgba(245, 244, 240, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* Login header */
+body .t-Login-header {
+  background: linear-gradient(135deg, var(--mp-color-primary) 0%, var(--mp-color-primary-light) 60%, var(--mp-color-secondary-dark) 100%);
+  padding: 36px 32px;
+  border-bottom: 2px solid rgba(0, 72, 50, 0.3);
+  position: relative;
+}
+
+body .t-Login-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mp-color-accent), transparent);
+}
+
+body .t-Login-logo {
+  font-size: 26px;
+  font-weight: 800;
+  color: #F8FAF9;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: var(--mp-space-md);
+}
+
+body .t-Login-title {
+  font-size: var(--mp-font-size-xl);
+  color: var(--mp-color-primary);
+  font-weight: 700;
+  margin-bottom: var(--mp-space-lg);
+}
+
+/* Login icon colors */
+body .t-Login-header .t-Icon,
+body .t-Login-header .fa {
+  color: var(--mp-color-accent);
+}
+
+body .t-Login-container .t-Icon,
+body .t-Login-container .fa {
+  color: var(--mp-color-neutral-500);
+}
+
+/* Login body */
+body .t-Login-body {
+  padding: 32px;
+  background: transparent;
+}
+
+body .t-Login-body .t-Form-label,
+body .t-Login-body label {
+  color: var(--mp-color-primary);
+  font-weight: 600;
+}
+
+/* Login inputs */
+body .t-Login-body .t-Form-inputContainer input[type="text"],
+body .t-Login-body .t-Form-inputContainer input[type="password"],
+body .t-Login-body input.apex-item-text {
+  border: 2px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-md);
+  padding: 12px 16px 12px 42px;
+  background: var(--mp-color-bg-card-hover);
+  color: var(--mp-color-primary);
+  font-size: 15px;
+  transition: all var(--mp-transition-normal);
+}
+
+body .t-Login-body .t-Form-inputContainer input:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.2);
+  outline: none;
+}
+
+/* Login form icons */
+body .t-Login-body .apex-item-icon,
+body .t-Login-body .t-Form-inputContainer .t-Icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  font-size: 16px;
+  color: var(--mp-color-neutral-500);
+  pointer-events: none;
+}
+
+body .t-Login-body .t-Form-itemWrapper {
+  position: relative;
+}
+
+/* Login sign-in button */
+body .t-Login-body .t-Button--hot {
+  background: var(--mp-gradient-dark);
+  border: none;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(8, 46, 88, 0.4);
+  width: 100%;
+  transition: all var(--mp-transition-normal);
+}
+
+body .t-Login-body .t-Button--hot:hover {
+  background: linear-gradient(135deg, var(--mp-color-primary-light) 0%, var(--mp-color-secondary-dark) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(8, 46, 88, 0.5);
+}
+
+/* Password visibility toggle */
+body .t-Button--passwordVisibility {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  min-width: auto;
+  padding: 4px 8px;
+}
+
+body .t-Button--passwordVisibility .fa {
+  color: var(--mp-color-neutral-500);
+  font-size: 16px;
+}
+
+body .t-Button--passwordVisibility:hover {
+  background: rgba(111, 81, 62, 0.1);
+}
+
+/* Password input wrapper */
+body .t-Login-body .apex-item-group--password {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+body .t-Login-body .apex-item-group--password input {
+  padding-right: 40px;
+}
+
+/* Remember me */
+body .t-Login-body .u-checkbox,
+body .t-Login-body .apex-item-single-checkbox label {
+  color: var(--mp-color-primary-light);
+  font-weight: 500;
+}
+
+/* Login footer */
+body .t-Login-footer {
+  background: rgba(221, 224, 216, 0.5);
+  border-top: 1px solid rgba(184, 189, 179, 0.4);
+  padding: var(--mp-space-md) var(--mp-space-xl);
+}
+
+body .t-Login-footer a {
+  color: var(--mp-color-secondary);
+  font-weight: 600;
+}
+
+body .t-Login-footer a:hover {
+  color: var(--mp-color-primary);
+}
+
+/* =============================================
+   DASHBOARD (Page 1)
+   ============================================= */
+
+.widget-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--mp-space-lg);
+  margin-bottom: var(--mp-space-xl);
+}
+
+.widget {
+  background: var(--mp-color-bg-card);
+  border-radius: var(--mp-radius-xl);
+  padding: var(--mp-space-lg);
+  border: 1px solid var(--mp-color-neutral-300);
+  box-shadow: var(--mp-shadow-lg);
+  transition: transform var(--mp-transition-normal), box-shadow var(--mp-transition-normal);
+}
+
+.widget:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--mp-shadow-xl);
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--mp-space-lg);
+}
+
+.widget-title {
+  font-size: var(--mp-font-size-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--mp-color-neutral-600);
+}
+
+.widget-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--mp-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--mp-color-neutral-100);
+}
+
+.widget-icon.blue   { background: var(--mp-gradient-secondary); }
+.widget-icon.purple  { background: linear-gradient(135deg, #4A2D73 0%, #082E58 100%); }
+.widget-icon.green  { background: var(--mp-gradient-success); }
+.widget-icon.orange { background: var(--mp-gradient-warning); }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--mp-space-lg);
+  margin-bottom: var(--mp-space-xl);
+}
+
+/* =============================================
+   CHECK STATUS MODAL (Page 5)
+   ============================================= */
+
+.check-status-dialog .t-Dialog {
+  max-width: 600px;
+}
+
+.check-status-loading {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.check-result-card {
+  border-radius: var(--mp-radius-lg);
+  border: 1px solid var(--mp-color-neutral-300);
+  background: var(--mp-color-bg-card);
+  overflow: hidden;
+}
+
+.check-result-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--mp-color-neutral-150);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+}
+
+.check-result-card__body {
+  padding: var(--mp-space-lg);
+}
+
+.check-result-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  margin-bottom: var(--mp-space-md);
+}
+
+@media (max-width: 480px) {
+  .check-result-card__grid { grid-template-columns: 1fr; }
+}
+
+.check-result-card__label {
+  font-size: var(--mp-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--mp-color-neutral-500);
+}
+
+.check-result-card__value {
+  font-size: var(--mp-font-size-base);
+  font-weight: 500;
+  color: var(--mp-color-neutral-900);
+}
+
+.check-error-card {
+  display: flex;
+  gap: var(--mp-space-md);
+  padding: var(--mp-space-lg);
+  border-radius: var(--mp-radius-lg);
+  border: 1px solid var(--mp-status-denied);
+  border-left-width: 4px;
+  background: rgba(139, 46, 46, 0.06);
+}
+
+.check-error-card__icon {
+  flex-shrink: 0;
+  font-size: 24px;
+  color: var(--mp-status-denied);
+}
+
+.check-error-card__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--mp-status-denied);
+}
+
+.check-error-card__message {
+  margin: 0 0 8px;
+  font-size: var(--mp-font-size-sm);
+  color: var(--mp-color-neutral-900);
+}
+
+.check-error-card__hint {
+  margin: 0;
+  font-size: var(--mp-font-size-xs);
+  color: var(--mp-color-neutral-500);
+}
+
+/* Receipt input inside modal */
+.check-status-dialog [data-receipt-input="true"] {
+  font-family: var(--mp-font-family-mono);
+  font-weight: 600;
+  font-size: 1.15em;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* =============================================
+   IMPORT/EXPORT (Page 6)
+   ============================================= */
+
+.transfer-card {
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-md);
+  background: var(--mp-color-bg-card);
+  padding: var(--mp-space-lg);
+  transition: box-shadow var(--mp-transition-fast);
+}
+
+.transfer-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.drag-over::after {
+  content: attr(data-drop-text);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 46, 88, 0.06);
+  border: 2px dashed var(--mp-color-primary);
+  border-radius: var(--mp-radius-md);
+  color: var(--mp-color-primary);
+  font-size: var(--mp-font-size-lg);
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.is-importing,
+.is-exporting {
+  position: relative;
+  min-height: 80px;
+}
+
+.is-importing::before,
+.is-exporting::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: var(--mp-radius-md);
+  z-index: 90;
+}
+
+.js-import-progress-msg {
+  display: none;
+  text-align: center;
+  padding: 8px 0;
+  font-size: var(--mp-font-size-sm);
+  color: var(--mp-color-neutral-700);
+  position: relative;
+  z-index: 91;
+}
+
+.is-importing .js-import-progress-msg { display: block; }
+
+.import-preview--valid {
+  background: rgba(0, 72, 50, 0.08);
+  border-left: 4px solid var(--mp-status-approved);
+  padding: 12px 16px;
+  border-radius: 0 6px 6px 0;
+}
+
+.import-preview--invalid {
+  background: rgba(139, 26, 26, 0.06);
+  border-left: 4px solid var(--mp-status-denied);
+  padding: 12px 16px;
+  border-radius: 0 6px 6px 0;
+}
+
+.import-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--mp-color-neutral-300);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.import-progress-bar__fill {
+  height: 100%;
+  background: var(--mp-color-primary);
+  border-radius: 3px;
+  transition: width var(--mp-transition-normal);
+  width: 0%;
+}
+
+.transfer-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--mp-radius-md);
+  background: rgba(8, 46, 88, 0.08);
+  color: var(--mp-color-primary);
+  font-size: var(--mp-font-size-lg);
+  margin-bottom: 12px;
+}
+
+/* =============================================
+   SETTINGS (Page 7)
+   ============================================= */
+
+.u-success-text {
+  color: var(--mp-status-approved);
+  font-weight: 600;
+}
+
+.u-danger-text {
+  color: var(--mp-color-danger);
+  font-weight: 600;
+}
+
+.u-success-text .fa,
+.u-danger-text .fa {
+  margin-right: 4px;
+}
+
+/* =============================================
+   ADMIN (Page 8)
+   ============================================= */
+
+/* Health cards grid */
+.admin-health-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--mp-space-md);
+  padding: var(--mp-space-xs) 0;
+}
+
+.admin-health-card {
+  background: var(--mp-color-bg-card);
+  border-radius: var(--mp-radius-md);
+  padding: var(--mp-space-md);
+  border: 1px solid var(--mp-color-neutral-300);
+  box-shadow: var(--mp-shadow-sm);
+}
+
+.admin-health-card .card-label {
+  color: var(--mp-color-neutral-500);
+  font-size: var(--mp-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.admin-health-card .card-value {
+  font-size: var(--mp-font-size-xl);
+  font-weight: 700;
+  color: var(--mp-color-neutral-900);
+}
+
+.admin-health-cards .t-Cards-item {
+  min-height: 120px;
+}
+
+/* Shared admin data table */
+.admin-audit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-audit-table th {
+  background: var(--mp-color-neutral-150);
+  padding: var(--mp-space-xs) var(--mp-space-sm);
+  text-align: left;
+  font-weight: 600;
+  font-size: var(--mp-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--mp-color-neutral-300);
+}
+
+.admin-audit-table td {
+  padding: var(--mp-space-xs) var(--mp-space-sm);
+  border-bottom: 1px solid var(--mp-color-neutral-200);
+  font-size: var(--mp-font-size-sm);
+  vertical-align: top;
+}
+
+.admin-audit-table tr:hover td {
+  background: rgba(0, 72, 50, 0.04);
+}
+
+.admin-num-cell {
+  text-align: right;
+}
+
+.admin-empty-state {
+  text-align: center;
+  padding: var(--mp-space-lg);
+  color: var(--mp-color-neutral-500);
+}
+
+.admin-monospace {
+  font-family: var(--mp-font-family-mono);
+  font-size: var(--mp-font-size-xs);
+  letter-spacing: 0.02em;
+}
+
+.admin-audit .t-Badge,
+.admin-scheduler .t-Badge {
+  font-size: var(--mp-font-size-xs);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* ---- Token History (Tab 4) ---- */
+
+.admin-token-summary {
+  padding: var(--mp-space-sm) var(--mp-space-md);
+  margin-bottom: var(--mp-space-md);
+  background: var(--mp-color-bg-card);
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-md);
+}
+
+.admin-token-summary-row {
+  padding: 4px 0;
+  font-size: var(--mp-font-size-base);
+  line-height: 1.6;
+}
+
+.admin-token-summary-row + .admin-token-summary-row {
+  border-top: 1px solid var(--mp-color-neutral-200);
+}
+
+.admin-token-history .u-textMonospace {
+  font-family: var(--mp-font-family-mono);
+  font-size: var(--mp-font-size-xs);
+  letter-spacing: 0.02em;
+}
+
+/* ---- API Test Console (Tab 5) ---- */
+
+.admin-api-test-mode {
+  padding: 10px var(--mp-space-md);
+  margin-bottom: var(--mp-space-md);
+  background: var(--mp-color-neutral-150);
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-sm);
+  font-size: var(--mp-font-size-sm);
+  line-height: 1.6;
+}
+
+.admin-api-test-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mp-space-sm);
+  align-items: flex-end;
+  padding-bottom: var(--mp-space-lg);
+  border-bottom: 1px solid var(--mp-color-neutral-200);
+  margin-bottom: var(--mp-space-lg);
+}
+
+.admin-api-test-field label {
+  display: block;
+  font-size: var(--mp-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  color: var(--mp-color-neutral-700);
+}
+
+.admin-api-test-field input[type="text"] {
+  width: 220px;
+  padding: 6px 10px;
+  font-size: var(--mp-font-size-base);
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-sm);
+  background: var(--mp-color-neutral-100);
+  transition: border-color var(--mp-transition-fast);
+}
+
+.admin-api-test-field input[type="text"]:focus {
+  border-color: var(--mp-color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 72, 50, 0.12);
+  outline: none;
+}
+
+.admin-api-test-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--mp-font-size-sm);
+  cursor: pointer;
+  padding-bottom: 4px;
+}
+
+.admin-api-test-buttons {
+  display: flex;
+  gap: var(--mp-space-xs);
+}
+
+.admin-api-test-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mp-space-sm);
+  align-items: flex-end;
+  padding-bottom: var(--mp-space-md);
+}
+
+.admin-api-test-results {
+  min-height: 200px;
+}
+
+.admin-api-test-empty {
+  text-align: center;
+  padding: var(--mp-space-2xl) var(--mp-space-lg);
+  color: var(--mp-color-neutral-500);
+}
+
+.admin-api-test-empty .fa {
+  display: block;
+  margin-bottom: var(--mp-space-md);
+}
+
+.admin-api-test-empty p {
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.admin-api-test-loading {
+  text-align: center;
+  padding: var(--mp-space-2xl) var(--mp-space-lg);
+  color: var(--mp-color-neutral-500);
+}
+
+.admin-api-test-loading .fa {
+  display: block;
+  margin-bottom: var(--mp-space-sm);
+  color: var(--mp-color-secondary);
+}
+
+.admin-api-test-result-card {
+  padding: var(--mp-space-md);
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-md);
+  background: var(--mp-color-bg-card);
+}
+
+.admin-api-test-result-title {
+  margin: 0 0 var(--mp-space-sm);
+  font-size: var(--mp-font-size-md);
+  font-weight: 600;
+}
+
+.admin-api-test-result-title .fa {
+  margin-right: 6px;
+}
+
+.admin-api-test-result-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-api-test-result-table th {
+  text-align: left;
+  padding: var(--mp-space-xs) var(--mp-space-sm);
+  width: 160px;
+  font-weight: 600;
+  color: var(--mp-color-neutral-700);
+  border-bottom: 1px solid var(--mp-color-neutral-200);
+  vertical-align: top;
+}
+
+.admin-api-test-result-table td {
+  padding: var(--mp-space-xs) var(--mp-space-sm);
+  border-bottom: 1px solid var(--mp-color-neutral-200);
+  vertical-align: top;
+  word-break: break-word;
+}
+
+.admin-api-test-raw {
+  margin-top: var(--mp-space-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+  border-radius: var(--mp-radius-sm);
+}
+
+.admin-api-test-raw summary {
+  padding: var(--mp-space-xs) var(--mp-space-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--mp-font-size-sm);
+  color: var(--mp-color-neutral-600);
+  background: var(--mp-color-neutral-150);
+}
+
+.admin-api-test-raw summary:hover {
+  background: var(--mp-color-neutral-200);
+}
+
+.admin-api-test-json {
+  margin: 0;
+  padding: var(--mp-space-sm);
+  font-family: var(--mp-font-family-mono);
+  font-size: var(--mp-font-size-xs);
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: var(--mp-color-neutral-150);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.admin-api-test-error {
+  text-align: center;
+  padding: var(--mp-space-xl) var(--mp-space-lg);
+}
+
+.admin-api-test-error .fa {
+  display: block;
+  margin-bottom: var(--mp-space-sm);
+}
+
+.admin-api-test-error p {
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* =============================================
+   HERO REGION
+   ============================================= */
+
+/* Hide empty icon in hero region */
+.t-HeroRegion-icon.t-Icon:empty,
+.t-HeroRegion-icon:not([class*="fa-"]):not([class*="icon-"]) {
+  display: none;
+}
+
+.t-HeroRegion-col--left:has(.t-HeroRegion-icon:empty),
+.t-HeroRegion-col--left:has(.t-HeroRegion-icon:not([class*="fa-"]):not([class*="icon-"])) {
+  display: none;
+}
+
+/* Styled hero icon */
+.t-HeroRegion-icon.t-Icon[class*="fa-"] {
+  background: rgba(0, 72, 50, 0.1);
+  border-radius: var(--mp-radius-md);
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--mp-color-secondary);
+}
+
+/* Page header hero */
+.page-header-hero {
+  background: var(--mp-gradient-dark);
+  padding: 40px 32px;
+  margin: -16px -16px var(--mp-space-lg) -16px;
+  border-radius: 0 0 var(--mp-radius-xl) var(--mp-radius-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header-hero h1 {
+  color: var(--mp-color-neutral-100);
+  font-size: var(--mp-font-size-2xl);
+  font-weight: 800;
+  margin: 0;
+  position: relative;
+}
+
+.page-header-hero p {
+  color: var(--mp-color-neutral-400);
+  font-size: var(--mp-font-size-md);
+  margin-top: 8px;
+  position: relative;
+}
+
+/* =============================================
+   RESPONSIVE — Mobile Overrides
+   ============================================= */
+
+@media (max-width: 640px) {
+  .summary-card-value { font-size: 36px; }
+
+  .timeline-container { padding-left: 30px; }
+  .timeline-item::before { left: -22px; width: 12px; height: 12px; }
+
+  .widget-container { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr; }
+}
+/**
+ * Maine Pine v5 — Utilities & Animations
+ * Keyframes, print styles, status dots, visual helpers, FAB
+ */
+
+/* =============================================
+   KEYFRAMES
+   ============================================= */
+
+@keyframes mp-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes mp-modalPopIn {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes mp-dotPulse {
+  0%, 80%, 100% { transform: scale(0); }
+  40%           { transform: scale(1); }
+}
+
+@keyframes mp-statusPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+@keyframes mp-pulseRing {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 72, 50, 0.5); }
+  70%  { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 72, 50, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 72, 50, 0); }
+}
+
+@keyframes mp-timelineSlideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes mp-alertSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes mp-toastSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes mp-notificationPop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes mp-progressShine {
+  from { left: -40%; }
+  to   { left: 140%; }
+}
+
+@keyframes mp-shimmer {
+  0%   { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+@keyframes mp-skeleton {
+  0%   { opacity: 0.6; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes mp-gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes mp-dotBounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-6px); }
+}
+
+@keyframes mp-fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* =============================================
+   STATUS DOTS
+   ============================================= */
+
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 6px;
+  background: var(--mp-status-unknown);
+}
+
+.status-dot.approved  { background: var(--mp-status-approved); }
+.status-dot.denied    { background: var(--mp-status-denied); }
+.status-dot.pending   { background: var(--mp-status-pending); animation: mp-statusPulse 2s ease-in-out infinite; }
+.status-dot.rfe       { background: var(--mp-status-rfe); animation: mp-statusPulse 2s ease-in-out 0.5s infinite; }
+.status-dot.received  { background: var(--mp-status-received); }
+.status-dot.transferred { background: var(--mp-status-transferred); }
+.status-dot.unknown   { background: var(--mp-status-unknown); }
+
+/* =============================================
+   VISUAL UTILITIES
+   ============================================= */
+
+/* Gradient text */
+.gradient-text {
+  background: var(--mp-gradient-text);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Glow border */
+.glow-border {
+  box-shadow: 0 0 12px rgba(0, 72, 50, 0.4), 0 0 4px rgba(0, 72, 50, 0.2);
+}
+
+/* Shimmer loading placeholder */
+.shimmer {
+  background: linear-gradient(90deg,
+    var(--mp-color-neutral-200) 0px,
+    var(--mp-color-neutral-150) 40px,
+    var(--mp-color-neutral-200) 80px);
+  background-size: 200px 100%;
+  animation: mp-shimmer 1.6s ease-in-out infinite;
+}
+
+/* Skeleton loading placeholder */
+.skeleton {
+  background: var(--mp-color-neutral-200);
+  border-radius: var(--mp-radius-sm);
+  animation: mp-skeleton 1.5s ease-in-out infinite;
+}
+
+.skeleton--text {
+  height: 1em;
+  width: 80%;
+  margin-bottom: 8px;
+}
+
+.skeleton--circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton--rect {
+  height: 120px;
+  width: 100%;
+}
+
+/* Hover transforms */
+.hover-lift {
+  transition: transform var(--mp-transition-normal), box-shadow var(--mp-transition-normal);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--mp-shadow-xl);
+}
+
+.hover-scale {
+  transition: transform var(--mp-transition-fast);
+}
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+/* Frosted glass */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Border gradient */
+.border-gradient {
+  position: relative;
+  background: var(--mp-color-bg-card);
+}
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--mp-color-primary), var(--mp-color-secondary));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Highlight badge */
+.highlight-badge {
+  display: inline-block;
+  font-size: var(--mp-font-size-xs);
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--mp-color-accent);
+  color: var(--mp-color-primary);
+}
+
+/* Notification badge (on icons) */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: var(--mp-status-denied);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  animation: mp-notificationPop 0.3s ease-out;
+}
+
+/* =============================================
+   LOADING DOTS
+   ============================================= */
+
+.loading-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mp-color-primary);
+  animation: mp-dotBounce 1.4s ease-in-out infinite both;
+}
+
+.loading-dots span:nth-child(2) { animation-delay: 0.16s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.32s; }
+
+/* =============================================
+   TOAST NOTIFICATIONS (Issue #6)
+   ============================================= */
+
+/* APEX success/error messages — higher visibility */
+.t-Body-alert .t-Alert--page {
+  animation: mp-toastSlideUp 0.4s ease-out;
+}
+
+.t-Body-alert .t-Alert--page.t-Alert--success {
+  border-left: 4px solid var(--mp-status-approved);
+  box-shadow: 0 4px 16px rgba(0, 72, 50, 0.2);
+}
+
+.t-Body-alert .t-Alert--page.t-Alert--danger {
+  border-left: 4px solid var(--mp-status-denied);
+  box-shadow: 0 4px 16px rgba(139, 46, 46, 0.2);
+}
+
+.t-Body-alert .t-Alert--page.t-Alert--warning {
+  border-left: 4px solid var(--mp-status-rfe);
+  box-shadow: 0 4px 16px rgba(139, 100, 20, 0.18);
+}
+
+/* =============================================
+   FAB — Floating Action Button
+   ============================================= */
+
+.fab {
+  position: fixed;
+  bottom: var(--mp-space-xl);
+  right: var(--mp-space-xl);
+  z-index: 1000;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--mp-gradient-dark);
+  color: #FFFFFF;
+  border: none;
+  box-shadow: 0 6px 24px rgba(8, 46, 88, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: transform var(--mp-transition-fast), box-shadow var(--mp-transition-fast);
+}
+
+.fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 32px rgba(8, 46, 88, 0.5);
+}
+
+.fab:active {
+  transform: scale(0.96);
+}
+
+.fab:focus-visible {
+  outline: 2px solid var(--mp-color-accent);
+  outline-offset: 2px;
+}
+
+/* =============================================
+   RESPONSIVE UTILITIES
+   ============================================= */
+
+@media (max-width: 640px) {
+  .hide-mobile { display: none; }
+}
+
+@media (min-width: 641px) {
+  .hide-desktop { display: none; }
+}
+
+@media (max-width: 640px) {
+  .stack-mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* =============================================
+   PRINT STYLES
+   ============================================= */
+
+@media print {
+  /* Hide non-printable elements */
+  .t-Header,
+  .t-Body-side,
+  .t-Footer,
+  .fab,
+  .t-Body-actions,
+  .t-Alert--page,
+  .loading-overlay,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset backgrounds */
+  body,
+  .t-Body,
+  .t-Body-content,
+  .t-Region {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+
+  /* Full width */
+  .t-Body-contentInner {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Table borders */
+  .t-Report-report th,
+  .t-Report-report td,
+  .a-IRR-table th,
+  .a-IRR-table td {
+    border: 1px solid #999 !important;
+  }
+
+  /* Status dots — print as text */
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Page breaks */
+  .t-Region { break-inside: avoid; }
+  h1, h2 { break-after: avoid; }
+}
+
+/* =============================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot.pending,
+  .status-dot.rfe,
+  .shimmer,
+  .skeleton,
+  .loading-dots span,
+  .fab,
+  .hover-lift,
+  .hover-scale,
+  .t-Body-alert .t-Alert--page {
+    animation: none;
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .status-dot {
+    outline: 2px solid currentColor;
+    outline-offset: 1px;
+  }
+
+  .loading-dots span {
+    background: currentColor;
+  }
+
+  .fab {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+  }
+}

@@ -293,12 +293,13 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(13300001000000001)
 ,p_button_name=>'BTN_DELETE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft:t-Button--danger'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>4072362960822175091
 ,p_button_image_alt=>'Delete Case'
 ,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-trash-o'
+,p_icon_css_classes=>'fa-trash'
+,p_button_css_classes=>'t-Button--danger'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(13300100000000100)

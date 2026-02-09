@@ -480,9 +480,9 @@ Week 13-14  ██████████████████████�
 
 | ID | Task | Category | Priority | Est. Hours | Dependencies | Status |
 |----|------|----------|----------|------------|--------------|--------|
-| 7.2.1 | Evaluate APEX AI Assistant for natural-language case queries | 🔌 Integration | P2 | 4 | 7.1.4 | ⬜ Not Started |
-| 7.2.2 | Prototype Semantic Search bar to replace filter forms | 🔌 Integration | P2 | 6 | 7.2.1 | ⬜ Not Started |
-| 7.2.3 | Prototype "Generate Text" Dynamic Action for report summaries | 🔌 Integration | P3 | 4 | 7.2.1 | ⬜ Not Started |
+| 7.2.1 | ~~Evaluate APEX AI Assistant for natural-language case queries~~ | 🔌 Integration | P2 | 4 | 7.1.4 | ❌ Cancelled (requires paid OCI AI services; not available on Always Free tier) |
+| 7.2.2 | ~~Prototype Semantic Search bar to replace filter forms~~ | 🔌 Integration | P2 | 6 | 7.2.1 | ❌ Cancelled (depends on 7.2.1) |
+| 7.2.3 | ~~Prototype "Generate Text" Dynamic Action for report summaries~~ | 🔌 Integration | P3 | 4 | 7.2.1 | ❌ Cancelled (depends on 7.2.1) |
 | 7.2.4 | Convert dashboard cards to Template Components ("Maine Postcard") | 🖥️ APEX | P1 | 4 | 7.1.4 | ⬜ Not Started |
 | 7.2.5 | Evaluate Human Task components for unified approval lists | 🖥️ APEX | P3 | 3 | 7.1.4 | ⬜ Not Started |
 | 7.2.6 | Evaluate Document Generator for PDF reports (state forms) | 🖥️ APEX | P3 | 3 | 7.1.4 | ⬜ Not Started |
@@ -490,7 +490,7 @@ Week 13-14  ██████████████████████�
 | 7.2.8 | Cross-browser / mobile testing of Maine Professional theme | 🧪 Testing | P0 | 4 | 7.1.12 | ⬜ Not Started |
 | 7.2.9 | Evaluate APEXlang (file-based UI definitions) for Git tracking | 🚀 DevOps | P2 | 3 | 7.1.4 | ⬜ Not Started |
 
-**Phase 7 Total:** ~56 hours
+**Phase 7 Total:** ~42 hours (14 hours cancelled — AI features require paid OCI services)
 
 ---
 
@@ -506,8 +506,8 @@ Week 13-14  ██████████████████████�
 | 4 | Advanced Features | 89 | 8-9 |
 | 5 | Testing & Hardening | 86 | 10-11 |
 | 6 | Deployment | 46 | 12 |
-| 7 | UI/UX Modernization (Maine Professional) | 56 | 13-14 |
-| **Total** | | **536** | **14** |
+| 7 | UI/UX Modernization (Maine Professional) | 42 | 13-14 |
+| **Total** | | **522** | **14** |
 
 ### Hours by Category
 
@@ -567,6 +567,7 @@ Week 13-14  ██████████████████████�
 | 2026-02-05 | 1.3 | Migration Team | Completed tasks 2.2.1-2.2.11: USCIS_CASE_PKG body implementation (add_case, add_or_update_case, get_case, list_cases, count_cases, delete_case, case_exists, get_cases_by_receipts, update_case_notes, set_case_active) and unit tests |
 | 2026-02-05 | 1.4 | Migration Team | Enforced per-package unit-test policy: moved tasks 2.6.7, 3.1.6, 3.2.7, 4.1.5, 4.4.8 to 🔄 In Progress; updated Phase 5 task 5.1.1 to verification-only; added unit-test policy note requiring tests before Phase 5 |
 | 2026-02-08 | 2.0 | Migration Team | Added Phase 7: UI/UX Modernization — "Maine Professional" palette. Completed tasks 7.1.1-7.1.3, 7.1.5, 7.1.8, 7.1.11: CSS palette transformation (app-styles.css v4.0, template_components.css v2.0), Inter font, USCIS_TEMPLATE_COMPONENTS_PKG v2.0, WCAG audit, design doc update. Created theme_roller_maine_pine.sql patch. |
+| 2026-02-08 | 2.1 | Migration Team | Cancelled AI tasks 7.2.1-7.2.3 (APEX AI Assistant, Semantic Search, Generate Text): Oracle Always Free tier does not include OCI Generative AI services. Phase 7 total reduced from 56h to 42h. |
 
 ---
 

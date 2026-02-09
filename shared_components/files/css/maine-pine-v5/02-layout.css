@@ -1,0 +1,142 @@
+/**
+ * Maine Pine v5 — Layout
+ * Page containers, regions, content width, responsive grid
+ *
+ * Fixes Issue #1: Full-width sprawl — caps container widths
+ */
+
+/* =============================================
+   MAIN CONTENT CONTAINER
+   ============================================= */
+
+body .t-Body-contentInner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--mp-space-lg);
+}
+
+body .t-Body-title {
+  padding: var(--mp-space-lg) var(--mp-space-xl);
+  background: transparent;
+}
+
+/* =============================================
+   REGIONS — Card-style with borders + shadows
+   ============================================= */
+
+body .t-Region {
+  --ut-region-background-color: var(--mp-color-bg-card);
+  border-radius: var(--mp-radius-lg);
+  box-shadow: var(--mp-shadow-sm);
+  border: 1px solid var(--mp-color-neutral-300);
+  overflow: hidden;
+  background: var(--mp-color-bg-card);
+}
+
+body .t-Region-header {
+  background: var(--mp-color-neutral-150);
+  padding: var(--mp-space-sm) var(--mp-space-lg);
+  padding-bottom: var(--mp-space-lg);
+  margin-bottom: var(--mp-space-md);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+}
+
+body .t-Region-title {
+  color: var(--mp-color-neutral-800);
+  font-weight: 700;
+  font-size: var(--mp-font-size-md);
+  letter-spacing: 0.2px;
+}
+
+body .t-Region-titleText {
+  margin: 0;
+}
+
+body .t-Region-body {
+  padding: var(--mp-space-lg);
+}
+
+/* Form regions — constrained for readability */
+.t-Region--scrollBody,
+.a-Form {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Collapsible regions */
+body .t-Region--hideShow .t-Region-header {
+  cursor: pointer;
+  transition: background var(--mp-transition-fast);
+}
+
+body .t-Region--hideShow .t-Region-header:hover {
+  background: var(--mp-color-neutral-200);
+}
+
+/* =============================================
+   MODAL DIALOGS
+   ============================================= */
+
+@keyframes mp-modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+body .t-Dialog {
+  border-radius: var(--mp-radius-xl);
+  box-shadow: var(--mp-shadow-float);
+  border: 1px solid var(--mp-color-neutral-300);
+  overflow: hidden;
+  animation: mp-modalPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body .t-Dialog-header {
+  background: var(--mp-color-neutral-150);
+  padding: var(--mp-space-md) var(--mp-space-lg);
+  border-bottom: 1px solid var(--mp-color-neutral-300);
+}
+
+body .t-Dialog-title {
+  color: var(--mp-color-neutral-800);
+  font-weight: 700;
+  font-size: 17px;
+}
+
+body .t-Dialog-body {
+  padding: var(--mp-space-lg);
+  background: var(--mp-color-bg-card);
+}
+
+body .t-Dialog-footer {
+  padding: var(--mp-space-md) var(--mp-space-lg);
+  background: var(--mp-color-neutral-150);
+  border-top: 1px solid var(--mp-color-neutral-300);
+}
+
+/* Dialog backdrop */
+.ui-widget-overlay {
+  background: rgba(8, 46, 88, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* =============================================
+   RESPONSIVE LAYOUT
+   ============================================= */
+
+@media (max-width: 640px) {
+  body .t-Body-contentInner {
+    padding: var(--mp-space-md);
+  }
+
+  body .t-Region-body {
+    padding: var(--mp-space-md);
+  }
+}

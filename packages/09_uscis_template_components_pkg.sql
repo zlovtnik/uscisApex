@@ -26,7 +26,7 @@ AS
     -- ========================================================
     -- Package Version
     -- ========================================================
-    gc_version      CONSTANT VARCHAR2(10) := '1.0.0';
+    gc_version      CONSTANT VARCHAR2(10) := '2.0.0';
     gc_package_name CONSTANT VARCHAR2(40) := 'USCIS_TEMPLATE_COMPONENTS_PKG';
 
     -- ========================================================
@@ -99,7 +99,7 @@ AS
      * Used by chart regions and anywhere raw color is needed.
      *
      * @param p_status_category  Status category key
-     * @return Hex color code (e.g. '#2e8540')
+     * @return Hex color code (e.g. '#004832')
      */
     FUNCTION get_status_color(
         p_status_category IN VARCHAR2
@@ -261,13 +261,13 @@ CREATE OR REPLACE PACKAGE BODY uscis_template_components_pkg AS
     IS
     BEGIN
         RETURN CASE p_status_category
-            WHEN gc_status_approved    THEN '#2e8540'
-            WHEN gc_status_denied      THEN '#cd2026'
-            WHEN gc_status_rfe         THEN '#0071bc'
-            WHEN gc_status_received    THEN '#4c2c92'
-            WHEN gc_status_pending     THEN '#fdb81e'
+            WHEN gc_status_approved    THEN '#004832'
+            WHEN gc_status_denied      THEN '#8B1A1A'
+            WHEN gc_status_rfe         THEN '#082E58'
+            WHEN gc_status_received    THEN '#4A2D73'
+            WHEN gc_status_pending     THEN '#FFE84F'
             WHEN gc_status_transferred THEN '#006064'
-            ELSE '#5b616b'
+            ELSE '#5A5A5A'
         END;
     END get_status_color;
 

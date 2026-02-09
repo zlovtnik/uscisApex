@@ -110,6 +110,9 @@ e_invalid_response  EXCEPTION;
     
     -- Check if API is configured
     FUNCTION is_api_configured RETURN BOOLEAN;
+    
+    -- Test real API connection (always hits live endpoint, never mock)
+    FUNCTION test_api_connection RETURN uscis_types_pkg.t_api_result;
 
 END uscis_api_pkg;
 /
@@ -379,15 +382,15 @@ WHEN e_resource_busy THEN
     
     -- --------------------------------------------------------
     -- is_mock_mode
+    -- Mock mode activates when USE_MOCK_API = TRUE **or**
+    -- USCIS_API_MODE = 'SANDBOX' (set from the Settings page).
+    -- Missing credentials alone will NOT activate mock mode;
+    -- instead, the OAuth layer raises -20011.
     -- --------------------------------------------------------
     FUNCTION is_mock_mode RETURN BOOLEAN IS
     BEGIN
-        -- Mock mode if API not configured or explicitly enabled
-        IF NOT is_api_configured THEN
-            RETURN TRUE;
-        END IF;
-        
-        RETURN uscis_util_pkg.get_config_boolean('USE_MOCK_API', FALSE);
+        RETURN uscis_util_pkg.get_config_boolean('USE_MOCK_API', FALSE)
+            OR UPPER(uscis_util_pkg.get_config('USCIS_API_MODE', 'PRODUCTION')) = 'SANDBOX';
     END is_mock_mode;
     
     -- --------------------------------------------------------
@@ -554,7 +557,34 @@ WHEN e_resource_busy THEN
             uscis_oauth_pkg.clear_token;
             l_result.error_message := 'Authentication failed';
         ELSE
-            l_result.error_message := 'API returned status ' || l_result.http_status;
+            -- Parse RFC-9457 error body when present
+            -- Expected: {"errors":[{"code":"...","message":"...","category":"...",
+            --            "reference":"...","status":"...","traceId":"..."}]}
+            BEGIN
+                DECLARE
+                    l_err_code    VARCHAR2(200);
+                    l_err_msg     VARCHAR2(4000);
+                    l_err_cat     VARCHAR2(200);
+                    l_trace_id    VARCHAR2(200);
+                BEGIN
+                    SELECT JSON_VALUE(l_result.data, '$.errors[0].code'),
+                           JSON_VALUE(l_result.data, '$.errors[0].message'),
+                           JSON_VALUE(l_result.data, '$.errors[0].category'),
+                           JSON_VALUE(l_result.data, '$.errors[0].traceId')
+                    INTO   l_err_code, l_err_msg, l_err_cat, l_trace_id
+                    FROM   dual;
+
+                    l_result.error_message :=
+                        'HTTP ' || l_result.http_status || ' — ' ||
+                        NVL(l_err_msg, 'Unknown error') ||
+                        CASE WHEN l_err_code IS NOT NULL THEN ' [' || l_err_code || ']' END ||
+                        CASE WHEN l_trace_id IS NOT NULL THEN ' (traceId: ' || l_trace_id || ')' END;
+                EXCEPTION
+                    WHEN OTHERS THEN
+                        -- Response wasn't RFC-9457 JSON; fall back to generic message
+                        l_result.error_message := 'API returned status ' || l_result.http_status;
+                END;
+            END;
         END IF;
         
         RETURN l_result;
@@ -702,6 +732,19 @@ END check_case_status_json;
             gc_package_name
         );
     END check_multiple_cases;
+    
+    -- --------------------------------------------------------
+    -- test_api_connection
+    -- Always hits the real USCIS API endpoint regardless of
+    -- USCIS_API_MODE or USE_MOCK_API settings.  Uses a dummy
+    -- receipt number.  Returns the raw t_api_result so the
+    -- caller can inspect http_status, response_time_ms, etc.
+    -- --------------------------------------------------------
+    FUNCTION test_api_connection RETURN uscis_types_pkg.t_api_result IS
+        l_test_rcpt CONSTANT VARCHAR2(13) := 'IOE0000000000';
+    BEGIN
+        RETURN call_uscis_api(l_test_rcpt);
+    END test_api_connection;
 
 END uscis_api_pkg;
 /

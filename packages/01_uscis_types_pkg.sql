@@ -63,11 +63,12 @@ AS
     gc_api_version      CONSTANT VARCHAR2(10) := 'v1';
     
     -- ========================================================
-    -- Rate Limiting Constants
+    -- Rate Limiting Constants (USCIS Case Status API — Sandbox)
+    -- Production values will be provided when Prod access is granted.
     -- ========================================================
-    gc_rate_limit_tps   CONSTANT NUMBER := 10;          -- 10 transactions per second
-    gc_min_interval_ms  CONSTANT NUMBER := 100;         -- 100ms between requests
-    gc_daily_limit      CONSTANT NUMBER := 400000;      -- 400K requests per day
+    gc_rate_limit_tps   CONSTANT NUMBER := 5;           -- 5 transactions per second (Sandbox)
+    gc_min_interval_ms  CONSTANT NUMBER := 200;         -- 200ms between requests (1 req/200ms)
+    gc_daily_limit      CONSTANT NUMBER := 1000;        -- 1,000 requests per day (Sandbox)
     
     -- ========================================================
     -- Token Management Constants

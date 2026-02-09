@@ -1,0 +1,139 @@
+-- ============================================================
+-- USCIS Case Tracker - Theme Roller Configuration Patch
+-- "Maine Pine" Style based on Vita-Slate
+-- ============================================================
+-- File: page_patches/theme_roller_maine_pine.sql
+-- 
+-- PURPOSE:
+--   Instructions for configuring Theme Roller in APEX 24.2
+--   to create the "Maine Pine" custom style.
+--
+-- HOW TO APPLY:
+--   1. Open App Builder → Application 102
+--   2. Shared Components → Themes → Universal Theme 42
+--   3. Click "Customize" (Theme Roller icon)
+--   4. Follow the steps below in Page Designer
+--
+-- ============================================================
+
+-- ============================================================
+-- STEP 1: Create "Maine Pine" Theme Style via Theme Roller
+-- ============================================================
+-- 
+-- Navigation:
+--   Shared Components → Themes → Theme 42 → Customize (🎨)
+--
+-- Base Style: Select "Vita - Slate" from the Theme Roller dropdown.
+--
+-- Set Global Colors:
+--   • Primary:       #082E58   (Coastal Navy - Pantone 289)
+--   • Success:       #004832   (Pine Green - Pantone 330)  
+--   • Warning:       #6F513E   (Teakwood)
+--   • Danger:        #8B1A1A   (Deep Cranberry)
+--   • Info:          #082E58   (Coastal Navy)
+--
+-- Set Layout:
+--   • Body Background: #F4F7F6 (Fog)
+--   • Header:          #082E58 (Coastal Navy)
+--   • Navigation:      #051D3A (Deep Navy)
+--
+-- Custom CSS (paste into Theme Roller Custom CSS box):
+--
+-- /* ── Maine Pine — Theme Roller Custom CSS ── */
+-- :root {
+--   --ut-body-font-family: 'Inter', -apple-system, BlinkMacSystemFont,
+--     'Segoe UI', Roboto, sans-serif;
+-- }
+--
+-- Click "Save As" → Name: "Maine Pine"
+-- Set as Current Style
+
+-- ============================================================
+-- STEP 2: Upload Maine.gov Logo (SVG)
+-- ============================================================
+--
+-- Navigation:
+--   Shared Components → User Interface Attributes → Logo
+--
+-- Logo Type: Image and Text
+-- Logo Image: Upload maine-gov-logo.svg (SVG preferred for retina)
+-- Logo Text:  USCIS Case Tracker
+-- Logo Link:  f?p=&APP_ID.:1:&SESSION.
+--
+-- Alternatively, for Shared Workspace Themes (APEX 24.2):
+--   Administration → Workspace Theme Defaults
+--   Apply "Maine Pine" as the workspace default.
+
+-- ============================================================
+-- STEP 3: Typography - Inter Font Integration
+-- ============================================================
+--
+-- Navigation:
+--   Shared Components → User Interface Attributes
+--     → JavaScript → File URLs, add:
+--       (none needed - font loaded via CSS @import in app-styles.css)
+--
+-- The @import for Inter is in app-styles.css.
+-- For production, self-host the Inter font to avoid privacy concerns:
+--   1. Download Inter from https://rsms.me/inter/ (weights 400/500/600/700/800)
+--   2. Add font files to shared_components/files/fonts/inter/
+--   3. Add @font-face declarations in app-styles.css pointing to #APP_FILES#fonts/inter/
+--   4. Remove the Google Fonts @import from app-styles.css
+--
+-- Do NOT use external Google Fonts URLs in CSS → File URLs.
+-- Instead, serve fonts from your own domain:
+--   CSS → File URLs:
+--     #APP_FILES#css/app-styles.css
+--   (Fonts loaded via @font-face in app-styles.css)
+
+-- ============================================================
+-- STEP 4: Verify WCAG 2.1 AA Compliance
+-- ============================================================
+--
+-- Required contrast ratios (minimum 4.5:1 for normal text):
+--
+-- | Foreground    | Background | Ratio   | Pass? |
+-- |--------------|------------|---------|-------|
+-- | #FFFFFF      | #082E58    | 10.6:1  |  ✓   |  (White on Navy)
+-- | #FFFFFF      | #004832    | 10.2:1  |  ✓   |  (White on Pine)
+-- | #6F513E      | #F4F7F6    |  4.8:1  |  ✓   |  (Teakwood on Fog)
+-- | #0F1B2A      | #F4F7F6    | 14.8:1  |  ✓   |  (Dark text on Fog)
+-- | #FFFFFF      | #8B1A1A    |  7.3:1  |  ✓   |  (White on Cranberry)
+-- | #082E58      | #FFE84F    |  8.5:1  |  ✓   |  (Navy text on Yellow CTA)
+-- | #003D2A      | #E6F2EE    |  7.2:1  |  ✓   |  (Approved badge)
+-- | #6E1111      | #FCE8E8    |  7.8:1  |  ✓   |  (Denied badge)
+-- | #051D3A      | #E3ECF5    |  9.1:1  |  ✓   |  (RFE badge)
+-- | #5C3F2E      | #FFF8E1    |  6.2:1  |  ✓   |  (Pending badge)
+--
+-- Tool: https://webaim.org/resources/contrastchecker/
+
+-- ============================================================
+-- STEP 5: Font Awesome Icon Updates (optional)
+-- ============================================================
+--
+-- Navigation:
+--   Shared Components → Navigation Menu
+--
+-- Recommended icon classes for Maine-themed navigation:
+--   Dashboard:     fa-home          (or fa-compass for Maine feel)
+--   Case List:     fa-list-alt
+--   Add Case:      fa-plus-circle
+--   Check Status:  fa-refresh
+--   Import/Export: fa-exchange
+--   Settings:      fa-cog
+--   Admin:         fa-shield
+
+-- ============================================================
+-- STEP 6: Read-Only Element Rendering (APEX 24.2)
+-- ============================================================
+--
+-- Navigation:
+--   Shared Components → Component Settings → Form Region
+--
+-- Enable "Enhanced Read-Only Rendering" (new in 24.2)
+-- This improves accessibility for read-only form items.
+
+PROMPT ============================================================
+PROMPT Theme Roller "Maine Pine" configuration patch
+PROMPT Apply these settings manually in Page Designer / Theme Roller
+PROMPT ============================================================

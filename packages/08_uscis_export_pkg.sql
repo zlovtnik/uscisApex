@@ -80,6 +80,18 @@ AS
         p_json_data IN CLOB
     ) RETURN CLOB;  -- Returns validation result as JSON
     
+    -- Import cases with detailed per-case results (Task 4.2.6)
+    -- Returns JSON: {"imported":N,"skipped":N,"errors":N,"detail":[...]}
+    -- When p_auto_commit is TRUE (default), the function issues periodic
+    -- COMMITs during batch processing and a final COMMIT on completion.
+    -- Set p_auto_commit to FALSE to let the caller manage transactions.
+    FUNCTION import_cases_json_detailed(
+        p_json_data        IN CLOB,
+        p_replace_existing IN BOOLEAN DEFAULT FALSE,
+        p_batch_size       IN NUMBER  DEFAULT 50,
+        p_auto_commit      IN BOOLEAN DEFAULT TRUE
+    ) RETURN CLOB;
+    
     -- ========================================================
     -- Download Procedures (for APEX)
     -- ========================================================
@@ -522,6 +534,148 @@ CREATE OR REPLACE PACKAGE BODY uscis_export_pkg AS
         RETURN l_count;
     END import_cases_json;
     
+    -- --------------------------------------------------------
+    -- import_cases_json_detailed  (Task 4.2.6)
+    -- Processes large files in batches and returns a JSON
+    -- summary with per-case error detail.
+    -- --------------------------------------------------------
+    -- --------------------------------------------------------
+    -- import_cases_json_detailed
+    -- Transaction control: when p_auto_commit = TRUE (the
+    -- default), periodic COMMITs are issued every
+    -- p_batch_size rows and a final COMMIT after the last
+    -- row.  Set p_auto_commit = FALSE when the caller must
+    -- own the transaction (e.g., inside a larger unit of
+    -- work).  In that case NO COMMITs are issued here.
+    -- --------------------------------------------------------
+    FUNCTION import_cases_json_detailed(
+        p_json_data        IN CLOB,
+        p_replace_existing IN BOOLEAN DEFAULT FALSE,
+        p_batch_size       IN NUMBER  DEFAULT 50,
+        p_auto_commit      IN BOOLEAN DEFAULT TRUE
+    ) RETURN CLOB IS
+        l_imported   NUMBER := 0;
+        l_skipped    NUMBER := 0;
+        l_error_cnt  NUMBER := 0;
+        l_total      NUMBER := 0;
+        l_batch_num  NUMBER := 0;
+        l_receipt    VARCHAR2(13);
+        l_case_json  CLOB;
+        l_result     CLOB;
+        l_errors_arr CLOB := ''; -- comma-separated JSON objects
+        l_effective_batch NUMBER;
+    BEGIN
+        -- Enforce sensible batch size (10 – 500)
+        l_effective_batch := LEAST(GREATEST(NVL(p_batch_size, 50), 10), 500);
+        
+        IF JSON_EXISTS(p_json_data, '$.cases') THEN
+            -- Array format — process in batches
+            FOR rec IN (
+                SELECT jt.*, ROWNUM AS rn
+                FROM JSON_TABLE(p_json_data, '$.cases[*]'
+                    COLUMNS (
+                        receipt_number  VARCHAR2(13)   PATH '$.receipt_number',
+                        case_type       VARCHAR2(100)  PATH '$.case_type',
+                        current_status  VARCHAR2(500)  PATH '$.current_status',
+                        last_updated    VARCHAR2(50)   PATH '$.last_updated',
+                        details         VARCHAR2(4000) PATH '$.details',
+                        notes           VARCHAR2(4000) PATH '$.notes',
+                        is_active       NUMBER         PATH '$.is_active',
+                        check_frequency NUMBER         PATH '$.check_frequency'
+                    )
+                ) jt
+            ) LOOP
+                l_total := l_total + 1;
+                BEGIN
+                    l_case_json := '{' ||
+                        '"receipt_number":"' || rec.receipt_number || '",' ||
+                        '"case_type":"' || uscis_util_pkg.json_escape(rec.case_type) || '",' ||
+                        '"current_status":"' || uscis_util_pkg.json_escape(rec.current_status) || '",' ||
+                        '"last_updated":"' || rec.last_updated || '",' ||
+                        '"details":"' || uscis_util_pkg.json_escape(rec.details) || '",' ||
+                        '"notes":"' || uscis_util_pkg.json_escape(rec.notes) || '",' ||
+                        '"is_active":' || NVL(rec.is_active, 1) || ',' ||
+                        '"check_frequency":' || NVL(rec.check_frequency, 24) ||
+                    '}';
+                    
+                    l_receipt := import_case_json(l_case_json, p_replace_existing);
+                    l_imported := l_imported + 1;
+                    
+                EXCEPTION
+                    WHEN OTHERS THEN
+                        IF SQLCODE = uscis_types_pkg.gc_err_duplicate_case THEN
+                            -- Duplicate — skip (not replace mode)
+                            l_skipped := l_skipped + 1;
+                        ELSE
+                            -- Track error detail (limit to first 50 errors)
+                            l_error_cnt := l_error_cnt + 1;
+                            IF l_error_cnt <= 50 THEN
+                                IF l_errors_arr IS NOT NULL AND LENGTH(l_errors_arr) > 0 THEN
+                                    l_errors_arr := l_errors_arr || ',';
+                                END IF;
+                                l_errors_arr := l_errors_arr ||
+                                    '{"receipt":"' || NVL(rec.receipt_number, '?') || '",' ||
+                                     '"error":"' || uscis_util_pkg.json_escape(
+                                         SUBSTR(SQLERRM, 1, 200)) || '"}';
+                            END IF;
+                            
+                            uscis_util_pkg.log_error(
+                                'Failed to import case ' || rec.receipt_number || ': ' || SQLERRM,
+                                gc_package_name
+                            );
+                        END IF;
+                END;
+                
+                -- Batch commit to avoid undo segment pressure on large files
+                IF p_auto_commit AND MOD(l_total, l_effective_batch) = 0 THEN
+                    COMMIT;
+                    l_batch_num := l_batch_num + 1;
+                END IF;
+            END LOOP;
+            
+            -- Final commit for remaining rows
+            IF p_auto_commit THEN
+                COMMIT;
+            END IF;
+        ELSE
+            -- Single case format
+            BEGIN
+                l_receipt := import_case_json(p_json_data, p_replace_existing);
+                l_imported := 1;
+                l_total := 1;
+                IF p_auto_commit THEN
+                    COMMIT;
+                END IF;
+            EXCEPTION
+                WHEN OTHERS THEN
+                    IF SQLCODE = uscis_types_pkg.gc_err_duplicate_case THEN
+                        l_skipped := 1;
+                        l_total := 1;
+                    ELSE
+                        l_error_cnt := 1;
+                        l_total := 1;
+                        l_errors_arr := '{"receipt":"?","error":"' ||
+                            uscis_util_pkg.json_escape(SUBSTR(SQLERRM, 1, 200)) || '"}';
+                    END IF;
+            END;
+        END IF;
+        
+        -- Log import
+        uscis_audit_pkg.log_import(l_imported, NULL, l_error_cnt);
+        
+        -- Build result JSON
+        l_result := '{' ||
+            '"total":'    || l_total    || ',' ||
+            '"imported":' || l_imported || ',' ||
+            '"skipped":'  || l_skipped  || ',' ||
+            '"errors":'   || l_error_cnt || ',' ||
+            '"batches":'  || (l_batch_num + 1) || ',' ||
+            '"detail":['  || NVL(l_errors_arr, '') || ']' ||
+        '}';
+        
+        RETURN l_result;
+    END import_cases_json_detailed;
+
     -- --------------------------------------------------------
     -- download_export
     -- --------------------------------------------------------
